@@ -49,6 +49,20 @@ def create_planner_node(llm: BaseChatModel):
         return {
             "request": user_request,
             "plan": plan,
+            "project_directory": str(project_directory),
         }
 
     return planner_node
+
+
+def create_coder_node(llm: BaseChatModel):
+    structured_llm = llm.with_structured_output(DevelopmentPlan).with_retry(
+        retry_if_exception_type=(Exception,),
+        stop_after_attempt=3,
+    )
+
+    def coder_node(state: DevState) -> DevState:
+        user_request = state["request"]
+        return {}
+
+    return coder_node

@@ -33,9 +33,6 @@ class Task(BaseModel):
 
 
 class DevelopmentPlan(BaseModel):
-    title: str = Field(
-        description="Short title of the project, only three words at most"
-    )
     project_id: str = Field(
         description=(
             "Unique lowercase kebab-case identifier used as the project "
