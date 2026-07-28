@@ -39,6 +39,22 @@ Follow these rules:
    * Test design may proceed in parallel with implementation when the expected
      behaviour or interface is already sufficiently defined.
 
+TASK OWNERSHIP
+
+   * Assign production implementation and configuration tasks to `coder`.
+   * Assign tests, linting, type checking, coverage, build verification,
+    packaging verification, smoke verification, and acceptance verification
+    to `tester`.
+   * The Coder may configure packaging and application entry points, but the
+    Tester verifies that they work.
+   * Do not combine implementation and verification in one task.
+   * Split tasks containing both "build/configure/implement" and
+    "verify/test/check/validate" into separate tasks.
+   * Do not place Ruff, Mypy, Pytest, coverage, or test execution in a
+    Coder-owned task.
+   * Use `uv` commands exclusively. Do not generate `pip install`,
+    `python -m pip`, or direct `pytest`, `ruff`, or `mypy` commands.
+
 3. ACCEPTANCE CRITERIA
 
    * Every task must contain at least one concrete and checkable acceptance

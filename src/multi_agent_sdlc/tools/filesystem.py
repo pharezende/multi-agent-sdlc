@@ -5,6 +5,57 @@ from pathlib import Path
 
 from langchain_core.tools import tool
 
+CODER_WRITE_FILE_DESCRIPTION = """
+Create or replace a production-code file inside the current project.
+
+The `path` argument must be relative to the project root.
+
+Correct examples:
+- pyproject.toml
+- README.md
+- src/calculator/__init__.py
+- src/calculator/main.py
+
+Incorrect examples:
+- sandbox/terminal-calculator/src/calculator/main.py
+- /absolute/path/main.py
+- ../other-project/main.py
+- tests/test_calculator.py
+- src/calculator/test_main.py
+
+Do not include the sandbox directory or project directory in `path`.
+
+This tool is restricted to production files.
+
+Do not create or modify:
+- unit tests or integration tests;
+- files under `test/`, `tests/`, `__tests__/`, `spec/`, or `specs/`;
+- files named `test_*.py` or `*_test.py`;
+- `conftest.py`, `pytest.ini`, `tox.ini`, or coverage configuration;
+- test fixtures, mocks, test data, or test documentation.
+
+Test implementation belongs exclusively to the Tester agent.
+If test work is required, do not attempt it with another path or mechanism.
+""".strip()
+
+CODER_CREATE_DIRECTORY_DESCRIPTION = """
+Create a directory inside the current project directory.
+
+The `path` argument must be relative to the project root.
+
+Correct examples:
+- src
+- src/calculator
+- config
+
+Incorrect examples:
+- sandbox/terminal-calculator/src
+- /home/user/project/src
+- ../another-project
+
+Do not include the sandbox directory or project directory in `path`.
+""".strip()
+
 
 @tool
 def read_file(
@@ -26,32 +77,24 @@ def read_file(
     return file_path.read_text(encoding="utf-8")
 
 
-@tool
+@tool(
+    "write_file",
+    description=CODER_WRITE_FILE_DESCRIPTION,
+)
 def write_file(
     path: str,
     content: str,
     runtime: ToolRuntime[DevState],
 ) -> str:
-    """Create or replace a UTF-8 file inside the current project."""
+    reject_coder_test_path(path)
 
     project_directory = get_project_directory(runtime)
+    file_path = resolve_project_path(project_directory, path)
 
-    file_path = resolve_project_path(
-        project_directory=project_directory,
-        relative_path=path,
-    )
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(content, encoding="utf-8")
 
-    file_path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    file_path.write_text(
-        content,
-        encoding="utf-8",
-    )
-
-    return f"Written file: {path}"
+    return f"Written production file: {path}"
 
 
 @tool
@@ -80,26 +123,22 @@ def list_files(
     )
 
 
-@tool
+@tool(
+    "create_directory",
+    description=CODER_CREATE_DIRECTORY_DESCRIPTION,
+)
 def create_directory(
     path: str,
     runtime: ToolRuntime[DevState],
 ) -> str:
-    """Create a directory inside the current project."""
+    reject_coder_test_path(path)
 
     project_directory = get_project_directory(runtime)
+    directory_path = resolve_project_path(project_directory, path)
 
-    directory = resolve_project_path(
-        project_directory=project_directory,
-        relative_path=path,
-    )
+    directory_path.mkdir(parents=True, exist_ok=True)
 
-    directory.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    return f"Created directory: {path}"
+    return f"Created production directory: {path}"
 
 
 def get_project_directory(
@@ -118,3 +157,31 @@ def get_project_directory(
         raise NotADirectoryError(f"Project directory does not exist: {directory}")
 
     return directory.resolve()
+
+
+from pathlib import PurePosixPath
+
+
+TEST_DIRECTORY_NAMES = {
+    "test",
+    "tests",
+    "__tests__",
+    "spec",
+    "specs",
+}
+
+
+def is_test_related_path(path: str) -> bool:
+    normalized_path = path.replace("\\", "/").strip("/")
+    candidate = PurePosixPath(normalized_path)
+
+    return any(part.lower() in TEST_DIRECTORY_NAMES for part in candidate.parts)
+
+
+def reject_coder_test_path(path: str) -> None:
+    if is_test_related_path(path):
+        raise PermissionError(
+            "The Coder cannot create or modify files or directories "
+            f"inside test-related paths: {path}. "
+            "Test implementation belongs to the Tester."
+        )

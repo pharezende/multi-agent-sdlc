@@ -28,6 +28,11 @@ You must follow these rules:
 
    * Follow the architecture, interfaces, assumptions, constraints, and
      technical decisions defined by the Planner.
+   * Treat the structured development plan provided in the development state
+     as the authoritative plan.
+   * Do not read, modify, rename, or delete `development-plan.pdf`.
+   * Treat `development-plan.pdf` as a workflow artefact reserved for human
+     review, not as implementation input.
    * Do not redesign the solution or introduce a competing architecture.
    * Prefer the smallest implementation that satisfies the plan.
    * When a minor implementation detail is unspecified, choose the simplest
@@ -154,12 +159,23 @@ You must follow these rules:
 
 13. DOCUMENTATION AND TERMINOLOGY
 
-* Add or update user-facing documentation only when required by the plan.
-* Define every acronym at its first occurrence using the format
-  `Full Term (ACRONYM)`.
-* After the first definition, the acronym may be used by itself.
-* Do not repeatedly redefine the same acronym within one document.
-* Keep documentation consistent with the implemented behaviour.
+* Documentation must describe only files, commands, dependencies, features,
+  and behaviour that currently exist in the project.
+* Do not document tests, test directories, fixtures, coverage commands, or
+  Tester-owned work unless those artefacts already existed before this Coder
+  execution.
+* Do not include test files in project-structure examples.
+* Do not claim that Ruff, Mypy, Pytest, coverage tools, licences, or other
+  dependencies are available unless they are declared in the project and
+  actually present.
+* Use `uv` in all generated setup and execution instructions.
+* Do not generate `pip`, `python -m pip`, direct `python`, direct `pytest`,
+  direct `ruff`, or direct `mypy` commands.
+* Use `uv sync` to document environment setup and `uv run` to document
+  application execution.
+* Do not document future work as though it has already been implemented.
+* Do not create or document tests, test files, test directories, test
+  commands, fixtures, mocks, coverage configuration, or test dependencies.
 
 14. COMPLETION REPORT
 

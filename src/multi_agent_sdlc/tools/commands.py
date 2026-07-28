@@ -2,18 +2,44 @@
 
 from multi_agent_sdlc.state import DevState
 from langgraph.prebuilt import ToolRuntime
-import shlex
 import subprocess
 from pathlib import Path
 
 from langchain_core.tools import tool
 
 
+CODER_RUN_COMMAND_DESCRIPTION = """
+Run the generated application inside the current project.
+
+The `command` argument must be a JSON array of separate command arguments,
+not a string containing a JSON array.
+
+Correct:
+{
+  "command": ["uv", "run", "python", "-m", "terminal_calculator"]
+}
+
+Correct:
+{
+  "command": ["uv", "run", "calc", "2+2"]
+}
+
+Incorrect:
+{
+  "command": "[\\"uv\\", \\"run\\", \\"python\\", \\"-m\\", \\"terminal_calculator\\"]"
+}
+
+Incorrect:
+{
+  "command": ["uv run python -m terminal_calculator"]
+}
+
+Do not provide Python source code, shell syntax, pipes, redirects, or multiline
+commands. Each command argument must be one list element.
+""".strip()
+
+
 ALLOWED_COMMANDS = {
-    "python",
-    "pytest",
-    "ruff",
-    "mypy",
     "uv",
 }
 
@@ -37,7 +63,10 @@ def validate_command(command: list[str]) -> None:
             raise ValueError(f"Parent-directory traversal is not allowed: {argument}")
 
 
-@tool
+@tool(
+    "run_command",
+    description=CODER_RUN_COMMAND_DESCRIPTION,
+)
 def run_command(
     command: list[str],
     runtime: ToolRuntime[DevState],

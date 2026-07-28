@@ -66,21 +66,16 @@ def create_planner_node(llm: BaseChatModel):
 def build_coder_context(state: DevState) -> dict[str, Any]:
 
     plan = state.get("plan")
-    if plan is None:
-        raise ValueError("Development plan is missing from the state.")
-
-    project_directory = state.get("project_directory")
-    if not project_directory:
-        raise ValueError("Project directory is missing from the state.")
-
-    request = state.get("request")
-    if not request or not request.strip():
-        raise ValueError("Development request is missing from the state.")
+    coder_tasks = [
+        task.model_dump(mode="json") for task in plan.tasks if task.owner == "coder"
+    ]
 
     return {
-        "request": request,
-        "project_directory": project_directory,
-        "plan": plan.model_dump(mode="json"),
+        "request": state.get("request"),
+        "project_directory": state.get("project_directory"),
+        "assumptions": plan.assumptions,
+        "out_of_scope": plan.out_of_scope,
+        "tasks": coder_tasks,
     }
 
 
@@ -155,20 +150,27 @@ def invoke_with_retry(
     messages,
     max_attempts,
 ):
-    for attempt in range(1, max_attempts + 1):
+    for attempt in range(0, max_attempts):
         try:
             return llm.invoke(messages)
 
         except ResponseValidationError as exc:
             error_text = str(exc)
 
-            transient_provider_error = (
-                "ResourceExhausted" in error_text
-                or "request limit reached" in error_text
-                or '"code":502' in error_text
+            is_transitory = any(
+                marker in error_text
+                for marker in (
+                    "ResourceExhausted",
+                    "request limit reached",
+                    "provider_overloaded",
+                    "provider_unavailable",
+                    "'code': 502",
+                    '"code":502',
+                    '"code": 502',
+                )
             )
 
-            if not transient_provider_error:
+            if not is_transitory:
                 raise
 
             if attempt == max_attempts:
@@ -177,5 +179,5 @@ def invoke_with_retry(
                     f"after {max_attempts} attempts."
                 ) from exc
 
-            delay_seconds = 2 ** (attempt - 1)
+            delay_seconds = 20 ** (attempt - 1)
             time.sleep(delay_seconds)

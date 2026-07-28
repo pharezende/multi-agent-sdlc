@@ -1,3 +1,4 @@
+from typing import Literal
 from turtle import title
 from enum import Enum
 from typing import List
@@ -13,6 +14,17 @@ class RiskLevel(str, Enum):
 class Task(BaseModel):
     id: str = Field(description="Short unique id, e.g. 'T1', 'T2'")
     title: str = Field(description="Title of the task")
+    owner: Literal["coder", "tester"] = Field(
+        description=(
+            "Owner of the task. "
+            "Use 'coder' for production code, application configuration, "
+            "runtime behaviour, and implementation documentation. "
+            "Use 'tester' for unit tests, integration tests, fixtures, mocks, "
+            "test data, coverage configuration, and test documentation. "
+            "A task must have exactly one owner. Do not assign test creation "
+            "or test-file changes to the coder."
+        )
+    )
     description: str = Field(
         description="What needs to be built/changed, specific enough for Coder to act without re-asking"
     )

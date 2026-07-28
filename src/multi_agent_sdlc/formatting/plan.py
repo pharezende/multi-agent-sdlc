@@ -25,6 +25,7 @@ def format_plan(plan: DevelopmentPlan) -> str:
                 "",
                 f"{task.id}. {task.title}",
                 f"Description: {task.description}",
+                f"Owner: {task.owner}",
                 f"Risk: {task.risk}",
                 f"Depends on: {', '.join(task.depends_on) or 'None'}",
                 "Acceptance criteria:",
