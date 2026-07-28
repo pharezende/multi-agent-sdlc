@@ -9,6 +9,7 @@ def run() -> None:
         "request": "Build a calculator app, all end user interactions happens via the terminal.",
         "plan": None,
         "project_directory": "",
+        "coder_messages": [],
     }
 
     result = graph.invoke(initial_state)
