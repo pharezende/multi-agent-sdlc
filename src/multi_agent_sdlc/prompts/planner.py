@@ -140,6 +140,7 @@ TASK OWNERSHIP
      agents.
    * Do not output an empty plan.
    * Do not create tasks unrelated to the user's request.
+   * The README.md must be created.
 
 11. ACRONYMS AND TERMINOLOGY
    * Define every acronym the first time it appears in the plan.

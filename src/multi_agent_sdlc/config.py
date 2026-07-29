@@ -12,4 +12,6 @@ SANDBOX_ROOT = os.getenv("SANDBOX_ROOT")
 def create_llm() -> ChatOpenRouter:
     return ChatOpenRouter(
         model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        reasoning={"effort": "high"},
+        # model="inclusionai/ling-3.0-flash:free",
     )

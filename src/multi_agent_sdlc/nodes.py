@@ -12,8 +12,6 @@ from pathlib import Path
 from re import fullmatch
 import json
 from typing import Any, Literal
-import time
-from openrouter.errors import ResponseValidationError
 
 
 def create_project_directory(project_id: str) -> Path:
@@ -107,7 +105,7 @@ def create_coder_node(
     llm: BaseChatModel,
     tools: list,
 ):
-    llm_with_tools = llm.bind_tools(tools)
+    llm_with_tools = llm.bind_tools(tools).with_retry(stop_after_attempt=3)
 
     def coder_node(state: DevState) -> dict:
 
@@ -131,53 +129,10 @@ def create_coder_node(
                 ],
             }
 
-        # response = llm_with_tools.invoke(coder_messages)
-        response = invoke_with_retry(
-            llm_with_tools,
-            coder_messages,
-            max_attempts=3,
-        )
+        response = llm_with_tools.invoke(coder_messages)
 
         return {
             "coder_messages": [response],
         }
 
     return coder_node
-
-
-def invoke_with_retry(
-    llm,
-    messages,
-    max_attempts,
-):
-    for attempt in range(0, max_attempts):
-        try:
-            return llm.invoke(messages)
-
-        except ResponseValidationError as exc:
-            error_text = str(exc)
-
-            is_transitory = any(
-                marker in error_text
-                for marker in (
-                    "ResourceExhausted",
-                    "request limit reached",
-                    "provider_overloaded",
-                    "provider_unavailable",
-                    "'code': 502",
-                    '"code":502',
-                    '"code": 502',
-                )
-            )
-
-            if not is_transitory:
-                raise
-
-            if attempt == max_attempts:
-                raise RuntimeError(
-                    "The upstream model provider remained unavailable "
-                    f"after {max_attempts} attempts."
-                ) from exc
-
-            delay_seconds = 20 ** (attempt - 1)
-            time.sleep(delay_seconds)
