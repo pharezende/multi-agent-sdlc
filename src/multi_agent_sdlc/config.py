@@ -1,3 +1,5 @@
+from typing import Any
+from typing import Mapping
 import os
 from dotenv import load_dotenv
 from langchain_openrouter import ChatOpenRouter
@@ -9,9 +11,12 @@ DOC_PLAN_PATH = os.getenv("DOC_PLAN_PATH")
 SANDBOX_ROOT = os.getenv("SANDBOX_ROOT")
 
 
-def create_llm() -> ChatOpenRouter:
+def create_llm(
+    model: str = "nvidia/nemotron-3-ultra-550b-a55b:free",
+    reasoning: Mapping[str, Any] = {"effort": "high"},
+) -> ChatOpenRouter:
     return ChatOpenRouter(
-        model="nvidia/nemotron-3-ultra-550b-a55b:free",
-        reasoning={"effort": "high"},
+        model=model,
+        reasoning=reasoning,
         # model="inclusionai/ling-3.0-flash:free",
     )

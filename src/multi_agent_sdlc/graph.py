@@ -10,9 +10,10 @@ from langgraph.prebuilt import ToolNode
 
 def build_graph():
 
-    llm = create_llm()
-    planner_node = create_planner_node(llm)
-    coder_node = create_coder_node(llm, tools=CODER_TOOLS)
+    llm_free = create_llm()
+    llm_paid = create_llm(model="deepseek/deepseek-v4-flash")
+    planner_node = create_planner_node(llm_free)
+    coder_node = create_coder_node(llm_paid, tools=CODER_TOOLS)
     coder_tool_node = ToolNode(
         CODER_TOOLS,
         messages_key="coder_messages",

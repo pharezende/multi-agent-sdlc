@@ -7,8 +7,8 @@ from pathlib import Path, PurePosixPath
 from typing import Annotated, Any
 from multi_agent_sdlc.state import DevState
 
-from langgraph.prebuilt import ToolRuntime
-from langchain_core.tools import tool
+# from langchain_core.tools import tool, ToolRuntime
+from langchain.tools import ToolRuntime, tool
 from pydantic import Field
 
 
@@ -459,7 +459,6 @@ def normalise_process_output(
 
 def execute_process(
     command: list[str],
-    *,
     project_directory: Path,
     timeout_seconds: int,
 ) -> dict[str, object]:
@@ -505,7 +504,6 @@ def execute_process(
 
 def validate_timeout(
     timeout_seconds: int,
-    *,
     maximum: int,
 ) -> None:
     """Validate a tool-specific timeout range."""
@@ -764,36 +762,8 @@ def coder_create_directory(
 # ============================================================
 
 
-from pydantic import BaseModel, Field
-
-
-class RunApplicationInput(BaseModel):
-    entry_point: str = Field(
-        description=(
-            "Application entry point declared in [project.scripts] "
-            "in pyproject.toml, such as `area-calculator`."
-        ),
-    )
-
-    arguments: list[str] = Field(
-        default_factory=list,
-        description=(
-            "Individual arguments passed to the application. "
-            "Do not include `uv run` or shell syntax."
-        ),
-    )
-
-    timeout_seconds: int = Field(
-        default=15,
-        ge=1,
-        le=60,
-        description="Maximum execution time in seconds.",
-    )
-
-
 @tool(
     "run_application",
-    args_schema=RunApplicationInput,
     description=RUN_APPLICATION_DESCRIPTION,
 )
 def coder_run_application(
@@ -804,6 +774,11 @@ def coder_run_application(
 ) -> dict[str, object]:
     validated_entry_point = validate_entry_point(entry_point)
     validated_arguments = validate_application_arguments(arguments)
+
+    validate_timeout(
+        timeout_seconds=timeout_seconds,
+        maximum=60,
+    )
 
     project_directory = get_project_directory(runtime)
 
@@ -826,21 +801,14 @@ def coder_run_application(
 def coder_run_python_module(
     module: str,
     runtime: ToolRuntime[DevState],
-    args: list[str] | None = None,
-    timeout_seconds: Annotated[
-        int,
-        Field(
-            ge=1,
-            le=60,
-            description=("Maximum module execution time in seconds."),
-        ),
-    ] = 15,
+    arguments: list[str] | None = None,
+    timeout_seconds: int = 15,
 ) -> dict[str, object]:
     validated_module = validate_module_name(module)
-    validated_arguments = validate_application_arguments(args or [])
+    validated_arguments = validate_application_arguments(arguments or [])
 
     validate_timeout(
-        timeout_seconds,
+        timeout_seconds=timeout_seconds,
         maximum=60,
     )
 
@@ -867,14 +835,7 @@ def coder_run_python_module(
 def coder_install_runtime_dependencies(
     packages: list[str],
     runtime: ToolRuntime[DevState],
-    timeout_seconds: Annotated[
-        int,
-        Field(
-            ge=1,
-            le=180,
-            description=("Maximum dependency installation time in seconds."),
-        ),
-    ] = 120,
+    timeout_seconds: int = 120,
 ) -> dict[str, object]:
     if not packages:
         raise ValueError("At least one runtime dependency is required.")
@@ -882,7 +843,7 @@ def coder_install_runtime_dependencies(
     validated_packages = [validate_runtime_dependency(package) for package in packages]
 
     validate_timeout(
-        timeout_seconds,
+        timeout_seconds=timeout_seconds,
         maximum=180,
     )
 
@@ -912,3 +873,19 @@ CODER_TOOLS = [
     coder_run_python_module,
     coder_install_runtime_dependencies,
 ]
+
+# if __name__ == "__main__":
+#     import inspect
+#     import json
+
+#     print("FUNCTION SIGNATURE")
+#     print(inspect.signature(coder_run_python_module.func))
+
+#     print("\nTOOL-CALL SCHEMA SENT TO THE MODEL")
+#     print(
+#         json.dumps(
+#             coder_run_python_module.tool_call_schema.model_json_schema(),
+#             indent=2,
+#             ensure_ascii=False,
+#         )
+#     )
