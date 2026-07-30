@@ -4,12 +4,8 @@ import os
 import re
 import subprocess
 from pathlib import Path, PurePosixPath
-from typing import Annotated, Any
 from multi_agent_sdlc.state import DevState
-
-# from langchain_core.tools import tool, ToolRuntime
 from langchain.tools import ToolRuntime, tool
-from pydantic import Field
 
 
 # ============================================================
@@ -502,22 +498,8 @@ def execute_process(
 # ============================================================
 
 
-def validate_timeout(
-    timeout_seconds: int,
-    maximum: int,
-) -> None:
-    """Validate a tool-specific timeout range."""
-    if not isinstance(timeout_seconds, int):
-        raise TypeError("timeout_seconds must be an integer.")
-
-    if not 1 <= timeout_seconds <= maximum:
-        raise ValueError(f"timeout_seconds must be between 1 and {maximum}.")
-
-
 def validate_entry_point(entry_point: str) -> str:
     """Validate and return a project entry-point name."""
-    if not isinstance(entry_point, str):
-        raise TypeError("Entry point must be a string.")
 
     cleaned = entry_point.strip()
 
@@ -775,10 +757,8 @@ def coder_run_application(
     validated_entry_point = validate_entry_point(entry_point)
     validated_arguments = validate_application_arguments(arguments)
 
-    validate_timeout(
-        timeout_seconds=timeout_seconds,
-        maximum=60,
-    )
+    if not 1 <= timeout_seconds <= 60:
+        raise ValueError(f"timeout_seconds must be between 1 and {60}.")
 
     project_directory = get_project_directory(runtime)
 
@@ -807,10 +787,8 @@ def coder_run_python_module(
     validated_module = validate_module_name(module)
     validated_arguments = validate_application_arguments(arguments or [])
 
-    validate_timeout(
-        timeout_seconds=timeout_seconds,
-        maximum=60,
-    )
+    if not 1 <= timeout_seconds <= 60:
+        raise ValueError(f"timeout_seconds must be between 1 and {60}.")
 
     project_directory = get_project_directory(runtime)
 
@@ -842,10 +820,8 @@ def coder_install_runtime_dependencies(
 
     validated_packages = [validate_runtime_dependency(package) for package in packages]
 
-    validate_timeout(
-        timeout_seconds=timeout_seconds,
-        maximum=180,
-    )
+    if not 1 <= timeout_seconds <= 180:
+        raise ValueError(f"timeout_seconds must be between 1 and {180}.")
 
     project_directory = get_project_directory(runtime)
 
