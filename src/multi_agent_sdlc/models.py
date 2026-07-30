@@ -66,6 +66,13 @@ class DevelopmentPlan(BaseModel):
 
 
 class CoderSummary(BaseModel):
+    summary: str = Field(
+        description=(
+            "Brief factual summary of the production implementation completed "
+            "by the Coder. Do not include unverified test or quality claims."
+        )
+    )
+
     completed_task_ids: list[str] = Field(
         default_factory=list,
         description=(

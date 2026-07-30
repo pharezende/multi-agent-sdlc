@@ -1,3 +1,4 @@
+from multi_agent_sdlc.models import CoderSummary
 from langgraph.graph import add_messages
 from langchain_core.messages import BaseMessage
 from typing import Annotated
@@ -8,6 +9,9 @@ from .models import DevelopmentPlan
 
 class DevState(TypedDict):
     request: str
-    plan: Optional[DevelopmentPlan]
+    plan: NotRequired[DevelopmentPlan]
     project_directory: NotRequired[str]
-    coder_messages: Annotated[list[BaseMessage], add_messages]
+    coder_messages: Annotated[
+        list[BaseMessage], add_messages
+    ]  # Reducer state field. Otherwise replaces the previous value.
+    coder_summary: NotRequired[CoderSummary]

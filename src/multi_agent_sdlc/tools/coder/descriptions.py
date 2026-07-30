@@ -272,3 +272,45 @@ Do not use this tool to:
 - execute the application;
 - perform Tester-owned verification.
 """.strip()
+
+
+SUBMIT_CODER_SUMMARY_DESCRIPTION = """
+Submit the final structured handoff summary for the Coder stage.
+
+Call this tool only when:
+- all safe Coder-owned production tasks are complete; or
+- no further safe implementation work can continue because of a genuine
+  blocker.
+
+This is a terminal Coder action. After calling it, do not request additional
+filesystem, dependency, synchronization, or application-execution operations.
+
+Populate the summary only with evidence from:
+- Coder-owned tasks in the approved DevelopmentPlan;
+- successful filesystem tool results;
+- runtime dependency operations;
+- project synchronization results;
+- application or module execution results;
+- observed failures and blockers.
+
+The summary must:
+- identify completed Coder-owned task IDs;
+- list project-relative production files created or modified;
+- list runtime dependencies actually added or changed;
+- list command-line entry points actually configured;
+- record only operations that were actually executed and their observed
+  outcomes;
+- identify unresolved failures, blockers, and incomplete work;
+- provide concise handoff notes for the Tester.
+
+Do not:
+- call this tool while more implementation actions are required;
+- call it together with another tool;
+- include test files or Tester-owned work as completed Coder work;
+- claim that tests, linting, type checking, coverage, acceptance criteria,
+  review, approval, deployment, or release succeeded;
+- invent files, dependencies, commands, task completion, or successful
+  outcomes;
+- return the final summary as ordinary text or Markdown instead of calling
+  this tool.
+""".strip()

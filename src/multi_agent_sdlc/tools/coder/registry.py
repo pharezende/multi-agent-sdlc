@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.coder.finalization import submit_coder_summary
 from multi_agent_sdlc.tools.coder.dependencies import (
     coder_install_runtime_dependencies,
 )
@@ -23,4 +24,5 @@ CODER_TOOLS = [
     coder_run_application,
     coder_run_python_module,
     coder_install_runtime_dependencies,
+    submit_coder_summary,
 ]
