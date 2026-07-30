@@ -7,7 +7,7 @@ def route_after_coder(
     state: DevState,
 ) -> Literal[
     "coder_tools",
-    "finalize_coder",
+    "tester",
 ]:
     messages = state.get("coder_messages", [])
 
@@ -16,4 +16,4 @@ def route_after_coder(
     if isinstance(last_message, AIMessage) and last_message.tool_calls:
         return "coder_tools"
 
-    return "finalize_coder"
+    return "tester"

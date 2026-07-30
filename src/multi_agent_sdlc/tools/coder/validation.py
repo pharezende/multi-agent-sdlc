@@ -1,5 +1,4 @@
 from multi_agent_sdlc.runtime.paths import normalise_relative_path
-from multi_agent_sdlc.tools.commands import normalise_dependency_name
 import re
 
 
@@ -183,3 +182,16 @@ def reject_coder_test_path(path: str) -> None:
             "Test implementation belongs to the Tester. "
             "Do not retry this operation using another tool or path."
         )
+
+
+def normalise_dependency_name(specification: str) -> str:
+    """Extract the normalised package name from a dependency specification."""
+    match = re.match(
+        r"^[A-Za-z0-9][A-Za-z0-9._-]*",
+        specification,
+    )
+
+    if match is None:
+        return ""
+
+    return match.group(0).lower().replace("_", "-")

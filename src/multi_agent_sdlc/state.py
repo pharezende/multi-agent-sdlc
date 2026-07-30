@@ -3,7 +3,7 @@ from langgraph.graph import add_messages
 from langchain_core.messages import BaseMessage
 from typing import Annotated
 from typing import NotRequired
-from typing import Optional, TypedDict
+from typing import TypedDict
 from .models import DevelopmentPlan
 
 

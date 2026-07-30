@@ -1,4 +1,4 @@
-from ..models import DevelopmentPlan
+from multi_agent_sdlc.models import DevelopmentPlan
 
 
 def format_plan(plan: DevelopmentPlan) -> str:
