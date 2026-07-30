@@ -1,20 +1,21 @@
+from langgraph.types import TimeoutPolicy
+from multi_agent_sdlc.agents.planner.node import create_planner_node
 from multi_agent_sdlc.agents.coder.node import create_coder_node
+from multi_agent_sdlc.agents.planner.model import planner_llm
 from multi_agent_sdlc.agents.coder.routing import route_after_coder
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
-from multi_agent_sdlc.agents.coder.models import coder_llm
+from multi_agent_sdlc.agents.coder.model import coder_llm
 from multi_agent_sdlc.nodes import finalize_coder
 from langgraph.graph import END, START, StateGraph
-from .config import create_llm
-from .nodes import create_planner_node
 from .state import DevState
 from langgraph.prebuilt import ToolNode
 
 
 def build_graph():
 
-    llm_free = create_llm()
+    # llm_free = create_llm()
     # llm_paid = coder_llm
-    planner_node = create_planner_node(llm_free)
+    planner_node = create_planner_node(planner_llm)
     coder_node = create_coder_node(coder_llm)
     coder_tool_node = ToolNode(
         CODER_TOOLS,

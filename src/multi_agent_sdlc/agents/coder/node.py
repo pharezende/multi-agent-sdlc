@@ -42,15 +42,6 @@ def create_coder_node(
 
         response = llm_with_tools.invoke(coder_messages)
 
-        print("CONTENT:")
-        print(repr(response.content))
-
-        print("\nTOOL CALLS:")
-        print(response.tool_calls)
-
-        print("\nINVALID TOOL CALLS:")
-        print(getattr(response, "invalid_tool_calls", None))
-
         if response.tool_calls:
             tool_call = response.tool_calls[0]
             if tool_call["name"] == "submit_coder_summary":
@@ -69,17 +60,5 @@ def create_coder_node(
         return {
             "coder_messages": [response],
         }
-
-        # summary = CoderSummary.model_validate_json(response.content)
-
-        # return {
-        #     "coder_summary": summary,
-        # }
-
-        # payload = response.tool_calls[0]["args"]
-
-        # coder_summary = CoderSummary.model_validate(
-        #     payload["summary"]
-        # )
 
     return coder_node
