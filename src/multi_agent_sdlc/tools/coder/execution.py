@@ -1,3 +1,7 @@
+from multi_agent_sdlc.tools.coder.validation import PythonModuleName
+from multi_agent_sdlc.tools.coder.validation import ExecutionTimeout
+from multi_agent_sdlc.tools.coder.validation import ApplicationArguments
+from multi_agent_sdlc.tools.coder.validation import EntryPoint
 from multi_agent_sdlc.tools.coder.descriptions import (
     RUN_SYNC_PROJECT,
     RUN_PYTHON_MODULE_DESCRIPTION,
@@ -5,11 +9,6 @@ from multi_agent_sdlc.tools.coder.descriptions import (
 )
 from multi_agent_sdlc.runtime.process import execute_process
 from multi_agent_sdlc.runtime.workspace import get_project_directory
-from multi_agent_sdlc.tools.coder.validation import (
-    validate_entry_point,
-    validate_application_arguments,
-    validate_module_name,
-)
 from multi_agent_sdlc.state import DevState
 from langchain.tools import ToolRuntime, tool
 
@@ -19,16 +18,11 @@ from langchain.tools import ToolRuntime, tool
     description=RUN_APPLICATION_DESCRIPTION,
 )
 def coder_run_application(
-    entry_point: str,
-    arguments: list[str],
-    timeout_seconds: int,
-    runtime: ToolRuntime,
+    entry_point: EntryPoint,
+    runtime: ToolRuntime[DevState],
+    arguments: ApplicationArguments | None = None,
+    timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
-    validated_entry_point = validate_entry_point(entry_point)
-    validated_arguments = validate_application_arguments(arguments)
-
-    if not 1 <= timeout_seconds <= 60:
-        raise ValueError(f"timeout_seconds must be between 1 and {60}.")
 
     project_directory = get_project_directory(runtime)
 
@@ -36,8 +30,8 @@ def coder_run_application(
         [
             "uv",
             "run",
-            validated_entry_point,
-            *validated_arguments,
+            entry_point,
+            *(arguments or []),
         ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
@@ -49,16 +43,11 @@ def coder_run_application(
     description=RUN_PYTHON_MODULE_DESCRIPTION,
 )
 def coder_run_python_module(
-    module: str,
+    module: PythonModuleName,
     runtime: ToolRuntime[DevState],
-    arguments: list[str] | None = None,
-    timeout_seconds: int = 15,
+    arguments: ApplicationArguments | None = None,
+    timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
-    validated_module = validate_module_name(module)
-    validated_arguments = validate_application_arguments(arguments or [])
-
-    if not 1 <= timeout_seconds <= 60:
-        raise ValueError(f"timeout_seconds must be between 1 and {60}.")
 
     project_directory = get_project_directory(runtime)
 
@@ -68,8 +57,8 @@ def coder_run_python_module(
             "run",
             "python",
             "-m",
-            validated_module,
-            *validated_arguments,
+            module,
+            *(arguments or []),
         ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
@@ -82,7 +71,7 @@ def coder_run_python_module(
 )
 def coder_sync_project(
     runtime: ToolRuntime[DevState],
-    timeout_seconds: int = 120,
+    timeout_seconds: ExecutionTimeout = 120,
 ) -> dict[str, object]:
     project_directory = get_project_directory(runtime)
 

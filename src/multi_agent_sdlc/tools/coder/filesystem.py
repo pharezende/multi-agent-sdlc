@@ -1,3 +1,5 @@
+from multi_agent_sdlc.tools.coder.validation import FileContent
+from multi_agent_sdlc.tools.coder.validation import ProjectRelativePath
 from multi_agent_sdlc.runtime.workspace import get_project_directory
 from multi_agent_sdlc.tools.coder.validation import reject_coder_test_path
 from multi_agent_sdlc.tools.coder.descriptions import (
@@ -9,6 +11,31 @@ from multi_agent_sdlc.tools.coder.descriptions import (
 from multi_agent_sdlc.runtime.paths import resolve_project_path
 from multi_agent_sdlc.state import DevState
 from langchain.tools import ToolRuntime, tool
+from pathlib import Path
+
+
+def get_directory_entries(
+    directory: Path,
+    project_directory: Path,
+) -> list[str]:
+    """Return sorted project-relative entries for one directory level."""
+
+    entries: list[str] = []
+
+    for item in sorted(
+        directory.iterdir(),
+        key=lambda candidate: (
+            not candidate.is_dir(),
+            candidate.name.casefold(),
+        ),
+    ):
+        relative_path = item.relative_to(
+            project_directory,
+        ).as_posix()
+
+        entries.append(f"{relative_path}/" if item.is_dir() else relative_path)
+
+    return entries
 
 
 @tool(
@@ -16,7 +43,7 @@ from langchain.tools import ToolRuntime, tool
     description=LIST_FILES_DESCRIPTION,
 )
 def coder_list_files(
-    path: str,
+    path: ProjectRelativePath,
     runtime: ToolRuntime[DevState],
 ) -> str:
     project_directory = get_project_directory(runtime)
@@ -30,21 +57,10 @@ def coder_list_files(
             project_directory,
         ).as_posix()
 
-    entries: list[str] = []
-
-    for item in sorted(
-        target.iterdir(),
-        key=lambda value: (
-            not value.is_dir(),
-            value.name.lower(),
-        ),
-    ):
-        relative = item.relative_to(
-            project_directory,
-        ).as_posix()
-
-        suffix = "/" if item.is_dir() else ""
-        entries.append(f"{relative}{suffix}")
+    entries = get_directory_entries(
+        target,
+        project_directory=project_directory,
+    )
 
     return "\n".join(entries) or "(empty directory)"
 
@@ -54,7 +70,7 @@ def coder_list_files(
     description=READ_FILE_DESCRIPTION,
 )
 def coder_read_file(
-    path: str,
+    path: ProjectRelativePath,
     runtime: ToolRuntime[DevState],
 ) -> str:
     project_directory = get_project_directory(runtime)
@@ -77,8 +93,8 @@ def coder_read_file(
     description=WRITE_FILE_DESCRIPTION,
 )
 def coder_write_file(
-    path: str,
-    content: str,
+    path: ProjectRelativePath,
+    content: FileContent,
     runtime: ToolRuntime[DevState],
 ) -> str:
     reject_coder_test_path(path)
@@ -107,7 +123,7 @@ def coder_write_file(
     description=CREATE_DIRECTORY_DESCRIPTION,
 )
 def coder_create_directory(
-    path: str,
+    path: ProjectRelativePath,
     runtime: ToolRuntime[DevState],
 ) -> str:
     reject_coder_test_path(path)

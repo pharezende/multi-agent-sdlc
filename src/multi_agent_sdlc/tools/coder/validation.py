@@ -1,5 +1,27 @@
+# This will require some refactoring in the future, e.g. moving some content to "centralized" files for code reuse.
+
+from typing import Annotated
 from multi_agent_sdlc.runtime.paths import normalise_relative_path
 import re
+from pydantic import AfterValidator, Field, StringConstraints
+
+ENTRY_POINT_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*")
+
+MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
+
+DEPENDENCY_PATTERN = re.compile(
+    r"^[A-Za-z0-9][A-Za-z0-9._-]*"
+    r"(?:\[[A-Za-z0-9._,-]+\])?"
+    r"(?:(?:===|==|~=|!=|<=|>=|<|>)[A-Za-z0-9.*+!_-]+)?$"
+)
+
+REMOTE_DEPENDENCY_PREFIXES = (
+    "http://",
+    "https://",
+    "git+",
+    "ssh://",
+    "file:",
+)
 
 
 TEST_DIRECTORY_NAMES = {
@@ -60,47 +82,6 @@ def validate_entry_point(entry_point: str) -> str:
     if cleaned.lower() in PROHIBITED_ENTRY_POINTS:
         raise PermissionError(f"The Coder cannot execute `{cleaned}`.")
 
-    if not ENTRY_POINT_PATTERN.fullmatch(cleaned):
-        raise ValueError(f"Invalid application entry point: {cleaned}")
-
-    return cleaned
-
-
-ENTRY_POINT_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-
-MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
-
-DEPENDENCY_PATTERN = re.compile(
-    r"^[A-Za-z0-9][A-Za-z0-9._-]*"
-    r"(?:\[[A-Za-z0-9._,-]+\])?"
-    r"(?:(?:===|==|~=|!=|<=|>=|<|>)[A-Za-z0-9.*+!_-]+)?$"
-)
-
-REMOTE_DEPENDENCY_PREFIXES = (
-    "http://",
-    "https://",
-    "git+",
-    "ssh://",
-    "file:",
-)
-
-
-def validate_module_name(module: str) -> str:
-    """Validate and return an application module name."""
-
-    cleaned = module.strip()
-
-    if not cleaned:
-        raise ValueError("Module cannot be empty.")
-
-    if not MODULE_PATTERN.fullmatch(cleaned):
-        raise ValueError(f"Invalid Python module name: {cleaned}")
-
-    root_module = cleaned.split(".", maxsplit=1)[0].lower()
-
-    if root_module in PROHIBITED_PYTHON_MODULES:
-        raise PermissionError(f"The Coder cannot execute Python module `{cleaned}`.")
-
     return cleaned
 
 
@@ -126,6 +107,25 @@ def validate_application_arguments(
         validated.append(argument)
 
     return validated
+
+
+def validate_module_name(module: str) -> str:
+    """Validate and return an application module name."""
+
+    cleaned = module.strip()
+
+    if not cleaned:
+        raise ValueError("Module cannot be empty.")
+
+    if not MODULE_PATTERN.fullmatch(cleaned):
+        raise ValueError(f"Invalid Python module name: {cleaned}")
+
+    root_module = cleaned.split(".", maxsplit=1)[0].lower()
+
+    if root_module in PROHIBITED_PYTHON_MODULES:
+        raise PermissionError(f"The Coder cannot execute Python module `{cleaned}`.")
+
+    return cleaned
 
 
 def validate_runtime_dependency(package: str) -> str:
@@ -184,6 +184,11 @@ def reject_coder_test_path(path: str) -> None:
         )
 
 
+def validate_project_relative_path(path: str) -> str:
+    candidate = normalise_relative_path(path.strip())
+    return candidate.as_posix()
+
+
 def normalise_dependency_name(specification: str) -> str:
     """Extract the normalised package name from a dependency specification."""
     match = re.match(
@@ -195,3 +200,91 @@ def normalise_dependency_name(specification: str) -> str:
         return ""
 
     return match.group(0).lower().replace("_", "-")
+
+
+def validate_file_content(content: str) -> str:
+    if "\x00" in content:
+        raise ValueError("File content cannot contain null bytes.")
+
+    return content
+
+
+EntryPoint = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=100,
+        pattern=r"[A-Za-z0-9][A-Za-z0-9._-]*",
+    ),
+    AfterValidator(validate_entry_point),
+]
+
+ApplicationArguments = Annotated[
+    list[str],
+    Field(
+        max_length=50,
+        description="Arguments passed directly to the application.",
+    ),
+    AfterValidator(validate_application_arguments),
+]
+
+ExecutionTimeout = Annotated[
+    int,
+    Field(
+        ge=1,
+        le=200,
+        description="Maximum application execution time in seconds.",
+    ),
+]
+
+PythonModuleName = Annotated[
+    str,
+    Field(
+        min_length=1,
+        max_length=200,
+        description=(
+            "A dotted Python module belonging to the generated application. "
+            "Testing, package-management, environment-management, and "
+            "process-execution modules are prohibited."
+        ),
+    ),
+    AfterValidator(validate_module_name),
+]
+
+RuntimeDependency = Annotated[
+    str,
+    AfterValidator(validate_runtime_dependency),
+]
+
+
+RuntimeDependencies = Annotated[
+    list[RuntimeDependency],
+    Field(
+        min_length=1,
+        max_length=20,
+        description="Runtime dependencies to add with uv.",
+    ),
+]
+
+ProjectRelativePath = Annotated[
+    str,
+    Field(
+        min_length=1,
+        max_length=500,
+        description=(
+            "A path relative to the project directory. "
+            "Absolute paths and parent-directory traversal are prohibited."
+        ),
+    ),
+    AfterValidator(validate_project_relative_path),
+]
+
+FileContent = Annotated[
+    str,
+    Field(
+        max_length=500_000,
+        description="Complete UTF-8 text content to write to the file.",
+    ),
+    AfterValidator(validate_file_content),
+]

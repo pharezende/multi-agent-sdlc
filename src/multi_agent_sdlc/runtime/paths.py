@@ -48,18 +48,21 @@ def resolve_project_path(
     project_directory: Path,
     path: str,
 ) -> Path:
-    """Resolve a relative path and ensure it remains inside the project."""
-    candidate = normalise_relative_path(path)
+    """Resolve a project-relative path and ensure it stays inside the project."""
+
+    cleaned_path = path.strip()
 
     reject_repeated_project_prefix(
         project_directory,
-        path,
+        cleaned_path,
     )
 
+    relative_path = normalise_relative_path(cleaned_path)
+
     root = project_directory.resolve()
-    resolved = (root / Path(*candidate.parts)).resolve()
+    resolved = (root / relative_path).resolve()
 
     if not resolved.is_relative_to(root):
-        raise PermissionError(f"Path escapes the project directory: {path}")
+        raise PermissionError(f"Path escapes the project directory: {path!r}")
 
     return resolved
