@@ -1,0 +1,10 @@
+from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
+from multi_agent_sdlc.llm.config import MODEL_CONFIG
+from multi_agent_sdlc.llm.factory import create_chat_model
+
+
+base_tester_model = create_chat_model(
+    MODEL_CONFIG.tester,
+)
+
+tester_llm = base_tester_model.bind_tools(TESTER_TOOLS).with_retry(stop_after_attempt=3)

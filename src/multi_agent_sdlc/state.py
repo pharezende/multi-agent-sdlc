@@ -15,3 +15,5 @@ class DevState(TypedDict):
         list[BaseMessage], add_messages
     ]  # Reducer state field. Otherwise replaces the previous value.
     coder_summary: NotRequired[CoderSummary]
+    tester_messages: Annotated[list[BaseMessage], add_messages]
+    tester_summary: NotRequired[CoderSummary]

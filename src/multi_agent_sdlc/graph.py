@@ -16,6 +16,11 @@ def build_graph():
         messages_key="coder_messages",
         handle_tool_errors=True,
     )
+    tester_tool_node = ToolNode(
+        TESTER_TOOLS,
+        messages_key="tester_messages",
+        handle_tool_errors=True,
+    )
     builder.add_node("planner", planner_node)
     builder.add_node("coder", coder_node)
     builder.add_node("coder_tools", coder_tool_node)
