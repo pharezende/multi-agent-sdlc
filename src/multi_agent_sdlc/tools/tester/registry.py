@@ -1,6 +1,6 @@
 from multi_agent_sdlc.tools.coder.finalization import submit_coder_summary
 from multi_agent_sdlc.tools.coder.dependencies import (
-    coder_install_runtime_dependencies,
+    coder_install_development_dependencies,
 )
 from multi_agent_sdlc.tools.coder.execution import (
     coder_run_application,
@@ -23,6 +23,6 @@ TESTER_TOOLS = [
     coder_sync_project,
     coder_run_application,
     coder_run_python_module,
-    coder_install_runtime_dependencies,
+    coder_install_development_dependencies,
     submit_coder_summary,
 ]

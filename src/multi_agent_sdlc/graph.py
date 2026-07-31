@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
 from multi_agent_sdlc.agents.coder.node import coder_node
 from multi_agent_sdlc.agents.planner.node import planner_node
 from multi_agent_sdlc.agents.tester.node import tester_node
