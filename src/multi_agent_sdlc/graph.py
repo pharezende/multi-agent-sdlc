@@ -1,10 +1,8 @@
+from multi_agent_sdlc.agents.coder.node import coder_node
+from multi_agent_sdlc.agents.planner.node import planner_node
 from multi_agent_sdlc.agents.tester.node import tester_node
-from multi_agent_sdlc.agents.planner.node import create_planner_node
-from multi_agent_sdlc.agents.coder.node import create_coder_node
-from multi_agent_sdlc.agents.planner.model import planner_llm
 from multi_agent_sdlc.agents.coder.routing import route_after_coder
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
-from multi_agent_sdlc.agents.coder.model import coder_llm
 from langgraph.graph import END, START, StateGraph
 from .state import DevState
 from langgraph.prebuilt import ToolNode
@@ -13,8 +11,6 @@ from langgraph.prebuilt import ToolNode
 def build_graph():
 
     builder = StateGraph(DevState)
-    planner_node = create_planner_node(planner_llm)
-    coder_node = create_coder_node(coder_llm)
     coder_tool_node = ToolNode(
         CODER_TOOLS,
         messages_key="coder_messages",

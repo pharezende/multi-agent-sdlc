@@ -1,10 +1,10 @@
+from multi_agent_sdlc.agents.planner.model import planner_llm
 from multi_agent_sdlc.agents.planner.prompt import PLANNER_SYSTEM_RULES
 from multi_agent_sdlc.agents.planner.exporter import export_plan_to_pdf
 from multi_agent_sdlc.agents.planner.formatter import format_plan
 from multi_agent_sdlc.state import DevState
 from multi_agent_sdlc.config import SANDBOX_ROOT
 from re import fullmatch
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from pathlib import Path
 
@@ -21,31 +21,28 @@ def create_project_directory(project_id: str) -> Path:
     return project_directory
 
 
-def create_planner_node(llm: BaseChatModel):
-    """Create the planner node, which is responsible for planning the application requested by the user."""
+def planner_node(state: DevState) -> DevState:
+    """Define the planner node, which is responsible for planning the application requested by the user."""
 
-    def planner_node(state: DevState) -> DevState:
-        user_request = state["request"]
-        messages = [
-            SystemMessage(content=PLANNER_SYSTEM_RULES),
-            HumanMessage(content=user_request),
-        ]
+    user_request = state["request"]
+    messages = [
+        SystemMessage(content=PLANNER_SYSTEM_RULES),
+        HumanMessage(content=user_request),
+    ]
 
-        plan = llm.invoke(messages)
+    plan = planner_llm.invoke(messages)
 
-        project_directory = create_project_directory(plan.project_id)
+    project_directory = create_project_directory(plan.project_id)
 
-        plan_text = format_plan(plan)
+    plan_text = format_plan(plan)
 
-        export_plan_to_pdf(
-            text=plan_text,
-            output_path=project_directory / "development-plan.pdf",
-        )
+    export_plan_to_pdf(
+        text=plan_text,
+        output_path=project_directory / "development-plan.pdf",
+    )
 
-        return {
-            "request": user_request,
-            "plan": plan,
-            "project_directory": str(project_directory),
-        }
-
-    return planner_node
+    return {
+        "request": user_request,
+        "plan": plan,
+        "project_directory": str(project_directory),
+    }
