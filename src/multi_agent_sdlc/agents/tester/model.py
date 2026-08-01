@@ -7,4 +7,7 @@ base_tester_model = create_chat_model(
     MODEL_CONFIG.tester,
 )
 
-tester_llm = base_tester_model.bind_tools(TESTER_TOOLS).with_retry(stop_after_attempt=3)
+tester_llm = base_tester_model.bind_tools(
+    TESTER_TOOLS,
+    tool_choice="required",  # force the use of tools
+).with_retry(stop_after_attempt=3)

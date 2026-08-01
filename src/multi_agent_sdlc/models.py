@@ -210,7 +210,7 @@ class TesterSummary(BaseModel):
         description=(
             "Production defects requiring Coder repair. Each item must include "
             "`related_task_ids`, `affected_files`, `failed_criteria`, "
-            "`observed_behavior`, `expected_behavior`, `evidence`, and "
-            "`retest_guidance`. Leave empty when no Coder repair is required."
+            "`observed_behavior`, `expected_behavior`, and `evidence`"  # , and "
+            # "`retest_guidance`. Leave empty when no Coder repair is required."
         )
     )

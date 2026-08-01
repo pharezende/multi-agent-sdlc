@@ -48,9 +48,7 @@ def build_graph():
     )
 
     builder.add_edge("coder_tools", "coder")
-    builder.add_edge("tester", "coder")
     builder.add_edge("tester_tools", "tester")
-    builder.add_edge("tester", "reviewer")
     builder.add_edge("reviewer", END)
 
     return builder.compile()
