@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.coder.execution import coder_run_verification_command
 from multi_agent_sdlc.tools.shared.filesystem import read_file
 from multi_agent_sdlc.tools.shared.filesystem import list_files
 from multi_agent_sdlc.tools.coder.finalization import submit_coder_summary
@@ -24,5 +25,6 @@ CODER_TOOLS = [
     coder_run_application,
     coder_run_python_module,
     coder_install_runtime_dependencies,
+    coder_run_verification_command,
     submit_coder_summary,
 ]

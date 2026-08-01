@@ -1,3 +1,6 @@
+from multi_agent_sdlc.tools.coder.descriptions import (
+    RUN_VERIFICATION_COMMAND_DESCRIPTION,
+)
 from multi_agent_sdlc.tools.coder.validation import PythonModuleName
 from multi_agent_sdlc.tools.coder.validation import ExecutionTimeout
 from multi_agent_sdlc.tools.coder.validation import ApplicationArguments
@@ -77,6 +80,43 @@ def coder_sync_project(
 
     return execute_process(
         ["uv", "sync"],
+        project_directory=project_directory,
+        timeout_seconds=timeout_seconds,
+    )
+
+
+from typing import Annotated, Literal
+from pydantic import Field
+
+VerificationCommand = Annotated[
+    Literal[
+        "ruff",
+        "mypy",
+        "coverage",
+    ],
+    Field(
+        description=(
+            "Approved development or verification executable to run "
+            "inside the project's uv-managed environment."
+        )
+    ),
+]
+
+
+@tool(
+    "run_verification_command",
+    description=RUN_VERIFICATION_COMMAND_DESCRIPTION,
+)
+def coder_run_verification_command(
+    command: VerificationCommand,
+    runtime: ToolRuntime[DevState],
+    arguments: ApplicationArguments | None = None,
+    timeout_seconds: ExecutionTimeout = 120,
+) -> dict[str, object]:
+    project_directory = get_project_directory(runtime)
+
+    return execute_process(
+        ["uv", "run", command, *(arguments or [])],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
     )
