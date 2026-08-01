@@ -1,3 +1,5 @@
+from multi_agent_sdlc.reviewer import reviewer_node
+from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
 from multi_agent_sdlc.agents.coder.node import coder_node
 from multi_agent_sdlc.agents.planner.node import planner_node
@@ -26,6 +28,8 @@ def build_graph():
     builder.add_node("coder", coder_node)
     builder.add_node("coder_tools", coder_tool_node)
     builder.add_node("tester", tester_node)
+    builder.add_node("tester_tools", tester_tool_node)
+    builder.add_node("reviewer", reviewer_node)
 
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "coder")
@@ -37,9 +41,16 @@ def build_graph():
             "tester": "tester",
         },
     )
+    builder.add_conditional_edges(
+        "tester",
+        route_after_tester,
+        {"tester_tools": "tester_tools", "reviewer": "reviewer", "coder": "coder"},
+    )
 
     builder.add_edge("coder_tools", "coder")
-
-    builder.add_edge("tester", END)
+    builder.add_edge("tester", "coder")
+    builder.add_edge("tester_tools", "tester")
+    builder.add_edge("tester", "reviewer")
+    builder.add_edge("reviewer", END)
 
     return builder.compile()

@@ -1,5 +1,6 @@
 from multi_agent_sdlc.state import DevState
 from .graph import build_graph
+from IPython.display import display, Image
 
 
 def run() -> None:
@@ -15,7 +16,12 @@ def run() -> None:
         "coder_messages": [],
     }
 
-    result = graph.invoke(initial_state)
+    png_data = graph.get_graph().draw_mermaid_png()
+
+    with open("multi_agent_sdlc_workflow.png", "wb") as file:
+        file.write(png_data)
+
+    # result = graph.invoke(initial_state)
 
     print("\nDone!")
 

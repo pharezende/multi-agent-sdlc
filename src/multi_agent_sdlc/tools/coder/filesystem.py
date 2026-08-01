@@ -3,7 +3,6 @@ from multi_agent_sdlc.tools.coder.validation import ProjectRelativePath
 from multi_agent_sdlc.runtime.workspace import get_project_directory
 from multi_agent_sdlc.tools.coder.validation import reject_coder_test_path
 from multi_agent_sdlc.tools.coder.descriptions import (
-    READ_FILE_DESCRIPTION,
     WRITE_FILE_DESCRIPTION,
     CREATE_DIRECTORY_DESCRIPTION,
 )

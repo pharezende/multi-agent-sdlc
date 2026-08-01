@@ -1,6 +1,6 @@
 from multi_agent_sdlc.runtime.paths import normalise_relative_path
 from multi_agent_sdlc.tools.coder.validation import MODULE_PATTERN
-from collections.abc import Callable, AbstractSet
+from collections.abc import Callable
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
@@ -87,9 +87,9 @@ def create_module_name_validator(
 
 def create_testing_dependency_validator(
     role: str,
-    prohibited_tester_dependencies: AbstractSet[str],
+    prohibited_tester_dependencies: set[str],
 ) -> Callable[[str], str]:
-    canonical_prohibited_dependencies = frozenset(
+    canonical_prohibited_dependencies = set(
         canonicalize_name(name) for name in prohibited_tester_dependencies
     )
 

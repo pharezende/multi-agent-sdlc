@@ -3,7 +3,7 @@ from langchain_core.messages import AIMessage
 from typing import Literal
 
 
-def route_after_coder(
+def route_after_tester(
     state: DevState,
 ) -> Literal["coder", "tester_tools", "reviewer"]:
     messages = state.get("coder_messages", [])
@@ -13,4 +13,8 @@ def route_after_coder(
     if isinstance(last_message, AIMessage) and last_message.tool_calls:
         return "tester_tools"
 
-    return "tester"
+    summary = state["tester_summary"]
+    if summary.coder_repair_requests:
+        return "coder"
+
+    return "reviewer"

@@ -1,7 +1,7 @@
 from typing import Literal
 from enum import Enum
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class RiskLevel(str, Enum):
@@ -125,4 +125,92 @@ class CoderSummary(BaseModel):
             "Concise handoff notes identifying behaviour or acceptance "
             "criteria the Tester should verify. Do not claim they already pass."
         ),
+    )
+
+
+class TesterSummary(BaseModel):
+    """Final structured handoff from the Tester to the Reviewer or Coder."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    completed_task_ids: list[str] = Field(
+        description=(
+            "Tester-owned task identifiers completed with supporting evidence."
+        )
+    )
+
+    files_created_or_modified: list[str] = Field(
+        description=(
+            "Project-relative Tester-owned files actually created or modified."
+        )
+    )
+
+    development_dependencies_added: list[str] = Field(
+        description=(
+            "Development or verification dependencies actually added or changed."
+        )
+    )
+
+    verification_results: list[dict[str, object]] = Field(
+        description=(
+            "Verification operations actually executed. Each item should include "
+            "`verification_type`, `command`, `status`, `exit_code`, `summary`, "
+            "and `related_task_ids`. Status must be `passed`, `failed`, "
+            "`blocked`, or `not_executed`."
+        )
+    )
+
+    acceptance_criteria_results: list[dict[str, object]] = Field(
+        description=(
+            "Results for approved acceptance criteria. Each item should include "
+            "`task_id`, `criterion`, `status`, and `evidence`."
+        )
+    )
+
+    tester_repairs: list[dict[str, object]] = Field(
+        description=(
+            "Repairs made only to Tester-owned files or verification "
+            "configuration. Each item should include `description`, "
+            "`files_modified`, and `verification_result`."
+        )
+    )
+
+    implementation_failures: list[dict[str, object]] = Field(
+        description=(
+            "Observed failures attributed to Coder-owned production code or "
+            "configuration. Each item should include `description`, "
+            "`related_task_ids`, and `evidence`."
+        )
+    )
+
+    unresolved_issues: list[dict[str, object]] = Field(
+        description=(
+            "Remaining failures, blockers, incomplete verification, or "
+            "environment limitations. Each item should include `owner`, "
+            "`description`, `related_task_ids`, and `evidence`. Owner must be "
+            "`coder`, `tester`, `environment`, or `unknown`."
+        )
+    )
+
+    overall_status: Literal[
+        "passed",
+        "failed",
+        "blocked",
+        "partial",
+    ] = Field(description="Overall observed result of the Tester stage.")
+
+    reviewer_notes: list[str] = Field(
+        description=(
+            "Concise handoff notes identifying verified behaviour, important "
+            "failures, limitations, and areas requiring focused review."
+        )
+    )
+
+    coder_repair_requests: list[dict[str, object]] = Field(
+        description=(
+            "Production defects requiring Coder repair. Each item must include "
+            "`related_task_ids`, `affected_files`, `failed_criteria`, "
+            "`observed_behavior`, `expected_behavior`, `evidence`, and "
+            "`retest_guidance`. Leave empty when no Coder repair is required."
+        )
     )

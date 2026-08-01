@@ -1,4 +1,7 @@
-from multi_agent_sdlc.tools.tester.validation import TestingDependencies
+from multi_agent_sdlc.tools.tester.validation import VerificationDependencies
+from multi_agent_sdlc.tools.tester.descriptions import (
+    INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION,
+)
 from multi_agent_sdlc.tools.coder.validation import ExecutionTimeout
 from multi_agent_sdlc.runtime.process import execute_process
 from multi_agent_sdlc.runtime.workspace import get_project_directory
@@ -7,11 +10,11 @@ from langchain.tools import ToolRuntime, tool
 
 
 @tool(
-    "install_testing_dependencies",
-    description=INSTALL_TESTING_DEPENDENCIES_DESCRIPTION,
+    "tester_install_verification_dependencies",
+    description=INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION,
 )
-def tester_install_testing_dependencies(
-    dependencies: TestingDependencies,
+def tester_install_verification_dependencies(
+    dependencies: VerificationDependencies,
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
 ) -> dict[str, object]:

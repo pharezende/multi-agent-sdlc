@@ -7,7 +7,6 @@ from typing import Annotated
 import re
 from pydantic import AfterValidator, Field, StringConstraints
 
-ENTRY_POINT_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*")
 
 MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
@@ -17,59 +16,41 @@ DEPENDENCY_PATTERN = re.compile(
     r"(?:(?:===|==|~=|!=|<=|>=|<|>)[A-Za-z0-9.*+!_-]+)?$"
 )
 
-REMOTE_DEPENDENCY_PREFIXES = (
-    "http://",
-    "https://",
-    "git+",
-    "ssh://",
-    "file:",
-)
-
-
-TEST_DIRECTORY_NAMES = {
-    "test",
-    "tests",
-    "__tests__",
-    "spec",
-    "specs",
-}
 
 PROHIBITED_TESTER_ENTRY_POINTS = {
-    "pytest",
-    "ruff",
-    "mypy",
-    "flake8",
-    "coverage",
-    "coverage3",
     "pip",
     "pip3",
+    "pipenv",
+    "poetry",
     "bash",
     "sh",
     "zsh",
     "fish",
     "powershell",
     "pwsh",
+    "twine",
+    "docker",
+    "kubectl",
+    "terraform",
 }
 
-PROHIBITED_PYTHON_MODULES = {
-    "pytest",
-    "unittest",
-    "coverage",
+
+PROHIBITED_TESTER_DEPENDENCIES = {
+    "pip",
+    "uv",
+    "virtualenv",
+    "pipenv",
+    "poetry",
+    "twine",
+}
+
+
+PROHIBITED_TESTER_PYTHON_MODULES = {
     "pip",
     "ensurepip",
     "venv",
     "subprocess",
-}
-
-PROHIBITED_TESTER_DEPENDENCIES = {
-    "pytest",
-    "pytest-cov",
-    "coverage",
-    "ruff",
-    "mypy",
-    "flake8",
-    "tox",
-    "nox",
+    "twine",
 }
 
 
@@ -111,7 +92,7 @@ ExecutionTimeout = Annotated[
 
 validate_module_name = create_entry_point_validator(
     role="Tester",
-    prohibited_entry_points=PROHIBITED_TESTER_ENTRY_POINTS,
+    prohibited_entry_points=PROHIBITED_TESTER_PYTHON_MODULES,
 )
 
 PythonModuleName = Annotated[
@@ -132,18 +113,18 @@ validate_testing_dependency = create_testing_dependency_validator(
     role="Tester", prohibited_tester_dependencies=PROHIBITED_TESTER_DEPENDENCIES
 )
 
-TestingDependency = Annotated[
+VerificationDependency = Annotated[
     str,
     AfterValidator(validate_testing_dependency),
 ]
 
 
-TestingDependencies = Annotated[
-    list[TestingDependency],
+VerificationDependencies = Annotated[
+    list[VerificationDependency],
     Field(
         min_length=1,
         max_length=20,
-        description="Testing dependencies to add with uv.",
+        description="Verification dependencies to add with uv.",
     ),
 ]
 

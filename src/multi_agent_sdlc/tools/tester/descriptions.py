@@ -1,28 +1,11 @@
-LIST_FILES_DESCRIPTION = """
-List files and directories inside the current generated project.
+WRITE_TEST_FILE_DESCRIPTION = """
+Create or replace a Tester-owned file inside the current project.
 
-Path rules:
-- `path` must be relative to the current project root.
-- Use `.` to list the project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
-
-Correct examples:
-- .
-- src
-- src/calculator
-
-Incorrect examples:
-- sandbox/terminal-calculator
-- /home/user/project
-- ../other-project
-
-This tool only inspects the filesystem. It does not execute shell commands.
-""".strip()
-
-
-READ_FILE_DESCRIPTION = """
-Read a UTF-8 text file inside the current generated project.
+Permitted files include:
+- automated tests;
+- test fixtures, mocks, helpers, and test data;
+- verification configuration for Pytest, Ruff, Mypy, and coverage;
+- development-tool configuration required by Tester-owned tasks.
 
 Path rules:
 - `path` must be relative to the current project root.
@@ -30,57 +13,44 @@ Path rules:
 - Do not use `..`.
 
 Correct examples:
-- pyproject.toml
-- README.md
-- src/calculator/main.py
-
-Incorrect examples:
-- sandbox/terminal-calculator/pyproject.toml
-- /home/user/project/main.py
-- ../other-project/main.py
-
-Use this tool to inspect existing project files before modifying them.
-""".strip()
-
-
-WRITE_FILE_DESCRIPTION = """
-Create or replace a production file inside the current generated project.
-
-Path rules:
-- `path` must be relative to the current project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
-
-Correct examples:
-- pyproject.toml
-- README.md
-- src/calculator/__init__.py
-- src/calculator/main.py
-
-Incorrect examples:
-- sandbox/terminal-calculator/src/calculator/main.py
-- /absolute/path/main.py
-- ../other-project/main.py
 - tests/test_calculator.py
+- tests/conftest.py
+- tests/fixtures/expressions.json
+- pytest.ini
+- ruff.toml
+- mypy.ini
+- .coveragerc
 
-Testing boundary:
-- This tool is restricted to production files.
-- Do not create or modify files inside `test`, `tests`, `__tests__`, `spec`,
-  or `specs`.
-- Test implementation belongs exclusively to the Tester agent.
-- Do not retry rejected test work using another path, tool, or mechanism.
+Incorrect examples:
+- sandbox/terminal-calculator/tests/test_calculator.py
+- /absolute/path/test_calculator.py
+- ../other-project/test_calculator.py
+- src/calculator/main.py
+
+Production boundary:
+- Do not create or modify production source files.
+- Do not change application behaviour to make verification pass.
+- Do not modify runtime dependencies, build configuration, or application entry
+  points unless the approved plan explicitly assigns that work to the Tester.
+- `pyproject.toml` may be modified only for Tester-owned development
+  dependencies or verification-tool configuration.
+- Production implementation and repair belong to the Coder.
+- Do not retry rejected production work using another path, tool, or mechanism.
 
 Python project requirements:
-- Use `pyproject.toml` for project metadata and dependency declarations.
-- Generated setup and execution instructions must use `uv`.
-- Do not document or generate `pip install`, `python -m pip`, virtual
-  environment activation, or direct dependency installation instructions.
-- Application execution instructions should use `uv run`.
+- Use `pyproject.toml` or an established project-specific configuration file for
+  verification tooling.
+- Generated verification instructions must use `uv`.
+- Do not generate `pip install`, `python -m pip`, manual virtual-environment
+  activation, or direct tool execution outside `uv run`.
 """.strip()
 
 
-CREATE_DIRECTORY_DESCRIPTION = """
-Create a production directory inside the current generated project.
+CREATE_TEST_DIRECTORY_DESCRIPTION = """
+Create a Tester-owned directory inside the current project.
+
+Use this tool for test suites, fixtures, mocks, test data, and other
+verification assets.
 
 Path rules:
 - `path` must be relative to the current project root.
@@ -88,68 +58,79 @@ Path rules:
 - Do not use `..`.
 
 Correct examples:
+- tests
+- tests/unit
+- tests/integration
+- tests/fixtures
+- specs
+
+Incorrect examples:
+- sandbox/terminal-calculator/tests
+- /absolute/path/tests
+- ../other-project/tests
 - src
 - src/calculator
 - config
 
-Incorrect examples:
-- sandbox/terminal-calculator/src
-- /absolute/path
-- ../other-project
-- tests
-- src/tests
+Production boundary:
+- Do not create production source, package, runtime-configuration, deployment,
+  or application-data directories.
+- Directory creation must support Tester-owned verification work.
+- Production directory creation belongs to the Coder.
 
-Testing boundary:
-- Do not create `test`, `tests`, `__tests__`, `spec`, or `specs` directories.
-- Test directory creation belongs exclusively to the Tester agent.
-
-This tool only creates directories. It does not run `mkdir`, shell commands,
-Python snippets, or project-management commands.
+This tool uses Python filesystem operations directly. It does not run `mkdir`,
+shell commands, Python snippets, or project-management commands.
 """.strip()
 
 
 RUN_APPLICATION_DESCRIPTION = """
-Run a project application entry point inside the generated project's uv-managed
-environment.
+Run a declared project application entry point inside the project's uv-managed
+environment for smoke or acceptance verification.
 
 The tool internally executes:
 
     uv run <entry_point> [arguments]
 
-The Coder provides only:
-- the entry-point name declared in `[project.scripts]` in `pyproject.toml`;
+The Tester provides only:
+- an entry-point name declared in `[project.scripts]` in `pyproject.toml`;
 - optional application arguments.
 
 Correct examples:
-- entry_point="calc", args=[]
-- entry_point="calc", args=["2 + 3"]
-- entry_point="odd-even", args=["7"]
-- entry_point="my-app", args=["--help"]
+- entry_point="calc", arguments=[]
+- entry_point="calc", arguments=["2 + 3"]
+- entry_point="odd-even", arguments=["7"]
+- entry_point="my-app", arguments=["--help"]
 
 Important uv rules:
 - Do not include `uv run` in `entry_point`.
 - Do not activate `.venv` manually.
 - Do not use `python`, `pip`, `uv pip`, shell commands, or absolute paths.
-- The tool runs from the current project root, so `uv` automatically discovers
-  `pyproject.toml` and uses or creates `<project_root>/.venv`.
+- The tool runs from the current project root, so `uv` discovers
+  `pyproject.toml` and uses the project's managed environment.
 - Use this tool instead of requesting a generic shell command.
 
-Testing boundary:
-- Use this tool only for direct application execution and simple smoke checks.
-- Do not use Pytest, Ruff, Mypy, coverage, shell scripts, or test entry points.
-- Do not simulate interactive input through subprocess scripts.
-- Interactive and end-to-end verification belongs to the Tester agent.
+Verification boundary:
+- Use this tool to verify declared application behaviour, command-line
+  interfaces, argument handling, exit status, and focused acceptance criteria.
+- Record the observed output and exit status without assuming success.
+- Do not use this tool to execute Pytest, Ruff, Mypy, coverage, build tools, or
+  shell scripts when a dedicated verification tool is available.
+- Do not perform destructive, deployment, publishing, or irreversible
+  operations.
+- If valid execution exposes a production defect, report it instead of
+  modifying production files.
 """.strip()
 
 
 RUN_PYTHON_MODULE_DESCRIPTION = """
-Run an application module inside the generated project's uv-managed environment.
+Run an application module inside the project's uv-managed environment for
+focused smoke or acceptance verification.
 
 The tool internally executes:
 
     uv run python -m <module> [arguments]
 
-The Coder provides only:
+The Tester provides only:
 - an importable application module name;
 - optional application arguments.
 
@@ -164,6 +145,7 @@ Incorrect examples:
 - module="python -m calculator"
 - module="pytest"
 - module="unittest"
+- module="coverage"
 - module="pip"
 - module="-c"
 
@@ -172,145 +154,158 @@ Important uv rules:
 - Do not provide a file path or Python source code.
 - Do not activate `.venv` manually.
 - Do not use direct `python`, `pip`, `uv pip`, or shell commands.
-- `uv` automatically executes the module inside the current project's `.venv`.
+- `uv` executes the module inside the current project's managed environment.
 
-Testing boundary:
-- This tool may run application modules only.
-- It cannot execute testing, linting, coverage, packaging, or environment
-  management modules.
-- Do not use it to create temporary verification scripts.
+Verification boundary:
+- Use this tool only to verify importable application modules.
+- Use dedicated tools for tests, linting, type checking, coverage, build, and
+  packaging verification.
+- Do not use this tool to create or execute temporary verification scripts.
+- If execution exposes a valid production failure, preserve the evidence and
+  report it without modifying production code.
 """.strip()
 
 
-INSTALL_RUNTIME_DEPENDENCIES_DESCRIPTION = """
-Add required runtime dependencies to the current generated project using `uv`.
+INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION = """
+Add required development and verification dependencies to the current project
+using `uv`.
 
 The tool internally executes:
 
-    uv add <package> [<package> ...]
+    uv add --dev <package> [<package> ...]
 
-`uv add`:
-- records dependencies in `pyproject.toml`;
+`uv add --dev`:
+- records dependencies as development dependencies in `pyproject.toml`;
 - updates `uv.lock`;
-- synchronises the generated project's `.venv`.
+- synchronises the project's uv-managed environment.
 
-Provide only runtime dependency specifications.
+Provide only dependencies required for Tester-owned verification work.
 
 Correct examples:
-- ["click"]
-- ["requests>=2.32"]
-- ["pydantic>=2"]
-- ["fastapi", "uvicorn"]
+- ["pytest"]
+- ["pytest", "pytest-cov"]
+- ["ruff"]
+- ["mypy"]
+- ["hypothesis>=6"]
+- ["coverage[toml]>=7"]
 
 Incorrect examples:
-- ["uv", "add", "click"]
-- ["pip install click"]
+- ["uv", "add", "--dev", "pytest"]
+- ["pip install pytest"]
 - ["--dev", "pytest"]
-- ["pytest"]
-- ["ruff"]
+- ["requests"]
+- ["fastapi"]
 - ["git+https://example.com/repository.git"]
 - ["package @ https://example.com/package.whl"]
 
 Important uv rules:
 - Do not use `pip`, `python -m pip`, or `uv pip install`.
 - Do not manually edit or activate `.venv`.
-- Use this tool only when the production application genuinely requires an
-  external runtime dependency.
-- Do not install packages already provided by the Python standard library.
+- Use this tool only when an approved Tester-owned task genuinely requires an
+  external development or verification dependency.
+- Do not add packages already provided by the Python standard library.
+- Do not add direct URL, Version Control System, SSH, or local-file
+  dependencies.
 
-Testing boundary:
-- Do not add Pytest, Ruff, Mypy, coverage, Tox, Nox, or other testing and
-  development dependencies.
-- Development and testing dependencies belong to the Tester or Verifier stage.
+Production boundary:
+- Do not add or change production runtime dependencies.
+- Do not use this tool to repair missing application dependencies.
+- If verification reveals a missing runtime dependency, report it as a
+  Coder-owned implementation issue.
 """.strip()
 
 
-RUN_SYNC_PROJECT = """
-Synchronise the generated Python project and validate its production
-environment using uv.
+SYNC_PROJECT_DESCRIPTION = """
+Synchronise the Python project and verify that its declared environment can be
+created using uv.
 
 The tool internally executes:
 
     uv sync
 
 Use this tool after:
-- creating or modifying `pyproject.toml`;
-- adding or changing runtime dependencies;
-- changing the package structure;
-- changing build-system or packaging configuration;
-- repairing an earlier `uv sync` failure.
-
-Correct usage examples:
-- After creating a new `pyproject.toml`.
-- After adding `click` to `[project.dependencies]`.
-- After changing the package path from `src/app` to `src/my_app`.
-- After adding or modifying an entry under `[project.scripts]`.
-- After correcting Hatchling build configuration.
+- adding or changing development dependencies;
+- modifying Tester-owned verification configuration;
+- repairing a development-dependency synchronization failure;
+- receiving a project from the Coder before executing verification;
+- an earlier `uv sync` operation failed.
 
 Do not provide a command, path, package name, or application argument.
 This tool requires no project-specific input other than the optional timeout.
 
 A successful result confirms that:
-- the `pyproject.toml` file can be parsed;
-- production dependencies can be resolved;
-- the project can be built and installed into its uv-managed environment;
+- `pyproject.toml` can be parsed;
+- declared dependencies can be resolved;
+- the project can be installed into its uv-managed environment;
 - the declared package structure is compatible with the build configuration.
 
 A successful result does not confirm that:
 - application behaviour is correct;
-- command-line arguments work as intended;
-- unit or integration tests pass;
-- linting, type checking, coverage, or acceptance criteria pass.
+- acceptance criteria pass;
+- tests pass;
+- linting or type checking passes;
+- coverage requirements are satisfied;
+- packaging or application entry points work correctly.
 
-If synchronisation fails because of production code, dependency, build, or
-packaging configuration, inspect the returned error, repair the relevant
-Coder-owned files, and call this tool again.
+Failure handling:
+- If synchronization fails because of a Tester-owned development dependency or
+  verification configuration, repair that Tester-owned issue and run the tool
+  again.
+- If synchronization fails because of production dependencies, package
+  structure, build configuration, or other Coder-owned files, preserve the
+  failure evidence and report it without modifying production files.
 
 Do not use this tool to:
-- install development or testing dependencies;
-- run Pytest, Ruff, Mypy, coverage, or other verification tools;
+- add dependencies;
+- run tests, linting, type checking, or coverage;
 - execute the application;
-- perform Tester-owned verification.
+- modify production configuration;
+- claim that acceptance verification succeeded.
 """.strip()
 
 
-SUBMIT_CODER_SUMMARY_DESCRIPTION = """
-Submit the final structured handoff summary for the Coder stage.
+SUBMIT_TESTER_SUMMARY_DESCRIPTION = """
+Submit the final structured handoff summary for the Tester stage.
 
 Call this tool only when:
-- all safe Coder-owned production tasks are complete; or
-- no further safe implementation work can continue because of a genuine
-  blocker.
+- all safe Tester-owned tasks and verification operations are complete; or
+- no further safe verification work can continue because of a genuine blocker.
 
-This is a terminal Coder action. After calling it, do not request additional
-filesystem, dependency, synchronization, or application-execution operations.
+This is a terminal Tester action. Call it alone. After calling it, do not
+request additional filesystem, dependency, synchronization, test, analysis,
+build, packaging, or application-execution operations.
 
 Populate the summary only with evidence from:
-- Coder-owned tasks in the approved DevelopmentPlan;
-- successful filesystem tool results;
-- runtime dependency operations;
-- project synchronization results;
-- application or module execution results;
+- Tester-owned tasks and acceptance criteria in the approved DevelopmentPlan;
+- repository inspection;
+- the Coder handoff;
+- Tester-owned files actually created or modified;
+- development-dependency operations;
+- synchronization, test, linting, type-checking, coverage, build, packaging,
+  smoke, and acceptance-verification results;
 - observed failures and blockers.
 
 The summary must:
-- identify completed Coder-owned task IDs;
-- list project-relative production files created or modified;
-- list runtime dependencies actually added or changed;
-- list command-line entry points actually configured;
-- record only operations that were actually executed and their observed
-  outcomes;
-- identify unresolved failures, blockers, and incomplete work;
-- provide concise handoff notes for the Tester.
+- identify completed Tester-owned task IDs;
+- list project-relative Tester-owned files created or modified;
+- list development dependencies actually added or changed;
+- record only verification operations that were actually executed;
+- distinguish passed, failed, blocked, and not-executed verification;
+- identify acceptance criteria that were independently verified;
+- report valid production failures without claiming they were repaired;
+- identify Tester-owned repairs and their subsequent verification results;
+- identify unresolved failures, blockers, and verification limitations;
+- provide concise handoff notes for the Reviewer.
 
 Do not:
-- call this tool while more implementation actions are required;
+- call this tool while more safe Tester-owned work remains;
 - call it together with another tool;
-- include test files or Tester-owned work as completed Coder work;
-- claim that tests, linting, type checking, coverage, acceptance criteria,
-  review, approval, deployment, or release succeeded;
-- invent files, dependencies, commands, task completion, or successful
-  outcomes;
-- return the final summary as ordinary text or Markdown instead of calling
-  this tool.
+- include production implementation as completed Tester work;
+- modify or conceal production failures;
+- claim that unexecuted verification succeeded;
+- claim that review, approval, merge, deployment, or release succeeded;
+- invent files, dependencies, commands, task completion, acceptance results, or
+  successful outcomes;
+- return the final summary as ordinary text or Markdown instead of calling this
+  tool.
 """.strip()
