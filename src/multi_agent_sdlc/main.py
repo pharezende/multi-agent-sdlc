@@ -16,7 +16,8 @@ def run() -> None:
     graph = build_graph()
 
     initial_state: DevState = {
-        "request": "Build an app that sum two numbers. The end user interactions happen via the terminal.",
+        "request": "Build a CLI expense tracker that lets users add expenses, list them, filter by category or date, and display total spending. Store data locally in a JSON file, validate invalid inputs, and provide clear exit codes and error messages. Include a concise README and a uv-managed Python project with a declared command-line entry point.",
+        # "request": "Build an app that sum two numbers. The end user interactions happen via the terminal.",
         # "request": "Build a calculator app, all end user interactions happens via the terminal.",
         # "request": "Build an app that enable the user to compute the area of squares and triangles. The end user interactions happen via the terminal.",
         # "request": "Build a Python command-line application named `temperature-converter`. The application must convert temperatures between Celsius and Fahrenheit.",

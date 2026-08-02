@@ -49,6 +49,7 @@ def coder_run_python_module(
     module: PythonModuleName,
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
+    stdin_text: str | None = None,
     timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
 
@@ -65,6 +66,7 @@ def coder_run_python_module(
         ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
+        stdin_text=stdin_text,
     )
 
 

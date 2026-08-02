@@ -76,13 +76,14 @@ def _process_coder_summary_call(
 
     tool_call = response.tool_calls[0]
 
-    summary_value = tool_call["args"]["summary"]
-    # Depending on provider/tool-call parsing, "summary" may arrive as a dict
-    # or as a JSON-encoded string.
-    if isinstance(summary_value, str):
-        coder_summary = CoderSummary.model_validate_json(summary_value)
+    summary_payload = tool_call["args"]["summary"]
+
+    # Depending on tool-call serialization and parsing, the payload may arrive
+    # as a structured dictionary or as a JSON-encoded string.
+    if isinstance(summary_payload, str):
+        coder_summary = CoderSummary.model_validate_json(summary_payload)
     else:
-        coder_summary = CoderSummary.model_validate(summary_value)
+        coder_summary = CoderSummary.model_validate(summary_payload)
 
     history = state.get("coder_summary_history", [])
 

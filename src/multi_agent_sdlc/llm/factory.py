@@ -4,12 +4,12 @@ from multi_agent_sdlc.llm.models import ModelId
 
 
 def create_chat_model(
-    model: ModelId,
+    model: str,
     timeout_seconds: float = 180000,  # ms
     max_retries: int = 0,
 ) -> ChatOpenRouter:
     return ChatOpenRouter(
-        model=model.value,
+        model=model,
         timeout=timeout_seconds,  # not working
         max_retries=max_retries,
     )

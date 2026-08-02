@@ -111,7 +111,7 @@ def _process_tester_summary_call(
         tester_status = TesterStatus.REPAIR_REQUIRED
         coder_status = (
             CoderStatus.REPAIRING
-        )  # Perhaps add a transitiono node to apply this?
+        )  # Perhaps add a transition node to apply this?
     elif tester_summary.overall_status == "blocked":
         tester_status = TesterStatus.BLOCKED
     elif tester_summary.overall_status == "passed":

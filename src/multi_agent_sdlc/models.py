@@ -66,7 +66,7 @@ class DevelopmentPlan(BaseModel):
 
 
 class CoderSummary(BaseModel):
-    summary: str = Field(
+    implementation_summary: str = Field(
         description=(
             "Brief factual summary of the production implementation completed "
             "by the Coder. Do not include unverified test or quality claims."
@@ -157,14 +157,17 @@ class TesterSummary(BaseModel):
             "Verification operations actually executed. Each item should include "
             "`verification_type`, `command`, `status`, `exit_code`, `summary`, "
             "and `related_task_ids`. Status must be `passed`, `failed`, "
-            "`blocked`, or `not_executed`."
+            "`blocked`, or `not_executed`. This field must contain sufficient "
+            "successful verification evidence when `overall_status` is `passed`."
         )
     )
 
     acceptance_criteria_results: list[dict[str, object]] = Field(
         description=(
             "Results for approved acceptance criteria. Each item should include "
-            "`task_id`, `criterion`, `status`, and `evidence`."
+            "`task_id`, `criterion`, `status`, and `evidence`. This field must "
+            "contain results for all applicable acceptance criteria when "
+            "`overall_status` is `passed`."
         )
     )
 
@@ -180,7 +183,9 @@ class TesterSummary(BaseModel):
         description=(
             "Observed failures attributed to Coder-owned production code or "
             "configuration. Each item should include `description`, "
-            "`related_task_ids`, and `evidence`."
+            "`related_task_ids`, and `evidence`. This field must contain at least "
+            "one evidenced production failure when `overall_status` is `failed`; "
+            "it must be empty when `overall_status` is `passed`."
         )
     )
 
@@ -189,7 +194,9 @@ class TesterSummary(BaseModel):
             "Remaining failures, blockers, incomplete verification, or "
             "environment limitations. Each item should include `owner`, "
             "`description`, `related_task_ids`, and `evidence`. Owner must be "
-            "`coder`, `tester`, `environment`, or `unknown`."
+            "`coder`, `tester`, `environment`, or `unknown`. This field must "
+            "contain at least one unresolved blocker when `overall_status` is "
+            "`blocked`; it must be empty when `overall_status` is `passed`."
         )
     )
 
@@ -197,13 +204,19 @@ class TesterSummary(BaseModel):
         "passed",
         "failed",
         "blocked",
-        "partial",
-    ] = Field(description="Overall observed result of the Tester stage.")
-
-    reviewer_notes: list[str] = Field(
+    ] = Field(
         description=(
-            "Concise handoff notes identifying verified behaviour, important "
-            "failures, limitations, and areas requiring focused review."
+            "Overall outcome of the Tester stage. Use `passed` only when all "
+            "required verification and applicable acceptance criteria completed "
+            "successfully; `verification_results` and "
+            "`acceptance_criteria_results` must provide supporting evidence, while "
+            "`implementation_failures`, `coder_repair_requests`, and "
+            "`unresolved_issues` must be empty. Use `failed` only when verification "
+            "identified at least one evidenced Coder-owned production defect; "
+            "`implementation_failures` and `coder_repair_requests` must both be "
+            "non-empty. Use `blocked` only when required verification could not be "
+            "completed because of a blocker the Tester cannot safely resolve; "
+            "`unresolved_issues` must be non-empty."
         )
     )
 
@@ -211,8 +224,10 @@ class TesterSummary(BaseModel):
         description=(
             "Production defects requiring Coder repair. Each item must include "
             "`related_task_ids`, `affected_files`, `failed_criteria`, "
-            "`observed_behavior`, `expected_behavior`, and `evidence`"  # , and "
-            # "`retest_guidance`. Leave empty when no Coder repair is required."
+            "`observed_behavior`, `expected_behavior`, and `evidence`. This field "
+            "must contain at least one focused repair request when `overall_status` "
+            "is `failed`; it must be empty when `overall_status` is `passed` or "
+            "`blocked`."
         )
     )
 

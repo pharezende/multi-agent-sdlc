@@ -23,6 +23,7 @@ def execute_process(
     command: list[str],
     project_directory: Path,
     timeout_seconds: int,
+    stdin_text: str | None = None,
 ) -> dict[str, object]:
     """Execute an internally constructed command inside the project."""
     try:
@@ -30,6 +31,7 @@ def execute_process(
             command,
             cwd=project_directory,
             env=build_sandbox_environment(),
+            input=stdin_text,
             capture_output=True,
             text=True,
             timeout=timeout_seconds,

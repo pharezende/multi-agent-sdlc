@@ -27,6 +27,10 @@ Incorrect examples:
 - ../other-project/test_calculator.py
 - src/calculator/main.py
 
+When writing a test file, provide valid UTF-8 source content with actual
+newline characters. Do not emit escaped newline text, flattened source code,
+or stringified file contents.
+
 Production boundary:
 - Do not create or modify production source files.
 - Do not change application behaviour to make verification pass.
@@ -309,3 +313,49 @@ Do not:
 - return the final summary as ordinary text or Markdown instead of calling this
   tool.
 """.strip()
+
+
+TESTER_RUN_VERIFICATION_COMMAND_DESCRIPTION = """
+Run an approved Tester verification command inside the current project's
+uv-managed environment.
+
+The tool internally executes:
+
+```
+uv run <command> [arguments]
+```
+
+Approved commands:
+
+* `pytest` for executing tests;
+* `ruff` for linting and formatting checks;
+* `mypy` for static type checking;
+* `coverage` for test coverage operations.
+
+Examples:
+
+* command="pytest", arguments=["-q"]
+* command="ruff", arguments=["check", "."]
+* command="ruff", arguments=["format", "--check", "."]
+* command="mypy", arguments=["src"]
+* command="coverage", arguments=["run", "-m", "pytest"]
+* command="coverage", arguments=["report", "--show-missing"]
+
+Rules:
+
+* Use only an approved command.
+* Do not include `uv run` in the command or arguments.
+* Do not execute Python, shell commands, arbitrary executables, application
+  entry points, or temporary scripts.
+* Ruff may only perform non-mutating checks. Do not use `--fix`,
+  `--unsafe-fixes`, or `ruff format` without `--check`.
+* Coverage may execute only Pytest through `coverage run -m pytest`.
+* Do not install dependencies or modify the environment.
+* Do not weaken tests, assertions, linting rules, type-checking rules, or
+  coverage thresholds to obtain a passing result.
+* Repair failures only when they originate from Tester-owned files or
+  verification configuration.
+* Report valid production failures as focused Coder repair requests.
+* Record the command, arguments, exit status, output, and observed result.
+* Treat returned results as authoritative Tester-stage verification evidence.
+  """.strip()
