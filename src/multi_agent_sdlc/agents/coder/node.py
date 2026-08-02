@@ -1,4 +1,5 @@
-from multi_agent_sdlc.models import CoderMode
+from multi_agent_sdlc.models import TesterStatus
+from multi_agent_sdlc.models import CoderStatus
 from multi_agent_sdlc.models import ImplementationCycle
 from langchain_core.messages import HumanMessage
 from langchain_core.messages import AIMessage
@@ -16,18 +17,18 @@ import json
 def coder_node(state: DevState) -> dict:
 
     coder_messages = state.get("coder_messages", [])
-    coder_mode = state.get("coder_mode", CoderMode.IMPLEMENTATION)
+    coder_status = state.get("coder_status", CoderStatus.IMPLEMENTING)
     current_tester_summary = state.get("current_tester_summary")
 
     if not coder_messages:
         return _initialize_coder_conversation(state)
 
-    if coder_mode is CoderMode.REPAIR:
+    if coder_status is CoderStatus.REPAIRING:
         coder_messages.append(
             HumanMessage(
                 content=(
                     "The Tester found production defects requiring repair.\n\n"
-                    f"{current_tester_summary.model_dump_json(indent=2)}"
+                    f"{current_tester_summary.coder_repair_requests.model_dump_json(indent=2)}"
                 )
             )
         )
@@ -75,18 +76,39 @@ def _process_coder_summary_call(
 
     tool_call = response.tool_calls[0]
 
-    coder_summary = CoderSummary.model_validate(tool_call["args"]["summary"])
+    summary_value = tool_call["args"]["summary"]
+    # Depending on provider/tool-call parsing, "summary" may arrive as a dict
+    # or as a JSON-encoded string.
+    if isinstance(summary_value, str):
+        coder_summary = CoderSummary.model_validate_json(summary_value)
+    else:
+        coder_summary = CoderSummary.model_validate(summary_value)
 
     history = state.get("coder_summary_history", [])
 
+    coder_status = state.get("coder_status", CoderStatus.IMPLEMENTING)
+    tester_status = state.get(
+        "tester_status",
+        TesterStatus.TESTING_PENDING,
+    )
+
     implementation_cycle = ImplementationCycle(
-        cycle_number=len(history) + 1,
-        mode=state.get("coder_mode", CoderMode.IMPLEMENTATION),
+        cycle_number=(history[-1].cycle_number + 1 if history else 1),
+        coder_status=coder_status,
         coder_summary=coder_summary,
     )
+
+    # Implement later
+    # if coder_summary.failed_task_ids:
+    #     resulting_status = CoderStatus.FAILED
+    # elif coder_summary.blocked_task_ids:
+    #     resulting_status = CoderStatus.BLOCKED
+    resulting_status = CoderStatus.COMPLETED
 
     return {
         "coder_messages": [response],
         "current_coder_summary": coder_summary,
         "coder_summary_history": [implementation_cycle],
+        "coder_status": resulting_status,
+        "tester_status": tester_status,
     }

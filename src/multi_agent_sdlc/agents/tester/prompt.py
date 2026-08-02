@@ -232,6 +232,35 @@ TOOL USAGE
   unless necessary to diagnose an observed failure.
 """.strip()
 
+TESTER_RESPONSE_RULES = """
+RESPONSE CONTRACT
+
+You must respond exclusively with one or more tool calls.
+
+For every turn, choose exactly one of these actions:
+
+1. Continue verification:
+   Call one or more Tester operational tools needed to inspect, configure,
+   execute, or verify the project.
+
+2. Finish the verification cycle:
+   Call `submit_tester_summary` exactly once and without any other tool call.
+
+Never return a plain-text response.
+Never return an empty response.
+Never describe a tool call without actually calling the tool.
+Never finish verification without calling `submit_tester_summary`.
+
+If verification cannot proceed, call `submit_tester_summary` and report the
+blocker in `unresolved_issues` with an overall status of `blocked`.
+
+If production defects are found, call `submit_tester_summary` and include
+actionable `coder_repair_requests`.
+
+After receiving a ToolMessage, inspect its result and either:
+- call another operational tool; or
+- call `submit_tester_summary` alone.
+""".strip()
 
 TESTER_COMPLETION_RULES = """
 COMPLETION AND HANDOFF
@@ -281,6 +310,7 @@ TESTER_SYSTEM_RULES = "\n\n".join(
         TESTER_PATH_AND_FILE_RULES,
         TESTER_SECURITY_AND_SAFETY_RULES,
         TESTER_TOOL_USAGE_RULES,
+        TESTER_RESPONSE_RULES,
         TESTER_COMPLETION_RULES,
     ]
 )

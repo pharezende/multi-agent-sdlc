@@ -8,6 +8,5 @@ base_tester_model = create_chat_model(
 )
 
 tester_llm = base_tester_model.bind_tools(
-    TESTER_TOOLS,
-    tool_choice="required",  # force the use of tools
+    TESTER_TOOLS, tool_choice="required", strict=True
 ).with_retry(stop_after_attempt=3)

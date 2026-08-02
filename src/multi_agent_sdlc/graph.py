@@ -1,3 +1,4 @@
+from multi_agent_sdlc.transitions import create_prepare_retest_node
 from multi_agent_sdlc.reviewer import reviewer_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
@@ -29,6 +30,10 @@ def build_graph():
     builder.add_node("coder_tools", coder_tool_node)
     builder.add_node("tester", tester_node)
     builder.add_node("tester_tools", tester_tool_node)
+    builder.add_node(
+        "prepare_retest",
+        create_prepare_retest_node,
+    )
     builder.add_node("reviewer", reviewer_node)
 
     builder.add_edge(START, "planner")
@@ -39,6 +44,7 @@ def build_graph():
         {
             "coder_tools": "coder_tools",
             "tester": "tester",
+            "prepare_retest": "prepare_retest",
         },
     )
     builder.add_conditional_edges(
@@ -49,6 +55,7 @@ def build_graph():
 
     builder.add_edge("coder_tools", "coder")
     builder.add_edge("tester_tools", "tester")
+    builder.add_edge("prepare_retest", "tester")
     builder.add_edge("reviewer", END)
 
     return builder.compile()

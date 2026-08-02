@@ -1,3 +1,4 @@
+from enum import StrEnum
 from typing import Literal
 from enum import Enum
 from typing import List
@@ -214,3 +215,35 @@ class TesterSummary(BaseModel):
             # "`retest_guidance`. Leave empty when no Coder repair is required."
         )
     )
+
+
+class VerificationCycle(BaseModel):
+    cycle_number: int
+    tester_summary: TesterSummary
+
+
+class CoderMode(StrEnum):
+    IMPLEMENTATION = "implementation"
+    REPAIR = "repair"
+
+
+class ImplementationCycle(BaseModel):
+    cycle_number: int
+    # mode: CoderMode
+    coder_summary: CoderSummary
+
+
+class CoderStatus(StrEnum):
+    IMPLEMENTING = "implementing"
+    REPAIRING = "repairing"
+    COMPLETED = "completed"
+    BLOCKED = "blocked"
+    FAILED = "failed"
+
+
+class TesterStatus(StrEnum):
+    TESTING = "testing"
+    TESTING_PENDING = "testing_pending"
+    PASSED = "passed"
+    REPAIR_REQUIRED = "repair_required"
+    BLOCKED = "blocked"
