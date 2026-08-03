@@ -6,10 +6,7 @@ from typing import Literal
 
 def route_after_coder(
     state: DevState,
-) -> Literal[
-    "coder_tools",
-    "tester",
-]:
+) -> Literal["coder_tools", "tester", "coder"]:
     coder_status = state.get("coder_status", CoderStatus.IMPLEMENTING)
     if coder_status is CoderStatus.COMPLETED:
         return "tester"
@@ -23,4 +20,4 @@ def route_after_coder(
     if isinstance(last_message, AIMessage) and last_message.tool_calls:
         return "coder_tools"
 
-    raise ValueError("Empty message and no tool called!")
+    return "coder"

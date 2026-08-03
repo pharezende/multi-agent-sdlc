@@ -176,6 +176,26 @@ Application execution:
 * Report an operation as successful only when the corresponding tool result confirms success.
   """.strip()
 
+CODER_PERSISTENT_DATA_RULE = """
+The application may create and update local data files when persistence is
+required by the task.
+
+Rules:
+- Store persistent application data inside the project directory.
+- Prefer a dedicated project-local path such as `.data/data.json`,
+  `data/app.json`, or another path clearly appropriate for the application.
+- Do not store application data in the operating-system user's home directory,
+  including paths such as `~/.data.json`.
+- Do not write outside the project sandbox.
+- Create parent directories when necessary.
+- Use UTF-8 and valid structured formats when applicable.
+- Handle a missing data file as the application's initial empty state.
+- Handle malformed or unreadable persistent data safely and report a clear
+  application error rather than silently corrupting or overwriting it.
+- Do not commit generated runtime data unless the task explicitly requires
+  sample or initial data.
+""".strip()
+
 CODER_DEPENDENCY_RULES = """
 
 * Prefer the standard library and existing dependencies.
@@ -307,6 +327,7 @@ CODER_SYSTEM_RULES = "\n\n".join(
         CODER_IMPLEMENTATION_QUALITY_RULES,
         CODER_PYPROJECT_AND_UV_RULES,
         CODER_TESTING_AND_EXECUTION_BOUNDARY_RULES,
+        CODER_PERSISTENT_DATA_RULE,
         CODER_DEPENDENCY_RULES,
         CODER_SECURITY_AND_SAFETY_RULES,
         CODER_TASK_CONTROL_RULES,

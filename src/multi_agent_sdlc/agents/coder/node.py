@@ -38,9 +38,21 @@ def coder_node(state: DevState) -> dict:
     if response.tool_calls:
         if response.tool_calls[0]["name"] == "submit_coder_summary":
             return _process_coder_summary_call(state, response)
+        return {
+            "coder_messages": [response],
+        }
 
     return {
-        "coder_messages": [response],
+        "coder_messages": [
+            response,
+            HumanMessage(
+                content=(
+                    "Invalid response."
+                    "Call exactly one approved Tester tool, or call "
+                    "`submit_coder_summary` alone."
+                )
+            ),
+        ],
     }
 
 

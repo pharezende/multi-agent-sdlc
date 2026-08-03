@@ -42,6 +42,7 @@ def build_graph():
         "coder",
         route_after_coder,
         {
+            "coder": "coder",
             "coder_tools": "coder_tools",
             "tester": "tester",
             "prepare_retest": "prepare_retest",

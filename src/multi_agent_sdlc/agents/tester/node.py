@@ -56,7 +56,7 @@ def tester_node(state: DevState) -> dict:
             response,
             HumanMessage(
                 content=(
-                    "Invalid response. Return no explanatory text. "
+                    "Invalid response."
                     "Call exactly one approved Tester tool, or call "
                     "`submit_tester_summary` alone."
                 )
