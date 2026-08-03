@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import StandardInput
 from multi_agent_sdlc.tools.tester.descriptions import (
     TESTER_RUN_VERIFICATION_COMMAND_DESCRIPTION,
 )
@@ -22,6 +23,7 @@ def tester_run_application(
     entry_point: EntryPoint,
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
+    stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
 
@@ -36,6 +38,7 @@ def tester_run_application(
         ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
+        stdin_text=stdin_text,
     )
 
 
@@ -47,7 +50,7 @@ def tester_run_python_module(
     module: PythonModuleName,
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
-    stdin_text: str | None = None,
+    stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
 

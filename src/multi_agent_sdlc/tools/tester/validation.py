@@ -59,6 +59,19 @@ validate_tester_entry_point = create_entry_point_validator(
     prohibited_entry_points=PROHIBITED_TESTER_ENTRY_POINTS,
 )
 
+StandardInput = Annotated[
+    str,
+    Field(
+        min_length=1,
+        max_length=10_000,
+        description=(
+            "Text sent to the application's standard input. Separate "
+            "interactive responses with newline characters. Omit this "
+            "argument when no standard input is required."
+        ),
+    ),
+]
+
 
 EntryPoint = Annotated[
     str,

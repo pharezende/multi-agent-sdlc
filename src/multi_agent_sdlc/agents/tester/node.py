@@ -44,10 +44,24 @@ def tester_node(state: DevState) -> dict:
 
     if response.tool_calls:
         if response.tool_calls[0]["name"] == "submit_tester_summary":
+            if len(response.tool_calls) != 1:
+                raise ValueError("`submit_tester_summary` must be called alone.")
             return _process_tester_summary_call(state, response)
+        return {
+            "tester_messages": [response],
+        }
 
     return {
-        "tester_messages": [response],
+        "tester_messages": [
+            response,
+            HumanMessage(
+                content=(
+                    "Invalid response. Return no explanatory text. "
+                    "Call exactly one approved Tester tool, or call "
+                    "`submit_tester_summary` alone."
+                )
+            ),
+        ],
     }
 
 
@@ -101,28 +115,31 @@ def _process_tester_summary_call(
     )
 
     verification_cycle = VerificationCycle(
-        cycle_number=len(verification_history) + 1,
+        cycle_number=(
+            verification_history[-1].cycle_number + 1 if verification_history else 1
+        ),
         tester_summary=tester_summary,
     )
 
-    coder_status = state["coder_status"]
-
-    if tester_summary.coder_repair_requests:
+    if tester_summary.overall_status == "failed":
         tester_status = TesterStatus.REPAIR_REQUIRED
-        coder_status = (
-            CoderStatus.REPAIRING
-        )  # Perhaps add a transition node to apply this?
     elif tester_summary.overall_status == "blocked":
         tester_status = TesterStatus.BLOCKED
     elif tester_summary.overall_status == "passed":
         tester_status = TesterStatus.PASSED
     else:
-        tester_status = TesterStatus.REPAIR_REQUIRED
+        raise ValueError(
+            f"Unsupported Tester status: " f"{tester_summary.overall_status!r}"
+        )
 
-    return {
+    update: dict[str, object] = {
         "tester_messages": [response],
         "current_tester_summary": tester_summary,
         "verification_history": [verification_cycle],
         "tester_status": tester_status,
-        "coder_status": coder_status,
     }
+
+    if tester_status == TesterStatus.REPAIR_REQUIRED:
+        update["coder_status"] = CoderStatus.REPAIRING
+
+    return update

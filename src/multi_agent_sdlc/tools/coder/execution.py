@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.coder.validation import StandardInput
 from multi_agent_sdlc.tools.coder.descriptions import (
     RUN_VERIFICATION_COMMAND_DESCRIPTION,
 )
@@ -24,6 +25,7 @@ def coder_run_application(
     entry_point: EntryPoint,
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
+    stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
 
@@ -38,6 +40,7 @@ def coder_run_application(
         ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
+        stdin_text=stdin_text,
     )
 
 
@@ -49,7 +52,7 @@ def coder_run_python_module(
     module: PythonModuleName,
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
-    stdin_text: str | None = None,
+    stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
 ) -> dict[str, object]:
 

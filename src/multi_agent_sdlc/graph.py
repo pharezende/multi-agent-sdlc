@@ -50,7 +50,12 @@ def build_graph():
     builder.add_conditional_edges(
         "tester",
         route_after_tester,
-        {"tester_tools": "tester_tools", "reviewer": "reviewer", "coder": "coder"},
+        {
+            "tester_tools": "tester_tools",
+            "reviewer": "reviewer",
+            "coder": "coder",
+            "tester": "tester",
+        },
     )
 
     builder.add_edge("coder_tools", "coder")

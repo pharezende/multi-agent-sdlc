@@ -220,6 +220,19 @@ EntryPoint = Annotated[
     AfterValidator(validate_entry_point),
 ]
 
+StandardInput = Annotated[
+    str,
+    Field(
+        min_length=1,
+        max_length=10_000,
+        description=(
+            "Text sent to the application's standard input. Separate "
+            "interactive responses with newline characters. Omit this "
+            "argument when no standard input is required."
+        ),
+    ),
+]
+
 ApplicationArguments = Annotated[
     list[str],
     Field(
