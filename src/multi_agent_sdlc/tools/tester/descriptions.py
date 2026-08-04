@@ -359,3 +359,43 @@ Rules:
 * Record the command, arguments, exit status, output, and observed result.
 * Treat returned results as authoritative Tester-stage verification evidence.
   """.strip()
+
+TESTER_RUN_PROJECT_VERIFICATION_DESCRIPTION = """
+Run the complete mandatory project verification suite inside the current
+project's uv-managed environment.
+
+The tool executes these fixed checks:
+
+    uv run ruff check .
+    uv run ruff format --check .
+    uv run mypy src
+    uv run pytest
+
+All checks are attempted, even when an earlier check fails. The result includes
+the command, exit code, timeout status, standard output, and standard error for
+each check, together with an overall pass or fail result.
+
+Use this tool as the authoritative final verification gate before submitting a
+Tester summary with `overall_status="passed"`.
+
+Rules:
+- Run this tool after implementing or repairing Tester-owned tests and
+  verification configuration.
+- Run it again after any change that could affect verification results.
+- A successful targeted test or individual verification command does not
+  replace this complete project verification.
+- Do not report `passed` unless the latest complete project verification
+  finished without timeouts and every mandatory check returned exit code 0.
+- When a check fails, inspect its full result to determine whether the failure
+  originates from production code, Tester-owned files, verification
+  configuration, dependencies, or the execution environment.
+- Repair failures only when they originate from Tester-owned tests or
+  verification configuration.
+- Report valid production-code failures through focused Coder repair requests.
+- Report an external or unresolvable verification obstacle as `blocked`.
+- Do not weaken tests, assertions, linting rules, formatting rules,
+  type-checking rules, or project configuration merely to obtain a passing
+  result.
+- Do not install dependencies, modify the environment, or execute arbitrary
+  commands through this tool.
+""".strip()

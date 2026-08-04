@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 from multi_agent_sdlc.models import CoderStatus
 from multi_agent_sdlc.models import TesterStatus
 from multi_agent_sdlc.models import CoderMode
@@ -34,3 +35,4 @@ class DevState(TypedDict):
         list[VerificationCycle],
         add,
     ]
+    current_project_verification_result: NotRequired[ProjectVerificationResult | None]

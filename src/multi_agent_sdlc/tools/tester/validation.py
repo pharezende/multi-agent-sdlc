@@ -162,3 +162,32 @@ FileContent = Annotated[
     ),
     AfterValidator(validate_file_content),
 ]
+
+from typing import TypedDict
+
+
+class ProcessResult(TypedDict):
+    command: list[str]
+    exit_code: int | None
+    stdout: str
+    stderr: str
+    timed_out: bool
+
+
+class ProjectVerificationResult(TypedDict):
+    verification_type: str
+    passed: bool
+    overall_exit_code: int
+    checks: list[ProcessResult]
+
+
+from pydantic import StringConstraints
+
+
+NonBlankStr = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+    ),
+]

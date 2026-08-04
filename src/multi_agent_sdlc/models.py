@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import NonBlankStr
 from enum import StrEnum
 from typing import Literal
 from enum import Enum
@@ -129,14 +130,103 @@ class CoderSummary(BaseModel):
     )
 
 
+from typing import Literal, Self
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+class VerificationType(StrEnum):
+    SYNC = "sync"
+    ENTRY_POINT = "entry_point"
+    PYTEST = "pytest"
+    RUFF_CHECK = "ruff_check"
+    RUFF_FORMAT_CHECK = "ruff_format_check"
+    MYPY = "mypy"
+    COMPLETE_PROJECT_VERIFICATION = "complete_project_verification"
+
+
+class VerificationResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    verification_type: VerificationType
+    command: list[str] = Field(min_length=1)
+    status: Literal["passed", "failed", "blocked", "not_executed"]
+    exit_code: int | None
+    summary: str = Field(min_length=1)
+    related_task_ids: list[str]
+
+
+class AcceptanceCriterionResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    task_id: str = Field(min_length=1)
+    criterion: str = Field(min_length=1)
+    status: Literal["passed", "failed", "blocked", "not_executed"]
+    evidence: str = Field(min_length=1)
+
+
+class TesterRepair(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    description: str = Field(min_length=1)
+    files_modified: list[str] = Field(min_length=1)
+    verification_result: str = Field(min_length=1)
+
+
+class ImplementationFailure(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    description: str = Field(min_length=1)
+    related_task_ids: list[str] = Field(min_length=1)
+    evidence: str = Field(min_length=1)
+
+
+class UnresolvedIssue(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    owner: Literal["coder", "tester", "environment", "unknown"]
+    description: str = Field(min_length=1)
+    related_task_ids: list[str]
+    evidence: str = Field(min_length=1)
+
+
+class CoderRepairRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    related_task_ids: list[str] = Field(min_length=1)
+    affected_files: list[str] = Field(min_length=1)
+    failed_criteria: list[str] = Field(min_length=1)
+    observed_behavior: str = Field(min_length=1)
+    expected_behavior: str = Field(min_length=1)
+    evidence: str = Field(min_length=1)
+
+
 class TesterSummary(BaseModel):
     """Final structured handoff from the Tester to the Reviewer or Coder."""
 
     model_config = ConfigDict(extra="forbid")
 
-    completed_task_ids: list[str] = Field(
+    addressed_task_ids: list[str] = Field(
         description=(
-            "Tester-owned task identifiers completed with supporting evidence."
+            "Task identifiers the Tester actively worked on during this cycle, "
+            "including test implementation, verification, investigation, or "
+            "Tester-owned repairs. Inclusion does not mean the task passed or "
+            "was fully verified."
+        )
+    )
+
+    passed_task_ids: list[str] = Field(
+        description=(
+            "Task identifiers for which all applicable acceptance criteria "
+            "completed successfully with supporting evidence. Do not include "
+            "tasks with any failed, blocked, incomplete, or unresolved criterion."
+        )
+    )
+
+    related_task_ids: list[str] = Field(
+        description=(
+            "Relevant task identifiers. Use an empty list only for project-wide "
+            "verification that does not map to a specific approved task."
         )
     )
 
@@ -148,87 +238,61 @@ class TesterSummary(BaseModel):
 
     development_dependencies_added: list[str] = Field(
         description=(
-            "Development or verification dependencies actually added or changed."
+            "Development dependencies newly added by the Tester during this cycle. "
+            "Do not include dependencies that were already present or merely used. "
+            "Include version constraints exactly as written in project configuration."
+        )
+    )
+    verification_results: list[VerificationResult] = Field(
+        description=(
+            "Verification operations actually executed. This field must contain "
+            "sufficient successful evidence when `overall_status` is `passed`."
         )
     )
 
-    verification_results: list[dict[str, object]] = Field(
+    acceptance_criteria_results: list[AcceptanceCriterionResult] = Field(
         description=(
-            "Verification operations actually executed. Each item should include "
-            "`verification_type`, `command`, `status`, `exit_code`, `summary`, "
-            "and `related_task_ids`. Status must be `passed`, `failed`, "
-            "`blocked`, or `not_executed`. This field must contain sufficient "
-            "successful verification evidence when `overall_status` is `passed`."
-        )
-    )
-
-    acceptance_criteria_results: list[dict[str, object]] = Field(
-        description=(
-            "Results for approved acceptance criteria. Each item should include "
-            "`task_id`, `criterion`, `status`, and `evidence`. This field must "
-            "contain results for all applicable acceptance criteria when "
+            "Results for all applicable approved acceptance criteria when "
             "`overall_status` is `passed`."
         )
     )
 
-    tester_repairs: list[dict[str, object]] = Field(
+    tester_repairs: list[TesterRepair] = Field(
         description=(
-            "Repairs made only to Tester-owned files or verification "
-            "configuration. Each item should include `description`, "
-            "`files_modified`, and `verification_result`."
+            "Repairs made only to Tester-owned files or verification configuration."
         )
     )
 
-    implementation_failures: list[dict[str, object]] = Field(
+    implementation_failures: list[ImplementationFailure] = Field(
         description=(
-            "Observed failures attributed to Coder-owned production code or "
-            "configuration. Each item should include `description`, "
-            "`related_task_ids`, and `evidence`. This field must contain at least "
-            "one evidenced production failure when `overall_status` is `failed`; "
-            "it must be empty when `overall_status` is `passed`."
+            "Failures attributed to Coder-owned production code or configuration."
         )
     )
 
-    unresolved_issues: list[dict[str, object]] = Field(
+    unresolved_issues: list[UnresolvedIssue] = Field(
         description=(
-            "Remaining failures, blockers, incomplete verification, or "
-            "environment limitations. Each item should include `owner`, "
-            "`description`, `related_task_ids`, and `evidence`. Owner must be "
-            "`coder`, `tester`, `environment`, or `unknown`. This field must "
-            "contain at least one unresolved blocker when `overall_status` is "
-            "`blocked`; it must be empty when `overall_status` is `passed`."
+            "Issues that remain unresolved, could not be safely classified, or "
+            "prevented required verification from completing. Do not duplicate "
+            "confirmed Coder-owned defects already recorded in "
+            "`implementation_failures` and `coder_repair_requests`. This field "
+            "should normally be non-empty only when `overall_status` is `blocked`."
         )
     )
 
-    overall_status: Literal[
-        "passed",
-        "failed",
-        "blocked",
-    ] = Field(
+    overall_status: Literal["passed", "failed", "blocked"] = Field(
         description=(
-            "Overall outcome of the Tester stage. Use `passed` only when all "
-            "required verification and applicable acceptance criteria completed "
-            "successfully; `verification_results` and "
-            "`acceptance_criteria_results` must provide supporting evidence, while "
-            "`implementation_failures`, `coder_repair_requests`, and "
-            "`unresolved_issues` must be empty. Use `failed` only when verification "
-            "identified at least one evidenced Coder-owned production defect; "
-            "`implementation_failures` and `coder_repair_requests` must both be "
-            "non-empty. Use `blocked` only when required verification could not be "
-            "completed because of a blocker the Tester cannot safely resolve; "
-            "`unresolved_issues` must be non-empty."
+            "Final Tester outcome. Use `passed` only when the latest complete "
+            "project verification passed and every applicable acceptance criterion "
+            "passed. Use `failed` when verification produced evidence of at least "
+            "one Coder-owned production defect requiring repair. Use `blocked` only "
+            "when required verification could not be completed or a failure could "
+            "not be safely classified because of an external, environmental, tool, "
+            "dependency, or access limitation."
         )
     )
 
-    coder_repair_requests: list[dict[str, object]] = Field(
-        description=(
-            "Production defects requiring Coder repair. Each item must include "
-            "`related_task_ids`, `affected_files`, `failed_criteria`, "
-            "`observed_behavior`, `expected_behavior`, and `evidence`. This field "
-            "must contain at least one focused repair request when `overall_status` "
-            "is `failed`; it must be empty when `overall_status` is `passed` or "
-            "`blocked`."
-        )
+    coder_repair_requests: list[CoderRepairRequest] = Field(
+        description=("Focused production defects requiring repair by the Coder.")
     )
 
 

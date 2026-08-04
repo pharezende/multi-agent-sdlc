@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.execution import tester_run_project_verification
 from multi_agent_sdlc.tools.tester.execution import tester_run_verification_command
 from multi_agent_sdlc.tools.tester.finalization import submit_tester_summary
 from multi_agent_sdlc.tools.shared.filesystem import read_file
@@ -24,4 +25,5 @@ TESTER_TOOLS = [
     read_file,
     submit_tester_summary,
     tester_run_verification_command,
+    tester_run_project_verification,
 ]

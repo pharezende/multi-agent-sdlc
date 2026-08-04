@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 from langchain_core.messages import HumanMessage
 from multi_agent_sdlc.models import TesterStatus
 from multi_agent_sdlc.models import CoderStatus
@@ -18,7 +19,7 @@ def tester_node(state: DevState) -> dict:
 
     tester_messages = state.get("tester_messages", [])
     tester_status = state["tester_status"]
-    current_coder_summary = state.get("current_coder_summary")
+    current_coder_summary = state["current_coder_summary"]
 
     if not tester_messages:
         return _initialize_tester_conversation(state)
@@ -109,6 +110,27 @@ def _process_tester_summary_call(
 
     tester_summary = TesterSummary.model_validate(tool_call["args"]["summary"])
 
+    latest_project_verification = state.get("current_project_verification_result")
+
+    if tester_summary.overall_status == "passed":
+        if latest_project_verification is None or not project_verification_passed(
+            latest_project_verification
+        ):
+            return {
+                "tester_messages": [
+                    response,
+                    HumanMessage(
+                        content=(
+                            "The Tester summary cannot report `passed`. "
+                            "Run `tester_run_project_verification` and ensure "
+                            "the complete Ruff, Mypy, and Pytest checks all "
+                            "finish successfully before submitting the "
+                            "summary again."
+                        )
+                    ),
+                ],
+            }
+
     verification_history = state.get(
         "verification_history",
         [],
@@ -143,3 +165,17 @@ def _process_tester_summary_call(
         update["coder_status"] = CoderStatus.REPAIRING
 
     return update
+
+
+def project_verification_passed(
+    result: ProjectVerificationResult,
+) -> bool:
+    return (
+        result["verification_type"] == "complete_project_verification"
+        and result["passed"]
+        and result["overall_exit_code"] == 0
+        and all(
+            not check["timed_out"] and check["exit_code"] == 0
+            for check in result["checks"]
+        )
+    )

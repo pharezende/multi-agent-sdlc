@@ -1,3 +1,7 @@
+from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
+from multi_agent_sdlc.tools.tester.descriptions import (
+    TESTER_RUN_PROJECT_VERIFICATION_DESCRIPTION,
+)
 from multi_agent_sdlc.tools.tester.validation import StandardInput
 from multi_agent_sdlc.tools.tester.descriptions import (
     TESTER_RUN_VERIFICATION_COMMAND_DESCRIPTION,
@@ -13,6 +17,9 @@ from multi_agent_sdlc.runtime.process import execute_process
 from multi_agent_sdlc.runtime.workspace import get_project_directory
 from multi_agent_sdlc.state import DevState
 from langchain.tools import ToolRuntime, tool
+from langchain_core.messages import ToolMessage
+from langgraph.types import Command
+import json
 
 
 @tool(
@@ -123,4 +130,52 @@ def tester_run_verification_command(
         ["uv", "run", command, *(arguments or [])],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
+    )
+
+
+@tool(
+    "tester_run_project_verification",
+    description=TESTER_RUN_PROJECT_VERIFICATION_DESCRIPTION,
+)
+def tester_run_project_verification(
+    runtime: ToolRuntime[DevState],
+    timeout_seconds: ExecutionTimeout = 200,
+) -> ProjectVerificationResult:
+    commands = [
+        ["uv", "run", "ruff", "check", "."],
+        ["uv", "run", "ruff", "format", "--check", "."],
+        ["uv", "run", "mypy", "src"],
+        ["uv", "run", "pytest"],
+    ]
+
+    project_directory = get_project_directory(runtime)
+
+    checks = [
+        execute_process(
+            command=command,
+            project_directory=project_directory,
+            timeout_seconds=timeout_seconds,
+        )
+        for command in commands
+    ]
+
+    passed = all(not check["timed_out"] and check["exit_code"] == 0 for check in checks)
+
+    result: ProjectVerificationResult = {
+        "verification_type": "complete_project_verification",
+        "passed": passed,
+        "overall_exit_code": 0 if passed else 1,
+        "checks": checks,
+    }
+
+    return Command(
+        update={
+            "current_project_verification_result": result,
+            "tester_messages": [
+                ToolMessage(
+                    content=json.dumps(result),
+                    tool_call_id=runtime.tool_call_id,
+                )
+            ],
+        }
     )
