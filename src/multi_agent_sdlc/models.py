@@ -130,11 +130,6 @@ class CoderSummary(BaseModel):
     )
 
 
-from typing import Literal, Self
-
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-
-
 class VerificationType(StrEnum):
     SYNC = "sync"
     ENTRY_POINT = "entry_point"
@@ -206,27 +201,30 @@ class TesterSummary(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    addressed_task_ids: list[str] = Field(
+    addressed_task_ids: list[NonBlankStr] = Field(
         description=(
-            "Task identifiers the Tester actively worked on during this cycle, "
-            "including test implementation, verification, investigation, or "
-            "Tester-owned repairs. Inclusion does not mean the task passed or "
-            "was fully verified."
+            "Tester-owned task identifiers actively worked on during this cycle, "
+            "including test implementation, Tester-owned repairs, verification, "
+            "or investigation. Include blocked Tester-owned tasks that were "
+            "attempted. Do not include Coder-owned tasks merely because their "
+            "implementation was verified."
         )
     )
 
-    passed_task_ids: list[str] = Field(
+    passed_task_ids: list[NonBlankStr] = Field(
         description=(
-            "Task identifiers for which all applicable acceptance criteria "
-            "completed successfully with supporting evidence. Do not include "
-            "tasks with any failed, blocked, incomplete, or unresolved criterion."
+            "Tester-owned task identifiers whose applicable acceptance criteria "
+            "all passed with supporting evidence. Do not include Coder-owned tasks "
+            "or Tester-owned tasks that are failed, blocked, incomplete, or "
+            "unresolved."
         )
     )
 
-    related_task_ids: list[str] = Field(
+    related_task_ids: list[NonBlankStr] = Field(
         description=(
-            "Relevant task identifiers. Use an empty list only for project-wide "
-            "verification that does not map to a specific approved task."
+            "Approved task identifiers owned by other agents whose outputs were "
+            "evaluated, exercised, or affected during this Tester cycle. Do not "
+            "include Tester-owned tasks listed in addressed_task_ids."
         )
     )
 

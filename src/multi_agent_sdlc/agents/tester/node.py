@@ -22,7 +22,9 @@ def tester_node(state: DevState) -> dict:
     current_coder_summary = state["current_coder_summary"]
 
     if not tester_messages:
-        return _initialize_tester_conversation(state)
+        return _initialize_tester_conversation(
+            state
+        )  # Summary is sent from here. (Need to fix for the second iteration with the tester)
 
     if tester_status is TesterStatus.TESTING_PENDING:
         tester_messages.append(

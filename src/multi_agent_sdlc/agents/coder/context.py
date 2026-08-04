@@ -4,7 +4,7 @@ from typing import Any
 
 def build_coder_context(state: DevState) -> dict[str, Any]:
 
-    plan = state.get("plan")
+    plan = state["plan"]
     coder_tasks = [
         task.model_dump(mode="json") for task in plan.tasks if task.owner == "coder"
     ]

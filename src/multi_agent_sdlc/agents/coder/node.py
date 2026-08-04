@@ -28,7 +28,7 @@ def coder_node(state: DevState) -> dict:
             HumanMessage(
                 content=(
                     "The Tester found production defects requiring repair.\n\n"
-                    f"{current_tester_summary.coder_repair_requests.model_dump_json(indent=2)}"
+                    f"{current_tester_summary.model_dump_json(indent=2)}"
                 )
             )
         )
@@ -60,7 +60,7 @@ def _initialize_coder_conversation(state: DevState) -> dict:
     prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(
         {
             "coder_rules": CODER_SYSTEM_RULES,
-            "coder_context": json.dumps(
+            "coder_context": json.dumps(  # coder_execution_input is better
                 build_coder_context(state),
                 indent=2,
                 ensure_ascii=False,
@@ -88,14 +88,7 @@ def _process_coder_summary_call(
 
     tool_call = response.tool_calls[0]
 
-    summary_payload = tool_call["args"]["summary"]
-
-    # Depending on tool-call serialization and parsing, the payload may arrive
-    # as a structured dictionary or as a JSON-encoded string.
-    if isinstance(summary_payload, str):
-        coder_summary = CoderSummary.model_validate_json(summary_payload)
-    else:
-        coder_summary = CoderSummary.model_validate(summary_payload)
+    coder_summary = CoderSummary.model_validate(tool_call["args"]["summary"])
 
     history = state.get("coder_summary_history", [])
 
