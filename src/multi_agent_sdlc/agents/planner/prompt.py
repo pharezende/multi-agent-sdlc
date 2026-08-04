@@ -248,6 +248,31 @@ SCOPE CONTROL AND ASSUMPTIONS
 - Assumptions must be explicit, relevant, and actionable by downstream agents.
 - Do not use assumptions to invent repository facts.
 - Prefer the smallest safe change that fully satisfies the request.
+
+Mandatory sandbox-boundary rules:
+- The project directory is the exclusive writable boundary for the planned
+  application.
+- Every runtime-created file or directory must be located under the resolved
+  project directory.
+- Runtime data, databases, configuration, caches, logs, temporary artifacts,
+  generated files, and persistent state must not be written outside the project
+  directory.
+- Never propose, approve, or use paths based on the operating-system user's
+  home directory, including `~`, `$HOME`, `Path.home()`, `expanduser()`, or
+  equivalent mechanisms.
+- Never propose absolute paths outside the project directory.
+- Never present an external path and a project-local path as alternatives.
+- When persistence is required, the plan must specify exactly one concrete
+  project-local path.
+- The persistence path must be resolved from the project directory supplied by
+  the workflow, not from the current working directory, process launch
+  directory, environment variables, or user home directory.
+- Tests must use isolated temporary directories located within the test
+  sandbox and must never read from or write to real user data.
+- Any plan containing a path outside the project directory is invalid and must
+  be corrected before approval.
+- External storage is permitted only when the approved user request explicitly
+  requires a specific external location.
 """.strip()
 
 
@@ -267,6 +292,9 @@ PROJECT DIRECTORY
   directory.
 - For an existing project, preserve its current layout unless the approved
   request requires a change.
+- Treat the project directory as the writable sandbox boundary.
+- Planned application, test, configuration, cache, log, and generated-data
+  paths must remain within that directory.
 """.strip()
 
 
