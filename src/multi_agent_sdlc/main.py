@@ -27,8 +27,8 @@ def run() -> None:
         "coder_messages": [],
     }
 
-    result = graph.invoke(initial_state)
-    # generate_diagram(graph)
+    # result = graph.invoke(initial_state)
+    generate_diagram(graph)
     print("\nDone!")
 
 

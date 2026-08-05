@@ -1,3 +1,5 @@
+from multi_agent_sdlc.agents.coder.messages import build_tester_initial_messages
+from multi_agent_sdlc.agents.coder.messages import build_tester_retest_messages
 from multi_agent_sdlc.models import CoderMode
 from multi_agent_sdlc.agents.coder.context import build_coder_context
 from multi_agent_sdlc.agents.coder.prompt import CODER_SYSTEM_RULES
@@ -12,7 +14,7 @@ from multi_agent_sdlc.state import DevState
 import json
 
 
-def prepare_initial_coder_cycle_node(
+def prepare_initial_coder_node(
     state: DevState,
 ) -> dict[str, object]:
     prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(
@@ -29,78 +31,32 @@ def prepare_initial_coder_cycle_node(
     return {
         "coder_status": CoderStatus.IMPLEMENTING,
         "coder_messages": prompt_value.to_messages(),
-        "current_coder_summary": None,
     }
 
 
-# def prepare_tester_cycle(state: DevState) -> dict[str, object]:
-#     coder_summary = state["current_coder_summary"]
+def prepare_tester_node(
+    state: DevState,
+) -> dict[str, object]:
 
-#     if coder_summary is None:
-#         raise ValueError("Cannot initialize testing without a Coder summary.")
+    coder_summary = state["current_coder_summary"]
 
-#     if state["coder_status"] not in {
-#         CoderStatus.COMPLETED,
-#     }:
-#         raise ValueError(
-#             "Cannot initialize testing unless the Coder completed its cycle."
-#         )
+    if coder_summary is None:
+        raise ValueError("Cannot prepare the Tester without a Coder summary.")
 
-#     tester_context = build_tester_context(state)
+    existing_messages = state.get("tester_messages", [])
 
-#     return {
-#         "tester_status": TesterStatus.TESTING_PENDING,
-#         "tester_messages": [
-#             HumanMessage(
-#                 content=TESTER_HUMAN_PROMPT.format(
-#                     tester_execution_input=json.dumps(
-#                         tester_context,
-#                         indent=2,
-#                         ensure_ascii=False,
-#                     )
-#                 )
-#             )
-#         ],
-#         "current_tester_summary": None,
-#         "current_project_verification_result": None,
-#     }
+    if existing_messages:
+        messages = [
+            build_tester_retest_messages(state),
+        ]
+    else:
+        messages = build_tester_initial_messages(state)
 
-
-# def prepare_coder_repair(state: DevState) -> dict[str, object]:
-#     tester_summary = state["current_tester_summary"]
-
-#     if tester_summary is None:
-#         raise ValueError("Cannot initialize a repair cycle without a Tester summary.")
-
-#     if tester_summary.overall_status != "failed":
-#         raise ValueError("Coder repair requires a failed Tester summary.")
-
-#     if not tester_summary.coder_repair_requests:
-#         raise ValueError("Failed Tester summary contains no Coder repair requests.")
-
-#     repair_count = state.get("coder_repair_count", 0) + 1
-
-#     if repair_count > state["maximum_coder_repairs"]:
-#         raise RepairLimitExceededError("Maximum Coder repair cycles exceeded.")
-
-#     repair_context = build_coder_repair_context(state)
-
-#     return {
-#         "coder_status": CoderStatus.REPAIRING,
-#         "tester_status": TesterStatus.REPAIR_REQUIRED,
-#         "coder_repair_count": repair_count,
-#         "coder_messages": [
-#             HumanMessage(
-#                 content=CODER_REPAIR_PROMPT.format(
-#                     coder_repair_input=json.dumps(
-#                         repair_context,
-#                         indent=2,
-#                         ensure_ascii=False,
-#                     )
-#                 )
-#             )
-#         ],
-#     }
+    return {
+        "tester_status": TesterStatus.TESTING,
+        "tester_messages": messages,
+        "current_project_verification_result": None,
+    }
 
 
 def create_prepare_retest_node(

@@ -341,3 +341,33 @@ TESTER_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         ("human", TESTER_HUMAN_PROMPT),
     ]
 )
+
+
+TESTER_RETEST_HUMAN_PROMPT = """
+The Coder has completed a repair in response to the previous Tester findings.
+
+The following JSON contains the latest Coder handoff and the relevant previous
+verification findings:
+
+{tester_retest_input}
+
+Independently inspect the current project state and determine whether the Coder
+resolved the previously reported production defects.
+
+Do not treat the Coder summary as authoritative evidence. Reinspect the
+affected production files and rerun all applicable verification.
+
+Complete any remaining safe Tester-owned work. Before reporting success, run
+the mandatory complete-project verification and confirm that all applicable
+acceptance criteria pass.
+
+When no additional Tester-owned action is required, submit the Tester summary
+as required by the system instructions.
+""".strip()
+
+
+TESTER_RETEST_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        ("human", TESTER_RETEST_HUMAN_PROMPT),
+    ]
+)
