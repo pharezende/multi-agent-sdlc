@@ -15,29 +15,35 @@ import json
 
 
 def coder_node(state: DevState) -> dict:
-
-    coder_messages = state.get("coder_messages", [])
-    coder_status = state.get("coder_status", CoderStatus.IMPLEMENTING)
-    current_tester_summary = state.get("current_tester_summary")
+    coder_messages = state["coder_messages"]
 
     if not coder_messages:
-        return _initialize_coder_conversation(state)
-
-    if coder_status is CoderStatus.REPAIRING:
-        coder_messages.append(
-            HumanMessage(
-                content=(
-                    "The Tester found production defects requiring repair.\n\n"
-                    f"{current_tester_summary.model_dump_json(indent=2)}"
-                )
-            )
-        )
+        raise ValueError("Coder conversation has not been initialized.")
 
     response = coder_llm.invoke(coder_messages)
 
     if response.tool_calls:
-        if response.tool_calls[0]["name"] == "submit_coder_summary":
-            return _process_coder_summary_call(state, response)
+        first_tool_call = response.tool_calls[0]
+
+        if first_tool_call["name"] == "submit_coder_summary":
+            if len(response.tool_calls) != 1:
+                return {
+                    "coder_messages": [
+                        response,
+                        HumanMessage(
+                            content=(
+                                "`submit_coder_summary` must be called alone. "
+                                "Correct the response and call it again."
+                            )
+                        ),
+                    ],
+                }
+
+            return _process_coder_summary_call(
+                state,
+                response,
+            )
+
         return {
             "coder_messages": [response],
         }
@@ -47,34 +53,11 @@ def coder_node(state: DevState) -> dict:
             response,
             HumanMessage(
                 content=(
-                    "Invalid response."
-                    "Call exactly one approved Tester tool, or call "
-                    "`submit_coder_summary` alone."
+                    "Invalid response. Return no explanatory text. "
+                    "Call exactly one approved Coder operational tool, "
+                    "or call `submit_coder_summary` alone."
                 )
             ),
-        ],
-    }
-
-
-def _initialize_coder_conversation(state: DevState) -> dict:
-    prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(
-        {
-            "coder_rules": CODER_SYSTEM_RULES,
-            "coder_context": json.dumps(  # coder_execution_input is better
-                build_coder_context(state),
-                indent=2,
-                ensure_ascii=False,
-            ),
-        }
-    )
-
-    initial_messages = prompt_value.to_messages()
-    response = coder_llm.invoke(initial_messages)
-
-    return {
-        "coder_messages": [
-            *initial_messages,
-            response,
         ],
     }
 

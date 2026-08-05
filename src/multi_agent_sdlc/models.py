@@ -52,7 +52,7 @@ class DevelopmentPlan(BaseModel):
             "directory under `sandbox`, for example `terminal-calculator`."
         )
     )
-    goal: str = Field(description="Restated user objective, one or two sentences")
+    goal: str = Field(description="Restated user objective")
     tasks: List[Task]
     execution_order: List[str] = Field(
         description="Task ids in dependency-resolved order — Planner computes this so downstream nodes don't need a topo-sort"

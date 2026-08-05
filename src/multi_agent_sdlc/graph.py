@@ -1,3 +1,4 @@
+from multi_agent_sdlc.transitions import prepare_initial_coder_cycle_node
 from multi_agent_sdlc.transitions import create_prepare_retest_node
 from multi_agent_sdlc.reviewer import reviewer_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
@@ -26,6 +27,7 @@ def build_graph():
         handle_tool_errors=True,
     )
     builder.add_node("planner", planner_node)
+    builder.add_node("prepare_initial_coder_cycle", prepare_initial_coder_cycle_node)
     builder.add_node("coder", coder_node)
     builder.add_node("coder_tools", coder_tool_node)
     builder.add_node("tester", tester_node)
@@ -37,7 +39,8 @@ def build_graph():
     builder.add_node("reviewer", reviewer_node)
 
     builder.add_edge(START, "planner")
-    builder.add_edge("planner", "coder")
+    builder.add_edge("planner", "prepare_initial_coder_cycle")
+    builder.add_edge("prepare_initial_coder_cycle", "coder")
     builder.add_conditional_edges(
         "coder",
         route_after_coder,

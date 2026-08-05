@@ -341,7 +341,7 @@ CODER_HUMAN_PROMPT = """
 The following JSON contains the approved execution context for this coding
 stage:
 
-{coder_context}
+{coder_execution_input}
 
 Implement all production-code tasks from the approved plan using the available
 tools.
