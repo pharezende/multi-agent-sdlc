@@ -1,6 +1,6 @@
+from multi_agent_sdlc.transitions import prepare_coder_implementation_node
+from multi_agent_sdlc.transitions import prepare_coder_repair_node
 from multi_agent_sdlc.transitions import prepare_tester_node
-from multi_agent_sdlc.transitions import prepare_initial_coder_node
-from multi_agent_sdlc.transitions import create_prepare_retest_node
 from multi_agent_sdlc.reviewer import reviewer_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
@@ -28,42 +28,40 @@ def build_graph():
         handle_tool_errors=True,
     )
     builder.add_node("planner", planner_node)
-    builder.add_node("prepare_initial_coder", prepare_initial_coder_node)
+    builder.add_node("prepare_coder_implementation", prepare_coder_implementation_node)
     builder.add_node("coder", coder_node)
     builder.add_node("coder_tools", coder_tool_node)
-    builder.add_node(
-        "prepare_retest",
-        create_prepare_retest_node,
-    )
+    builder.add_node("prepare_tester", prepare_tester_node)
     builder.add_node("tester", tester_node)
     builder.add_node("tester_tools", tester_tool_node)
+    builder.add_node("prepare_coder_repair", prepare_coder_repair_node)
     builder.add_node("reviewer", reviewer_node)
 
     builder.add_edge(START, "planner")
-    builder.add_edge("planner", "prepare_initial_coder")
-    builder.add_edge("prepare_initial_coder", "coder")
+    builder.add_edge("planner", "prepare_coder_implementation")
+    builder.add_edge("prepare_coder_implementation", "coder")
     builder.add_conditional_edges(
         "coder",
         route_after_coder,
         {
             "coder": "coder",
             "coder_tools": "coder_tools",
-            "prepare_retest": "prepare_retest",
+            "prepare_tester": "prepare_tester",
         },
     )
     builder.add_edge("coder_tools", "coder")
-    builder.add_edge("prepare_retest", "tester")
+    builder.add_edge("prepare_tester", "tester")
     builder.add_conditional_edges(
         "tester",
         route_after_tester,
         {
             "tester_tools": "tester_tools",
             "reviewer": "reviewer",
-            "coder": "coder",
+            "prepare_coder_repair": "prepare_coder_repair",
             "tester": "tester",
         },
     )
-
+    builder.add_edge("prepare_coder_repair", "coder")
     builder.add_edge("tester_tools", "tester")
     builder.add_edge("reviewer", END)
 

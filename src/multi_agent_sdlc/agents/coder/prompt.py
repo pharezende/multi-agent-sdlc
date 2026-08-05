@@ -362,3 +362,28 @@ CODER_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         ),
     ]
 )
+
+CODER_REPAIR_HUMAN_PROMPT = """
+The Tester identified production defects that require repair.
+
+The following JSON contains the repair input:
+
+{coder_repair_input}
+
+Inspect the current project state and repair the reported production-code
+defects.
+
+Do not modify Tester-owned files merely to make verification pass. Limit
+changes to Coder-owned production files and directly necessary production
+configuration.
+
+When the repair is complete, call `submit_coder_summary` as required by the
+system instructions.
+""".strip()
+
+
+CODER_REPAIR_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        ("human", CODER_REPAIR_HUMAN_PROMPT),
+    ]
+)

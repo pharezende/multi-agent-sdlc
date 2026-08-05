@@ -6,12 +6,12 @@ from typing import Literal
 
 def route_after_coder(
     state: DevState,
-) -> Literal["coder_tools", "prepare_retest", "coder"]:
-    coder_status = state.get("coder_status", CoderStatus.IMPLEMENTING)
+) -> Literal["coder_tools", "prepare_tester", "coder"]:
+    coder_status = state.get("coder_status")
     if coder_status is CoderStatus.COMPLETED:
-        return "prepare_retest"
+        return "prepare_tester"
     if coder_status in {CoderStatus.BLOCKED, CoderStatus.FAILED}:
-        raise ValueError("Future implementation")
+        return "human_intervention"  # future
 
     messages = state.get("coder_messages", [])
 

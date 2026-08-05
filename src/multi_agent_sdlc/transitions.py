@@ -1,3 +1,5 @@
+from multi_agent_sdlc.agents.coder.context import build_coder_repair_context
+from multi_agent_sdlc.agents.coder.prompt import CODER_REPAIR_CHAT_PROMPT_TEMPLATE
 from multi_agent_sdlc.agents.coder.messages import build_tester_initial_messages
 from multi_agent_sdlc.agents.coder.messages import build_tester_retest_messages
 from multi_agent_sdlc.models import CoderMode
@@ -14,7 +16,7 @@ from multi_agent_sdlc.state import DevState
 import json
 
 
-def prepare_initial_coder_node(
+def prepare_coder_implementation_node(
     state: DevState,
 ) -> dict[str, object]:
     prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(
@@ -59,11 +61,21 @@ def prepare_tester_node(
     }
 
 
-def create_prepare_retest_node(
+def prepare_coder_repair_node(
     state: DevState,
 ) -> dict[str, object]:
+    prompt_value = CODER_REPAIR_CHAT_PROMPT_TEMPLATE.invoke(
+        {
+            "coder_repair_input": json.dumps(
+                build_coder_repair_context(state),
+                indent=2,
+                ensure_ascii=False,
+            ),
+        }
+    )
+
     return {
-        "current_tester_summary": None,
+        "coder_status": CoderStatus.REPAIRING,
+        "coder_messages": prompt_value.to_messages(),
         "current_coder_summary": None,
-        "coder_mode": CoderMode.REPAIR,
     }

@@ -7,7 +7,7 @@ from typing import Literal
 def route_after_tester(
     state: DevState,
 ) -> Literal[
-    "coder",
+    "prepare_coder_repair",
     "tester_tools",
     "reviewer",
     "tester",
@@ -15,10 +15,13 @@ def route_after_tester(
     tester_status = state.get("tester_status")
 
     if tester_status == TesterStatus.REPAIR_REQUIRED:
-        return "coder"
+        return "prepare_coder_repair"
 
     if tester_status == TesterStatus.PASSED:
         return "reviewer"
+
+    if tester_status is TesterStatus.BLOCKED:
+        return "human_intervention"  # future
 
     messages = state.get("tester_messages", [])
 

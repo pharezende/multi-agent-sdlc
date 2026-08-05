@@ -320,7 +320,6 @@ class CoderStatus(StrEnum):
 
 class TesterStatus(StrEnum):
     TESTING = "testing"
-    TESTING_PENDING = "testing_pending"
     PASSED = "passed"
     REPAIR_REQUIRED = "repair_required"
     BLOCKED = "blocked"
