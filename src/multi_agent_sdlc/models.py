@@ -1,9 +1,9 @@
-from multi_agent_sdlc.tools.tester.validation import NonBlankStr
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Literal
-from enum import Enum
-from typing import List
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from multi_agent_sdlc.tools.tester.validation import NonBlankStr
 
 
 class RiskLevel(str, Enum):
@@ -29,10 +29,10 @@ class Task(BaseModel):
     description: str = Field(
         description="What needs to be built/changed, specific enough for Coder to act without re-asking"
     )
-    acceptance_criteria: List[str] = Field(
+    acceptance_criteria: list[str] = Field(
         description="Concrete, testable conditions — this is what Tester checks against"
     )
-    depends_on: List[str] = Field(
+    depends_on: list[str] = Field(
         default_factory=list, description="Task ids that must complete first"
     )
     target_files: list[str] = Field(
@@ -53,14 +53,14 @@ class DevelopmentPlan(BaseModel):
         )
     )
     goal: str = Field(description="Restated user objective")
-    tasks: List[Task]
-    execution_order: List[str] = Field(
+    tasks: list[Task]
+    execution_order: list[str] = Field(
         description="Task ids in dependency-resolved order — Planner computes this so downstream nodes don't need a topo-sort"
     )
-    assumptions: List[str] = Field(
+    assumptions: list[str] = Field(
         default_factory=list, description="Things the Planner assumed due to ambiguity"
     )
-    out_of_scope: List[str] = Field(
+    out_of_scope: list[str] = Field(
         default_factory=list,
         description="Explicitly excluded to prevent unclear goals during Coder execution",
     )

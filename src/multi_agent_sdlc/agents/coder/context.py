@@ -1,5 +1,6 @@
-from multi_agent_sdlc.state import DevState
 from typing import Any
+
+from multi_agent_sdlc.state import DevState
 
 
 def build_coder_context(state: DevState) -> dict[str, Any]:

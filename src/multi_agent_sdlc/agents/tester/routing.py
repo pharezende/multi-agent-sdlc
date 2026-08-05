@@ -1,7 +1,9 @@
+from typing import Literal
+
+from langchain_core.messages import AIMessage
+
 from multi_agent_sdlc.models import TesterStatus
 from multi_agent_sdlc.state import DevState
-from langchain_core.messages import AIMessage
-from typing import Literal
 
 
 def route_after_tester(
@@ -20,8 +22,8 @@ def route_after_tester(
     if tester_status == TesterStatus.PASSED:
         return "reviewer"
 
-    if tester_status is TesterStatus.BLOCKED:
-        return "human_intervention"  # future
+    # if tester_status is TesterStatus.BLOCKED:
+    #     return "human_intervention"  # future
 
     messages = state.get("tester_messages", [])
 

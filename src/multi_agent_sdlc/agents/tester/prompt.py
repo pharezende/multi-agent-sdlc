@@ -319,7 +319,7 @@ TESTER_HUMAN_PROMPT = """
 The following JSON contains the approved execution context for the current
 Tester stage:
 
-{tester_context}
+{tester_execution_input}
 
 Complete all Tester-owned tasks from the approved plan using the available
 tools.

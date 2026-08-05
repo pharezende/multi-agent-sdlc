@@ -1,10 +1,7 @@
-from multi_agent_sdlc.models import TesterStatus
-from multi_agent_sdlc.models import CoderStatus
-from multi_agent_sdlc.models import ImplementationCycle
-from langchain_core.messages import HumanMessage
-from langchain_core.messages import AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
+
 from multi_agent_sdlc.agents.coder.model import coder_llm
-from multi_agent_sdlc.models import CoderSummary
+from multi_agent_sdlc.models import CoderStatus, CoderSummary
 from multi_agent_sdlc.state import DevState
 
 
@@ -40,7 +37,6 @@ def coder_node(state: DevState) -> dict[str, object]:
                 }
 
             return _process_coder_summary_call(
-                state,
                 response,
             )
 

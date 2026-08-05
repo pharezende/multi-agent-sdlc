@@ -1,10 +1,11 @@
-from langgraph.graph import StateGraph
+from langgraph.graph.state import CompiledStateGraph
+
 from multi_agent_sdlc.state import DevState
+
 from .graph import build_graph
-from IPython.display import display, Image
 
 
-def generate_diagram(graph: StateGraph) -> None:
+def generate_diagram(graph: CompiledStateGraph) -> None:
 
     png_data = graph.get_graph().draw_mermaid_png()
 
@@ -27,8 +28,8 @@ def run() -> None:
         "coder_messages": [],
     }
 
-    # result = graph.invoke(initial_state)
-    generate_diagram(graph)
+    result = graph.invoke(initial_state)
+    # generate_diagram(graph)
     print("\nDone!")
 
 

@@ -1,8 +1,10 @@
-from multi_agent_sdlc.runtime.paths import normalise_relative_path
-from multi_agent_sdlc.tools.coder.validation import MODULE_PATTERN
 from collections.abc import Callable
+
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
+
+from multi_agent_sdlc.runtime.paths import normalise_relative_path
+from multi_agent_sdlc.tools.coder.validation import MODULE_PATTERN
 
 
 def validate_application_arguments(

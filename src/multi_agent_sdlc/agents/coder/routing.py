@@ -1,7 +1,9 @@
+from typing import Literal
+
+from langchain_core.messages import AIMessage
+
 from multi_agent_sdlc.models import CoderStatus
 from multi_agent_sdlc.state import DevState
-from langchain_core.messages import AIMessage
-from typing import Literal
 
 
 def route_after_coder(
@@ -10,8 +12,8 @@ def route_after_coder(
     coder_status = state.get("coder_status")
     if coder_status is CoderStatus.COMPLETED:
         return "prepare_tester"
-    if coder_status in {CoderStatus.BLOCKED, CoderStatus.FAILED}:
-        return "human_intervention"  # future
+    # if coder_status in {CoderStatus.BLOCKED, CoderStatus.FAILED}:
+    #     return "human_intervention"  # future
 
     messages = state.get("coder_messages", [])
 

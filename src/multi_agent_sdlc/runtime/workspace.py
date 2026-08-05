@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from pathlib import Path, PurePosixPath
-from multi_agent_sdlc.state import DevState
+from pathlib import Path
+
 from langchain.tools import ToolRuntime
+
+from multi_agent_sdlc.state import DevState
 
 
 def get_project_directory(

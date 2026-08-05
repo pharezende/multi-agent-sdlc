@@ -1,9 +1,11 @@
 # This will require some refactoring in the future, e.g. moving some content to "centralized" files for code reuse.
 
-from typing import Annotated
-from multi_agent_sdlc.runtime.paths import normalise_relative_path
 import re
+from typing import Annotated
+
 from pydantic import AfterValidator, Field, StringConstraints
+
+from multi_agent_sdlc.runtime.paths import normalise_relative_path
 
 ENTRY_POINT_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*")
 

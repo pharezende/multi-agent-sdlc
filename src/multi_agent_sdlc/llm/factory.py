@@ -1,7 +1,5 @@
 from langchain_openrouter import ChatOpenRouter
 
-from multi_agent_sdlc.llm.models import ModelId
-
 
 def create_chat_model(
     model: str,

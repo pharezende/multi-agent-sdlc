@@ -1,12 +1,15 @@
-from multi_agent_sdlc.runtime.validation import validate_file_content
-from multi_agent_sdlc.runtime.validation import validate_project_relative_path
-from multi_agent_sdlc.runtime.validation import create_testing_dependency_validator
-from multi_agent_sdlc.runtime.validation import validate_application_arguments
-from multi_agent_sdlc.runtime.validation import create_entry_point_validator
-from typing import Annotated
 import re
+from typing import Annotated
+
 from pydantic import AfterValidator, Field, StringConstraints
 
+from multi_agent_sdlc.runtime.validation import (
+    create_entry_point_validator,
+    create_testing_dependency_validator,
+    validate_application_arguments,
+    validate_file_content,
+    validate_project_relative_path,
+)
 
 MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
@@ -182,7 +185,6 @@ class ProjectVerificationResult(TypedDict):
 
 
 from pydantic import StringConstraints
-
 
 NonBlankStr = Annotated[
     str,
