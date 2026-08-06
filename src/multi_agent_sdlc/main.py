@@ -1,3 +1,4 @@
+from multi_agent_sdlc.models import PlanReviewStatus
 from langgraph.graph.state import CompiledStateGraph
 
 from multi_agent_sdlc.models import CoderStatus, TesterStatus
@@ -26,6 +27,9 @@ def run() -> None:
         # "request": "Build a Python CLI app named password-strength-checker that accepts a password as an argument and reports weak, medium, or strong using only the standard library.",
         "plan": None,
         "project_directory": None,
+        "plan_review_status": PlanReviewStatus.IDLE,
+        "plan_review_decision": None,
+        "plan_review_content": None,
         "coder_messages": [],
         "coder_status": CoderStatus.IDLE,
         "current_coder_summary": None,
@@ -37,11 +41,11 @@ def run() -> None:
         "current_project_verification_result": None,
     }
 
-    result = graph.invoke(
-        initial_state,
-        config={"run_name": "multi_agent_sdlc"},
-    )
-    # generate_diagram(graph)
+    # result = graph.invoke(
+    #     initial_state,
+    #     config={"run_name": "multi_agent_sdlc"},
+    # )
+    generate_diagram(graph)
     print("\nDone!")
 
 

@@ -1,3 +1,6 @@
+from multi_agent_sdlc.agents.presentation.plan_formatter import format_plan
+from multi_agent_sdlc.models import PlanReviewStatus
+from multi_agent_sdlc.models import PreparePlanReviewUpdate
 import json
 
 from multi_agent_sdlc.agents.coder.context import (
@@ -79,4 +82,19 @@ def prepare_coder_repair_node(
         "coder_status": CoderStatus.REPAIRING,
         "coder_messages": prompt_value.to_messages(),
         "current_coder_summary": None,
+    }
+
+
+def prepare_plan_review_node(
+    state: DevState,
+) -> PreparePlanReviewUpdate:
+    plan = state["plan"]
+
+    if plan is None:
+        raise ValueError("Cannot prepare review for a missing plan.")
+
+    return {
+        "plan_review_status": PlanReviewStatus.PENDING,
+        "plan_review_decision": None,
+        "plan_review_content": format_plan(plan),
     }

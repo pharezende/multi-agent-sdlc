@@ -54,10 +54,10 @@ def execute_process(
             ),
         }
 
-    return ProcessResult(
-        command=command,
-        exit_code=result.returncode,
-        stdout=result.stdout.strip(),
-        stderr=result.stderr.strip(),
-        timed_out=False,
-    )
+    return {
+        "command": command,
+        "exit_code": result.returncode,
+        "stdout": result.stdout.strip(),
+        "stderr": result.stderr.strip(),
+        "timed_out": False,
+    }

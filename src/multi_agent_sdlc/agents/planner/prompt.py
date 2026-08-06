@@ -374,6 +374,17 @@ ACRONYMS AND TERMINOLOGY
   verification approaches, assumptions, and risks.
 """.strip()
 
+PLANNER_MANDATORY_README_EXECUTION_REQUIREMENTS = """
+
+- The development plan MUST require every README.md command that executes the generated application to use the following form:
+  `uv run <declared-entry-point> [arguments]`
+- The README.md MUST NOT show the generated application entry point as a bare command.
+- Bare commands such as `<declared-entry-point> [arguments]` MUST be treated as invalid documentation, even when they would work after activating a virtual environment.
+- The plan MUST include an acceptance criterion stating that every application invocation in README.md is prefixed with `uv run`.
+- The plan MUST require verification of all README.md shell examples before implementation is considered complete.
+- Virtual-environment activation MUST NOT be used as a substitute for the required `uv run` command format.
+""".strip()
+
 
 PLANNER_OUTPUT_RULES = """
 OUTPUT CONTRACT
@@ -404,6 +415,7 @@ PLANNER_SYSTEM_RULES = "\n\n".join(
         PLANNER_ROLE_BOUNDARY_RULES,
         PLANNER_QUALITY_RULES,
         PLANNER_TERMINOLOGY_RULES,
+        PLANNER_MANDATORY_README_EXECUTION_REQUIREMENTS,
         PLANNER_OUTPUT_RULES,
     ]
 )

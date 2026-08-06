@@ -1,3 +1,5 @@
+from multi_agent_sdlc.models import PlanReviewDecision
+from multi_agent_sdlc.models import PlanReviewStatus
 from operator import add
 from typing import Annotated, NotRequired, TypedDict
 
@@ -21,6 +23,10 @@ class DevState(TypedDict):
     request: str
     plan: DevelopmentPlan | None
     project_directory: str | None
+
+    plan_review_status: PlanReviewStatus
+    plan_review_decision: PlanReviewDecision | None
+    plan_review_content: str | None
 
     coder_messages: Annotated[list[BaseMessage], add_messages]
     coder_status: CoderStatus | None

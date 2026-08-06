@@ -1,3 +1,4 @@
+from typing import TypedDict
 from enum import Enum, StrEnum
 from typing import Literal
 
@@ -325,3 +326,35 @@ class TesterStatus(StrEnum):
     PASSED = "passed"
     REPAIR_REQUIRED = "repair_required"
     BLOCKED = "blocked"
+
+
+class PlanReviewStatus(StrEnum):
+    IDLE = "idle"
+    PENDING = "pending"
+    APPROVED = "approved"
+    REVISION_REQUIRED = "revision_required"
+    REJECTED = "rejected"
+
+
+class PlanReviewDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    decision: Literal[
+        "approved",
+        "revision_required",
+        "rejected",
+    ]
+
+    feedback: str | None = Field(
+        default=None,
+        description=(
+            "Human feedback explaining required revisions or the reason "
+            "for rejection."
+        ),
+    )
+
+
+class PreparePlanReviewUpdate(TypedDict):
+    plan_review_status: PlanReviewStatus
+    plan_review_decision: PlanReviewDecision | None
+    plan_review_content: str
