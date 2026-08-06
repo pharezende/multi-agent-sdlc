@@ -1,9 +1,12 @@
+from pathlib import Path
 from typing import Any
 
 from multi_agent_sdlc.state import DevState
 
 
-def build_coder_context(state: DevState) -> dict[str, Any]:
+def build_coder_implementation_context(
+    state: DevState, project_directory: Path
+) -> dict[str, Any]:
 
     plan = state.get("plan")
     if plan is None:
@@ -16,7 +19,8 @@ def build_coder_context(state: DevState) -> dict[str, Any]:
         raise ValueError("The approved plan contains no Coder-owned tasks.")
 
     return {
-        "project_directory": state.get("project_directory"),
+        "request": state["request"],
+        "project_directory": project_directory,
         "project_id": plan.project_id,
         "goal": plan.goal,
         "assumptions": plan.assumptions,

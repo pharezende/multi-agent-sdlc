@@ -46,7 +46,16 @@ def run() -> None:
     #     initial_state,
     #     config={"run_name": "multi_agent_sdlc"},
     # )
-    generate_diagram(graph)
+
+    result = graph.invoke(
+        initial_state,
+        config={
+            "configurable": {
+                "thread_id": "app-run-1",
+            }
+        },
+    )
+    # generate_diagram(graph)
     print("\nDone!")
 
 

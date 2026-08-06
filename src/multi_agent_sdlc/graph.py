@@ -4,6 +4,7 @@ from multi_agent_sdlc.transitions import prepare_plan_review_node
 from multi_agent_sdlc.state import DevState
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
+from langgraph.checkpoint.memory import InMemorySaver
 
 from multi_agent_sdlc.agents.coder.node import coder_node
 from multi_agent_sdlc.agents.coder.routing import route_after_coder
@@ -85,4 +86,6 @@ def build_graph():
     builder.add_edge("tester_tools", "tester")
     builder.add_edge("reviewer", END)
 
-    return builder.compile()
+    return builder.compile(
+        checkpointer=InMemorySaver(),
+    )

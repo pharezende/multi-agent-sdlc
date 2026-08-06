@@ -1,4 +1,5 @@
-from __future__ import annotations
+from re import fullmatch
+from multi_agent_sdlc.config import SANDBOX_ROOT
 
 from pathlib import Path, PurePosixPath
 
@@ -66,3 +67,15 @@ def resolve_project_path(
         raise PermissionError(f"Path escapes the project directory: {path!r}")
 
     return resolved
+
+
+def create_project_directory(project_id: str) -> Path:
+    "Create project folder inside 'sandbox', e.g: terminal-calculator"
+
+    if not fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", project_id):
+        raise ValueError("project_id must use lowercase kebab-case.")
+
+    project_directory = Path(SANDBOX_ROOT) / project_id
+    project_directory.mkdir(parents=True, exist_ok=True)
+
+    return project_directory

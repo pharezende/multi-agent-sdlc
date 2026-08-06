@@ -19,18 +19,6 @@ from multi_agent_sdlc.config import SANDBOX_ROOT
 from multi_agent_sdlc.state import DevState
 
 
-def create_project_directory(project_id: str) -> Path:
-    "Create project folder inside 'sandbox', e.g: terminal-calculator"
-
-    if not fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", project_id):
-        raise ValueError("project_id must use lowercase kebab-case.")
-
-    project_directory = Path(SANDBOX_ROOT) / project_id
-    project_directory.mkdir(parents=True, exist_ok=True)
-
-    return project_directory
-
-
 def _generate_initial_plan(
     state: DevState,
 ) -> dict[str, object]:

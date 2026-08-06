@@ -1,3 +1,4 @@
+from multi_agent_sdlc.runtime.paths import create_project_directory
 from langchain_core.messages import HumanMessage
 from multi_agent_sdlc.agents.planner.prompt import (
     PLANNER_REVISION_HUMAN_PROMPT_TEMPLATE,
@@ -8,7 +9,7 @@ from multi_agent_sdlc.models import PreparePlanReviewUpdate
 import json
 
 from multi_agent_sdlc.agents.coder.context import (
-    build_coder_context,
+    build_coder_implementation_context,
     build_coder_repair_context,
 )
 from multi_agent_sdlc.agents.coder.messages import (
@@ -27,11 +28,23 @@ from multi_agent_sdlc.state import DevState
 def prepare_coder_implementation_node(
     state: DevState,
 ) -> dict[str, object]:
+    plan = state["plan"]
+
+    if plan is None:
+        raise ValueError("Plan cannot be None.")
+
+    project_directory = create_project_directory(plan.project_id)
+
+    coder_context = build_coder_implementation_context(
+        state=state,
+        project_directory=project_directory,
+    )
+
     prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(
         {
             "coder_rules": CODER_SYSTEM_RULES,
             "coder_execution_input": json.dumps(
-                build_coder_context(state),
+                coder_context,
                 indent=2,
                 ensure_ascii=False,
             ),
@@ -39,6 +52,7 @@ def prepare_coder_implementation_node(
     )
 
     return {
+        "project_directory": str(project_directory),
         "coder_status": CoderStatus.IMPLEMENTING,
         "coder_messages": prompt_value.to_messages(),
     }
