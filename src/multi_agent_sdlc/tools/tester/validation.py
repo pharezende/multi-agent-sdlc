@@ -1,7 +1,9 @@
+from typing import NotRequired
 import re
 from typing import Annotated
 
 from pydantic import AfterValidator, Field, StringConstraints
+from typing import TypedDict
 
 from multi_agent_sdlc.runtime.validation import (
     create_entry_point_validator,
@@ -166,8 +168,6 @@ FileContent = Annotated[
     AfterValidator(validate_file_content),
 ]
 
-from typing import TypedDict
-
 
 class ProcessResult(TypedDict):
     command: list[str]
@@ -175,6 +175,7 @@ class ProcessResult(TypedDict):
     stdout: str
     stderr: str
     timed_out: bool
+    message: NotRequired[str]
 
 
 class ProjectVerificationResult(TypedDict):

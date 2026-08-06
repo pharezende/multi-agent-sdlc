@@ -1,3 +1,4 @@
+from multi_agent_sdlc.models import DevelopmentPlan
 from pathlib import Path
 from re import fullmatch
 
@@ -23,7 +24,7 @@ def create_project_directory(project_id: str) -> Path:
     return project_directory
 
 
-def planner_node(state: DevState) -> DevState:
+def planner_node(state: DevState) -> dict[str, object]:
     """Define the planner node, which is responsible for planning the application requested by the user."""
 
     user_request = state["request"]
@@ -33,6 +34,12 @@ def planner_node(state: DevState) -> DevState:
     ]
 
     plan = planner_llm.invoke(messages)
+
+    if not isinstance(plan, DevelopmentPlan):
+        raise TypeError(
+            "Planner did not return a DevelopmentPlan. "
+            f"Received {type(plan).__name__}."
+        )
 
     project_directory = create_project_directory(plan.project_id)
 

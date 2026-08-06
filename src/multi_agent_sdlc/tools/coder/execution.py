@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProcessResult
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.runtime.process import execute_process
@@ -28,7 +29,7 @@ def coder_run_application(
     arguments: ApplicationArguments | None = None,
     stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
-) -> dict[str, object]:
+) -> ProcessResult:
 
     project_directory = get_project_directory(runtime)
 
@@ -55,7 +56,7 @@ def coder_run_python_module(
     arguments: ApplicationArguments | None = None,
     stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
-) -> dict[str, object]:
+) -> ProcessResult:
 
     project_directory = get_project_directory(runtime)
 
@@ -81,7 +82,7 @@ def coder_run_python_module(
 def coder_sync_project(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
-) -> dict[str, object]:
+) -> ProcessResult:
     project_directory = get_project_directory(runtime)
 
     return execute_process(
@@ -119,7 +120,7 @@ def coder_run_verification_command(
     runtime: ToolRuntime[DevState],
     arguments: ApplicationArguments | None = None,
     timeout_seconds: ExecutionTimeout = 120,
-) -> dict[str, object]:
+) -> ProcessResult:
     project_directory = get_project_directory(runtime)
 
     return execute_process(

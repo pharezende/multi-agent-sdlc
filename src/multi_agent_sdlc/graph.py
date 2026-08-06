@@ -1,3 +1,4 @@
+from multi_agent_sdlc.state import DevState
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
 
@@ -7,7 +8,6 @@ from multi_agent_sdlc.agents.planner.node import planner_node
 from multi_agent_sdlc.agents.tester.node import tester_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.reviewer import reviewer_node
-from multi_agent_sdlc.state import DevState
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
 from multi_agent_sdlc.transitions import (

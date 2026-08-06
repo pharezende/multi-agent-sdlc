@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProcessResult
 import subprocess
 from pathlib import Path
 
@@ -25,7 +26,7 @@ def execute_process(
     project_directory: Path,
     timeout_seconds: int,
     stdin_text: str | None = None,
-) -> dict[str, object]:
+) -> ProcessResult:
     """Execute an internally constructed command inside the project."""
     try:
         result = subprocess.run(
@@ -53,10 +54,10 @@ def execute_process(
             ),
         }
 
-    return {
-        "command": command,
-        "exit_code": result.returncode,
-        "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
-        "timed_out": False,
-    }
+    return ProcessResult(
+        command=command,
+        exit_code=result.returncode,
+        stdout=result.stdout.strip(),
+        stderr=result.stderr.strip(),
+        timed_out=False,
+    )

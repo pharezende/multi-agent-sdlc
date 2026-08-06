@@ -5,7 +5,9 @@ from multi_agent_sdlc.state import DevState
 
 def build_coder_context(state: DevState) -> dict[str, Any]:
 
-    plan = state["plan"]
+    plan = state.get("plan")
+    if plan is None:
+        raise ValueError("This workflow stage requires an approved plan.")
     coder_tasks = [
         task.model_dump(mode="json") for task in plan.tasks if task.owner == "coder"
     ]
@@ -14,7 +16,7 @@ def build_coder_context(state: DevState) -> dict[str, Any]:
         raise ValueError("The approved plan contains no Coder-owned tasks.")
 
     return {
-        "project_directory": str(state["project_directory"]),
+        "project_directory": state.get("project_directory"),
         "project_id": plan.project_id,
         "goal": plan.goal,
         "assumptions": plan.assumptions,
@@ -27,7 +29,11 @@ def build_coder_repair_context(
     state: DevState,
 ) -> dict[str, object]:
     plan = state["plan"]
+    if plan is None:
+        raise ValueError("This workflow stage requires an approved plan.")
     tester_summary = state["current_tester_summary"]
+    if tester_summary is None:
+        raise ValueError("This workflow stage requires a tester summary.")
 
     related_task_ids = {
         task_id

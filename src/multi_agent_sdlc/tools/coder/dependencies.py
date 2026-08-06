@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProcessResult
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.runtime.process import execute_process
@@ -20,7 +21,7 @@ def coder_install_runtime_dependencies(
     dependencies: RuntimeDependencies,
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
-) -> dict[str, object]:
+) -> ProcessResult:
 
     project_directory = get_project_directory(runtime)
 

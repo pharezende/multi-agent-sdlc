@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.validation import ProcessResult
 import json
 
 from langchain.tools import ToolRuntime, tool
@@ -34,7 +35,7 @@ def tester_run_application(
     arguments: ApplicationArguments | None = None,
     stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
-) -> dict[str, object]:
+) -> ProcessResult:
 
     project_directory = get_project_directory(runtime)
 
@@ -61,7 +62,7 @@ def tester_run_python_module(
     arguments: ApplicationArguments | None = None,
     stdin_text: StandardInput | None = None,
     timeout_seconds: ExecutionTimeout = 15,
-) -> dict[str, object]:
+) -> ProcessResult:
 
     project_directory = get_project_directory(runtime)
 
@@ -87,7 +88,7 @@ def tester_run_python_module(
 def tester_sync_project(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
-) -> dict[str, object]:
+) -> ProcessResult:
     project_directory = get_project_directory(runtime)
 
     return execute_process(
@@ -126,7 +127,7 @@ def tester_run_verification_command(
     runtime: ToolRuntime[DevState],
     arguments: str | None = None,
     timeout_seconds: ExecutionTimeout = 120,
-) -> dict[str, object]:
+) -> ProcessResult:
     project_directory = get_project_directory(runtime)
 
     return execute_process(
@@ -143,7 +144,7 @@ def tester_run_verification_command(
 def tester_run_project_verification(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 200,
-) -> ProjectVerificationResult:
+) -> Command:
     commands = [
         ["uv", "run", "ruff", "check", "."],
         ["uv", "run", "ruff", "format", "--check", "."],

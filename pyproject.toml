@@ -23,4 +23,3 @@ pythonpath = ["src"]
 testpaths = ["tests"]
 [tool.hatch.build.targets.wheel]
 packages = ["src/multi_agent_sdlc"]
-

@@ -19,22 +19,23 @@ from .models import DevelopmentPlan
 
 class DevState(TypedDict):
     request: str
-    plan: NotRequired[DevelopmentPlan]
-    project_directory: NotRequired[str]
-    coder_messages: Annotated[
-        list[BaseMessage], add_messages
-    ]  # Reducer state field. Otherwise replaces the previous value.
-    coder_status: NotRequired[CoderStatus]
-    current_coder_summary: NotRequired[CoderSummary]
+    plan: DevelopmentPlan | None
+    project_directory: str | None
+
+    coder_messages: Annotated[list[BaseMessage], add_messages]
+    coder_status: CoderStatus | None
+    current_coder_summary: CoderSummary | None
     coder_summary_history: Annotated[
         list[ImplementationCycle],
         add,
     ]
-    tester_status: NotRequired[TesterStatus]
+
     tester_messages: Annotated[list[BaseMessage], add_messages]
+    tester_status: TesterStatus | None
     current_tester_summary: TesterSummary | None
     verification_history: Annotated[
         list[VerificationCycle],
         add,
     ]
-    current_project_verification_result: NotRequired[ProjectVerificationResult | None]
+
+    current_project_verification_result: ProjectVerificationResult | None

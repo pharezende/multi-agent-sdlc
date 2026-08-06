@@ -311,6 +311,7 @@ class ImplementationCycle(BaseModel):
 
 
 class CoderStatus(StrEnum):
+    IDLE = "idle"
     IMPLEMENTING = "implementing"
     REPAIRING = "repairing"
     COMPLETED = "completed"
@@ -319,6 +320,7 @@ class CoderStatus(StrEnum):
 
 
 class TesterStatus(StrEnum):
+    IDLE = "idle"
     TESTING = "testing"
     PASSED = "passed"
     REPAIR_REQUIRED = "repair_required"

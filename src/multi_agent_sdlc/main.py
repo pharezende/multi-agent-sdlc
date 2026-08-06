@@ -1,5 +1,6 @@
 from langgraph.graph.state import CompiledStateGraph
 
+from multi_agent_sdlc.models import CoderStatus, TesterStatus
 from multi_agent_sdlc.state import DevState
 
 from .graph import build_graph
@@ -24,11 +25,22 @@ def run() -> None:
         # "request": "Build a Python command-line application named `temperature-converter`. The application must convert temperatures between Celsius and Fahrenheit.",
         # "request": "Build a Python CLI app named password-strength-checker that accepts a password as an argument and reports weak, medium, or strong using only the standard library.",
         "plan": None,
-        "project_directory": "",
+        "project_directory": None,
         "coder_messages": [],
+        "coder_status": CoderStatus.IDLE,
+        "current_coder_summary": None,
+        "coder_summary_history": [],
+        "tester_messages": [],
+        "tester_status": TesterStatus.IDLE,
+        "current_tester_summary": None,
+        "verification_history": [],
+        "current_project_verification_result": None,
     }
 
-    result = graph.invoke(initial_state)
+    result = graph.invoke(
+        initial_state,
+        config={"run_name": "multi_agent_sdlc"},
+    )
     # generate_diagram(graph)
     print("\nDone!")
 
