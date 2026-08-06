@@ -98,7 +98,7 @@ def prepare_plan_review_node(
         raise ValueError("Cannot prepare review for a missing plan.")
 
     return {
-        "plan_review_status": PlanReviewStatus.PENDING,
+        "plan_review_status": PlanReviewStatus.AWAITING_REVIEW,
         "plan_review_decision": None,
         "plan_review_content": format_plan(plan),
     }

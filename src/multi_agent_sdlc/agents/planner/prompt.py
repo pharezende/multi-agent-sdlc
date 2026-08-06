@@ -419,3 +419,30 @@ PLANNER_SYSTEM_RULES = "\n\n".join(
         PLANNER_OUTPUT_RULES,
     ]
 )
+
+PLANNER_INITIAL_HUMAN_PROMPT_TEMPLATE = """
+Create a complete development plan for the following request.
+
+USER REQUEST
+{user_request}
+
+Return a complete DevelopmentPlan that follows all system rules.
+Do not return commentary, explanations, or text outside the structured plan.
+""".strip()
+
+
+PLANNER_REVISION_HUMAN_PROMPT_TEMPLATE = """
+The human reviewer requested a revision of the development plan.
+
+MANDATORY HUMAN FEEDBACK
+{human_feedback}
+
+Revise the current development plan according to all feedback above.
+
+Requirements:
+- Return a complete revised DevelopmentPlan.
+- Preserve valid parts of the current plan.
+- Apply every requested change.
+- Resolve any inconsistencies introduced by the requested changes.
+- Do not return a patch, explanation, commentary, or partial plan.
+""".strip()

@@ -27,7 +27,7 @@ def run() -> None:
         # "request": "Build a Python CLI app named password-strength-checker that accepts a password as an argument and reports weak, medium, or strong using only the standard library.",
         "plan": None,
         "project_directory": None,
-        "plan_review_status": PlanReviewStatus.IDLE,
+        "plan_review_status": PlanReviewStatus.NOT_STARTED,
         "plan_review_decision": None,
         "plan_review_content": None,
         "planner_messages": [],

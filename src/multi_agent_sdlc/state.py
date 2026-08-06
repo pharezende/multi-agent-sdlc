@@ -23,7 +23,10 @@ class DevState(TypedDict):
     request: str
     plan: DevelopmentPlan | None
     project_directory: str | None
-
+    planner_messages: Annotated[
+        list[BaseMessage],
+        add_messages,
+    ]
     plan_review_status: PlanReviewStatus
     plan_review_decision: PlanReviewDecision | None
     plan_review_content: str | None

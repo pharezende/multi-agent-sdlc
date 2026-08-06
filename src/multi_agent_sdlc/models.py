@@ -311,6 +311,10 @@ class ImplementationCycle(BaseModel):
     coder_summary: CoderSummary
 
 
+# Revisit the consistency of the Status in the future.
+# Ideally should be ImplementationStatus and VerificationStatus (then they relate to operations and not agents)
+
+
 class CoderStatus(StrEnum):
     IDLE = "idle"
     IMPLEMENTING = "implementing"
@@ -329,8 +333,8 @@ class TesterStatus(StrEnum):
 
 
 class PlanReviewStatus(StrEnum):
-    IDLE = "idle"
-    PENDING = "pending"
+    NOT_STARTED = "not_started"
+    AWAITING_REVIEW = "awaiting_review"
     APPROVED = "approved"
     REVISION_REQUIRED = "revision_required"
     REJECTED = "rejected"
