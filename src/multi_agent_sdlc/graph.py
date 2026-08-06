@@ -1,3 +1,4 @@
+from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
 from multi_agent_sdlc.transitions import prepare_plan_review_node
 from multi_agent_sdlc.state import DevState
 from langgraph.graph import END, START, StateGraph
@@ -33,6 +34,7 @@ def build_graph():
     )
     builder.add_node("planner", planner_node)
     builder.add_node("prepare_plan_review", prepare_plan_review_node)
+    builder.add_node("human_plan_review", human_plan_review_node)
     builder.add_node("prepare_coder_implementation", prepare_coder_implementation_node)
     builder.add_node("coder", coder_node)
     builder.add_node("coder_tools", coder_tool_node)
@@ -44,7 +46,16 @@ def build_graph():
 
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "prepare_plan_review")
-    builder.add_edge("prepare_plan_review", "prepare_coder_implementation")
+    builder.add_edge("prepare_plan_review", "human_plan_review")
+    builder.add_conditional_edges(
+        "human_plan_review",
+        route_after_coder,
+        {
+            "prepare_coder_implementation": "prepare_coder_implementation",
+            # "prepare_planner_revision": "prepare_planner_revision",
+            "__end__": "__end__",
+        },
+    )
     builder.add_edge("prepare_coder_implementation", "coder")
     builder.add_conditional_edges(
         "coder",
