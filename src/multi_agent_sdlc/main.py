@@ -30,6 +30,7 @@ def run() -> None:
         "plan_review_status": PlanReviewStatus.IDLE,
         "plan_review_decision": None,
         "plan_review_content": None,
+        "planner_messages": [],
         "coder_messages": [],
         "coder_status": CoderStatus.IDLE,
         "current_coder_summary": None,
