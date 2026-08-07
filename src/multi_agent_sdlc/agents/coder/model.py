@@ -7,5 +7,5 @@ base_coder_model = create_chat_model(
 )
 
 coder_llm = base_coder_model.bind_tools(CODER_TOOLS, strict=True).with_retry(
-    stop_after_attempt=3
+    stop_after_attempt=5
 )

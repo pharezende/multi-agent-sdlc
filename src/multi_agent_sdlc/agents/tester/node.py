@@ -90,7 +90,7 @@ def _process_tester_summary_call(
     match tester_summary.overall_status:
         case "passed":
             tester_status = TesterStatus.PASSED
-        case "failed":
+        case "repair-required":
             tester_status = TesterStatus.REPAIR_REQUIRED
         case "blocked":
             tester_status = TesterStatus.BLOCKED

@@ -291,27 +291,79 @@ When no additional Coder-owned action is required, call
 
 Finalization rules:
 
-* Call `submit_coder_summary` only after all safe Coder-owned tasks for the current implementation or repair cycle are completed, blocked, or failed.
-* Do not return the final summary as ordinary text, JSON, or Markdown.
-* Call `submit_coder_summary` alone. Do not combine it with another tool call.
-* Do not call it while additional filesystem, dependency, synchronization, application-execution, Ruff, Mypy, or permitted Coverage operations are still required.
-* Populate every summary field using only evidence from the approved plan, current Tester repair requests when applicable, completed tool calls, and returned tool results.
-* Do not invent completed tasks, modified files, dependencies, entry points, executed operations, quality results, or successful outcomes.
-* Include only Coder-owned work as completed.
-* Include only task identifiers supported by completed implementation or repair work.
-* Use project-relative paths for all reported files.
-* Record only operations and checks that were actually executed and their observed outcomes.
-* Record remaining failures, blockers, uncertainties, and incomplete work in `unresolved_issues`.
-* If implementation or repair is blocked, still call `submit_coder_summary` and report the blocker accurately.
-* Include concise `tester_notes` describing behaviours, quality checks, coverage gaps, tests, and acceptance criteria that require independent verification or re-verification.
-* During a repair cycle, identify the Tester-reported defects addressed and the Coder-owned artefacts changed.
-* Distinguish Coder-side quality results from Tester-confirmed verification results.
-* You may report that a Coder-side Ruff, Mypy, permitted Coverage, synchronization, or application-execution operation passed only when the corresponding Coder tool result confirms success.
-* Do not claim that Pytest, unittest, Tox, Nox, or another Tester-owned test runner was executed by the Coder.
-* Do not claim that automated tests passed during the Coder stage.
-* Do not claim that independent Tester verification, acceptance criteria, review, human approval, merge, deployment, or release have succeeded.
-* After calling `submit_coder_summary`, do not request further implementation actions.
-  """.strip()
+- Call `submit_coder_summary` only after all safe Coder-owned tasks for the
+  current implementation or repair cycle are completed, blocked, or failed.
+- Do not return the final summary as ordinary text, JSON, or Markdown.
+- Call `submit_coder_summary` alone. Do not combine it with another tool call.
+- Do not call it while additional filesystem, dependency, synchronization,
+  application-execution, Ruff, Mypy, or permitted Coverage operations are
+  still required.
+- Populate every summary field using only evidence from the approved plan,
+  current Tester repair requests when applicable, completed tool calls, and
+  returned tool results.
+- Do not invent completed tasks, modified files, dependencies, entry points,
+  executed operations, quality results, or successful outcomes.
+
+- `completed_task_ids` must contain only Coder-owned task identifiers from the
+  approved plan whose implementation or repair work was completed during the
+  current Coder cycle.
+- A Coder repair performed because verification of a Tester-owned task failed
+  does not make that Tester-owned task completed by the Coder.
+
+- Use project-relative paths for all reported files.
+- Record only operations and checks that were actually executed and their
+  observed outcomes.
+
+- Record remaining failures, blockers, uncertainties, and incomplete work in
+  `unresolved_issues`.
+- `unresolved_issues` must contain only issues that still remain unresolved
+  when `submit_coder_summary` is called.
+- Do not report temporary failures, missing dependencies, environment issues,
+  or blockers as unresolved if they were resolved during the current Coder
+  cycle.
+- If a remaining concern belongs to independent Tester verification rather
+  than requiring additional Coder action, report it in `tester_notes` rather
+  than `unresolved_issues`.
+
+- Before submission, reconcile `executed_operations`,
+  `implementation_summary`, `tester_notes`, and `unresolved_issues` so they
+  describe one consistent final state and do not contradict one another.
+
+- If implementation or repair is blocked, still call `submit_coder_summary`
+  and report the blocker accurately.
+
+- `tester_notes` is a handoff to the Tester. Describe behaviours, repaired
+  defects, quality checks, coverage gaps, tests, and acceptance criteria that
+  require independent verification or re-verification.
+- Phrase `tester_notes` as verification targets or actions for the Tester, not
+  as claims that Tester-owned verification has already succeeded.
+
+- During a repair cycle, identify the Tester-reported defects addressed and the
+  Coder-owned artefacts changed.
+- Distinguish the Coder-owned implementation task being repaired from any
+  Tester-owned task that detected or verifies the defect. Only the Coder-owned
+  task may be reported in `completed_task_ids`.
+
+- Distinguish Coder-side quality results from Tester-confirmed verification
+  results.
+- You may report that a Coder-side Ruff, Mypy, permitted Coverage,
+  synchronization, or application-execution operation passed only when the
+  corresponding Coder tool result confirms success.
+
+- Pytest, unittest, Tox, Nox, and other Tester-owned test-suite results are not
+  Coder evidence.
+- Do not report that Tester-owned tests were executed or passed in
+  `executed_operations`, `implementation_summary`, `tester_notes`, or any
+  other Coder summary field, even if such results are visible in the execution
+  context.
+- Statements such as `all tests pass`, `pytest passed`, or equivalent claims
+  are prohibited during the Coder stage.
+
+- Do not claim that independent Tester verification, acceptance criteria,
+  review, human approval, merge, deployment, or release have succeeded.
+- After calling `submit_coder_summary`, do not request further implementation
+  actions.
+""".strip()
 
 
 CODER_SUMMARY_SCHEMA = json.dumps(

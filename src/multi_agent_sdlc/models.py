@@ -34,7 +34,10 @@ class Task(BaseModel):
         description="Concrete, testable conditions — this is what Tester checks against"
     )
     depends_on: list[str] = Field(
-        default_factory=list, description="Task ids that must complete first"
+        description=(
+            "Task identifiers that must complete before this task can safely "
+            "begin. Use [] only when the task can safely begin immediately."
+        )
     )
     target_files: list[str] = Field(
         description=(
@@ -313,7 +316,7 @@ class TesterSummary(BaseModel):
         )
     )
 
-    overall_status: Literal["passed", "failed", "blocked"] = Field(
+    overall_status: Literal["passed", "repair-required", "blocked"] = Field(
         description=(
             "Final Tester outcome. Use `passed` only when the latest complete "
             "project verification passed and every applicable acceptance criterion "
