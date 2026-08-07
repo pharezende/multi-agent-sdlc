@@ -57,6 +57,10 @@ def run() -> None:
     config: RunnableConfig = {
         "configurable": {
             "thread_id": "app-run-1",
+            "plan_review_decision": {
+                "decision": "approved",
+                "feedback": None,
+            },
         }
     }
 
