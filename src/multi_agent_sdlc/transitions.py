@@ -1,3 +1,4 @@
+from multi_agent_sdlc.agents.presentation.plan_pdf import export_plan_to_pdf
 from multi_agent_sdlc.runtime.paths import create_project_directory
 from langchain_core.messages import HumanMessage
 from multi_agent_sdlc.agents.planner.prompt import (
@@ -29,11 +30,20 @@ def prepare_coder_implementation_node(
     state: DevState,
 ) -> dict[str, object]:
     plan = state["plan"]
+    plan_review_content = state["plan_review_content"]
 
     if plan is None:
         raise ValueError("Plan cannot be None.")
 
+    if plan_review_content is None:
+        raise ValueError("Plan review content cannot be None.")
+
     project_directory = create_project_directory(plan.project_id)
+
+    export_plan_to_pdf(
+        text=plan_review_content,
+        output_path=project_directory / "development_plan.pdf",
+    )
 
     coder_context = build_coder_implementation_context(
         state=state,

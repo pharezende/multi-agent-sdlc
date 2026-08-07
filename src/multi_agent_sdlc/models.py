@@ -145,11 +145,46 @@ class VerificationResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     verification_type: VerificationType
-    command: list[str] = Field(min_length=1)
-    status: Literal["passed", "failed", "blocked", "not_executed"]
-    exit_code: int | None
-    summary: str = Field(min_length=1)
-    related_task_ids: list[str]
+    command: list[str] | None = Field(
+        default=None,
+        description=(
+            "Exact command executed for this verification result. "
+            "Use None for aggregate or non-command verification results."
+        ),
+    )
+    status: Literal[
+        "passed",
+        "failed",
+        "blocked",
+    ] = Field(
+        description=(
+            "Verification outcome: passed when execution succeeded, failed when "
+            "verification ran and failed and blocked when it could not proceed. "
+        )
+    )
+    exit_code: int | None = Field(
+        default=None,
+        description=(
+            "Exit code returned by the executed command. "
+            "Use None when no single command was executed."
+        ),
+    )
+    summary: str = Field(
+        min_length=1,
+        description=(
+            "Concise factual summary of the verification outcome. Report only "
+            "observed results from executed checks or explicitly state when a "
+            "verification was blocked or not executed. Do not infer that an "
+            "acceptance criterion passed from indirect evidence."
+        ),
+    )
+    verified_task_ids: list[str] = Field(
+        min_length=1,
+        description=(
+            "Approved task identifiers for which this specific verification result "
+            "provides direct verification evidence."
+        ),
+    )
 
 
 class AcceptanceCriterionResult(BaseModel):
@@ -202,7 +237,7 @@ class TesterSummary(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    addressed_task_ids: list[NonBlankStr] = Field(
+    addressed_task_ids: list[str] = Field(
         description=(
             "Tester-owned task identifiers actively worked on during this cycle, "
             "including test implementation, Tester-owned repairs, verification, "
@@ -212,7 +247,7 @@ class TesterSummary(BaseModel):
         )
     )
 
-    passed_task_ids: list[NonBlankStr] = Field(
+    passed_task_ids: list[str] = Field(
         description=(
             "Tester-owned task identifiers whose applicable acceptance criteria "
             "all passed with supporting evidence. Do not include Coder-owned tasks "
@@ -221,7 +256,7 @@ class TesterSummary(BaseModel):
         )
     )
 
-    related_task_ids: list[NonBlankStr] = Field(
+    related_task_ids: list[str] = Field(
         description=(
             "Approved task identifiers owned by other agents whose outputs were "
             "evaluated, exercised, or affected during this Tester cycle. Do not "

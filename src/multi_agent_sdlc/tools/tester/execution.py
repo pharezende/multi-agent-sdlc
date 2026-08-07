@@ -1,3 +1,5 @@
+from multi_agent_sdlc.tools.tester.descriptions import TESTER_RUN_BUILD_DESCRIPTION
+from datetime import time
 from multi_agent_sdlc.tools.tester.validation import ProcessResult
 import json
 
@@ -116,6 +118,25 @@ VerificationCommand = Annotated[
         )
     ),
 ]
+
+
+@tool(
+    "tester_run_build",
+    description=TESTER_RUN_BUILD_DESCRIPTION,
+)
+def tester_run_build(
+    runtime: ToolRuntime[DevState],
+    timeout_seconds: ExecutionTimeout = 120,
+) -> ProcessResult:
+    """Build the project distributions using uv."""
+
+    project_directory = get_project_directory(runtime)
+
+    return execute_process(
+        command=["uv", "build"],
+        project_directory=project_directory,
+        timeout_seconds=timeout_seconds,
+    )
 
 
 @tool(

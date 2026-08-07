@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.execution import tester_run_build
 from multi_agent_sdlc.tools.shared.filesystem import list_files, read_file
 from multi_agent_sdlc.tools.tester.dependencies import (
     tester_install_verification_dependencies,
@@ -19,6 +20,7 @@ TESTER_TOOLS = [
     tester_run_application,
     tester_run_python_module,
     tester_sync_project,
+    tester_run_build,
     tester_install_verification_dependencies,
     tester_write_file,
     tester_create_directory,

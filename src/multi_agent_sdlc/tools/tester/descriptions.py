@@ -267,6 +267,10 @@ Do not use this tool to:
 - claim that acceptance verification succeeded.
 """.strip()
 
+TESTER_RUN_BUILD_DESCRIPTION = """
+    Run `uv build` in the approved project directory to verify that the
+    project can be packaged successfully and produce distribution artifacts.
+""".strip()
 
 SUBMIT_TESTER_SUMMARY_DESCRIPTION = """
 Submit the final structured handoff summary for the Tester stage.

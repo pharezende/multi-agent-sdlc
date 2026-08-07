@@ -121,7 +121,8 @@ VERIFICATION EXECUTION
   when full-suite evidence is required.
 - Capture the executed operation, exit status, and relevant observed output.
 - A successful command proves only what that command actually verified.
-- Do not claim unexecuted verification as successful.
+- Do not claim unexecuted verification as successful. Verification evidence must 
+  correspond directly to the command, behavior, or observable outcome required by the approved acceptance criterion.
 """.strip()
 
 

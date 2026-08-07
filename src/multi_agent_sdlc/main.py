@@ -1,3 +1,4 @@
+from uuid import uuid4
 from multi_agent_sdlc.agents.presentation.terminal_plan_review import (
     collect_plan_review_decision,
 )
@@ -25,7 +26,13 @@ def run() -> None:
     graph = build_graph()
 
     initial_state: DevState = {
-        "request": "Build a CLI expense tracker that lets users add expenses, list them, filter by category or date, and display total spending. Store data locally in a JSON file, validate invalid inputs, and provide clear exit codes and error messages. Include a concise README and a uv-managed Python project with a declared command-line entry point.",
+        "request": """ Build a local task-management REST API that lets users create, retrieve, update, delete, and list tasks. Each task must include an ID, title, optional description, priority, status, creation timestamp, optional due date, and tags. Support filtering by status, priority, tag, and due-date range, as well as sorting and pagination.
+        Store data locally in SQLite and ensure database initialization happens automatically. Enforce valid task-state transitions, such as preventing a completed task from being moved directly back to in_progress without first reopening it. Validate all inputs and return appropriate HTTP status codes and structured error responses.
+        Add an endpoint that returns task statistics, including total tasks, counts by status and priority, overdue tasks, and completion percentage.
+        Include automated unit and integration tests using an isolated temporary database. Provide clear handling for invalid IDs, malformed requests, duplicate or invalid data, database errors, and unsupported state transitions.
+        Use FastAPI, Pydantic, SQLite, and a uv-managed Python project. Declare an application entry point so the service can be started with uv run <entry-point>. Include a concise README with installation instructions, API examples, expected responses, error behavior, and all commands required to run and verify the application.
+        """.strip(),  # later pass as an env. variable.
+        # "request": "Build a CLI expense tracker that lets users add expenses, list them, filter by category or date, and display total spending. Store data locally in a JSON file, validate invalid inputs, and provide clear exit codes and error messages. Include a concise README and a uv-managed Python project with a declared command-line entry point.",
         # "request": "Build an app that sum two numbers. The end user interactions happen via the terminal.",
         # "request": "Build a calculator app, all end user interactions happens via the terminal.",
         # "request": "Build an app that enable the user to compute the area of squares and triangles. The end user interactions happen via the terminal.",
@@ -56,7 +63,7 @@ def run() -> None:
 
     config: RunnableConfig = {
         "configurable": {
-            "thread_id": "app-run-1",
+            "thread_id": str(uuid4()),
             "plan_review_decision": {
                 "decision": "approved",
                 "feedback": None,
