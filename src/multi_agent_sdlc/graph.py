@@ -1,3 +1,4 @@
+from multi_agent_sdlc.human_in_the_loop.routing import route_after_plan_review
 from multi_agent_sdlc.transitions import prepare_planner_revision_node
 from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
 from multi_agent_sdlc.transitions import prepare_plan_review_node
@@ -52,7 +53,7 @@ def build_graph():
     builder.add_edge("prepare_plan_review", "human_plan_review")
     builder.add_conditional_edges(
         "human_plan_review",
-        route_after_coder,
+        route_after_plan_review,
         {
             "prepare_coder_implementation": "prepare_coder_implementation",
             "prepare_planner_revision": "prepare_planner_revision",

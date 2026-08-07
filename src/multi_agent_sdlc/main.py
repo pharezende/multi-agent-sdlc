@@ -1,8 +1,14 @@
+from multi_agent_sdlc.agents.presentation.terminal_plan_review import (
+    collect_plan_review_decision,
+)
+from langchain_core.runnables import RunnableConfig
 from multi_agent_sdlc.models import PlanReviewStatus
 from langgraph.graph.state import CompiledStateGraph
 
 from multi_agent_sdlc.models import CoderStatus, TesterStatus
 from multi_agent_sdlc.state import DevState
+
+from langgraph.types import Command
 
 from .graph import build_graph
 
@@ -42,21 +48,43 @@ def run() -> None:
         "current_project_verification_result": None,
     }
 
+    # generate_diagram(graph)
     # result = graph.invoke(
     #     initial_state,
     #     config={"run_name": "multi_agent_sdlc"},
     # )
 
+    config: RunnableConfig = {
+        "configurable": {
+            "thread_id": "app-run-1",
+        }
+    }
+
     result = graph.invoke(
         initial_state,
-        config={
-            "configurable": {
-                "thread_id": "app-run-1",
-            }
-        },
+        config=config,
     )
-    # generate_diagram(graph)
-    print("\nDone!")
+
+    interrupts = result.get("__interrupt__", ())
+
+    while interrupts:
+        interrupt_value = interrupts[0].value
+
+        if interrupt_value["type"] != "plan_review":
+            raise ValueError(f"Unsupported interrupt type: {interrupt_value['type']!r}")
+
+        print()
+        print(interrupt_value["content"])
+        print("\nGraph paused for plan review.")
+
+        review_response = collect_plan_review_decision()
+
+        result = graph.invoke(
+            Command(resume=review_response),
+            config=config,
+        )
+
+    print("\nGraph completed.")
 
 
 if __name__ == "__main__":

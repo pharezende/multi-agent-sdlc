@@ -20,7 +20,7 @@ def build_coder_implementation_context(
 
     return {
         "request": state["request"],
-        "project_directory": project_directory,
+        "project_directory": str(project_directory),
         "project_id": plan.project_id,
         "goal": plan.goal,
         "assumptions": plan.assumptions,

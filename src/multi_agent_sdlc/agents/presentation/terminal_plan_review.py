@@ -1,10 +1,7 @@
 from multi_agent_sdlc.models import PlanReviewDecision
 
 
-def collect_plan_review_decision(
-    plan_review_content: str,
-) -> PlanReviewDecision:
-    print(plan_review_content)
+def collect_plan_review_decision() -> PlanReviewDecision:
 
     decisions = {
         "1": "approved",
