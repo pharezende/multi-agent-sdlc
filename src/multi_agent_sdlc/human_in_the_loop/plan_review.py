@@ -1,3 +1,6 @@
+from workflow.runs import update_workflow_run_status
+from workflow.checkpointing import get_thread_id
+from workflow.runs import WorkflowRunStatus
 from multi_agent_sdlc.models import PlanReviewStatus
 from multi_agent_sdlc.models import PlanReviewDecision
 from multi_agent_sdlc.state import DevState
@@ -21,6 +24,11 @@ def human_plan_review_node(
                 "type": "plan_review",
                 "content": state["plan_review_content"],
             }
+        )
+
+        update_workflow_run_status(
+            get_thread_id(config),
+            WorkflowRunStatus.RUNNING,
         )
 
     decision = PlanReviewDecision.model_validate(response)

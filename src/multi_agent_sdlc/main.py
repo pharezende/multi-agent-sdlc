@@ -1,3 +1,9 @@
+from workflow.runs import list_workflow_runs
+from workflow.checkpointing import get_thread_id
+from workflow.runs import WorkflowRunStatus
+from workflow.runs import update_workflow_run_status
+from workflow.runs import create_workflow_run
+from workflow.runs import initialize_workflow_runs_database
 from uuid import uuid4
 from multi_agent_sdlc.agents.presentation.terminal_plan_review import (
     collect_plan_review_decision,
@@ -25,13 +31,14 @@ def generate_diagram(graph: CompiledStateGraph) -> None:
 def run() -> None:
     graph = build_graph()
 
-    initial_state: DevState = {
-        "request": """ Build a local task-management REST API that lets users create, retrieve, update, delete, and list tasks. Each task must include an ID, title, optional description, priority, status, creation timestamp, optional due date, and tags. Support filtering by status, priority, tag, and due-date range, as well as sorting and pagination.
+    request = """ Build a local task-management REST API that lets users create, retrieve, update, delete, and list tasks. Each task must include an ID, title, optional description, priority, status, creation timestamp, optional due date, and tags. Support filtering by status, priority, tag, and due-date range, as well as sorting and pagination.
         Store data locally in SQLite and ensure database initialization happens automatically. Enforce valid task-state transitions, such as preventing a completed task from being moved directly back to in_progress without first reopening it. Validate all inputs and return appropriate HTTP status codes and structured error responses.
         Add an endpoint that returns task statistics, including total tasks, counts by status and priority, overdue tasks, and completion percentage.
         Include automated unit and integration tests using an isolated temporary database. Provide clear handling for invalid IDs, malformed requests, duplicate or invalid data, database errors, and unsupported state transitions.
         Use FastAPI, Pydantic, SQLite, and a uv-managed Python project. Declare an application entry point so the service can be started with uv run <entry-point>. Include a concise README with installation instructions, API examples, expected responses, error behavior, and all commands required to run and verify the application.
-        """.strip(),  # later pass as an env. variable.
+        """.strip()
+    initial_state: DevState = {
+        "request": request,
         # "request": "Build a CLI expense tracker that lets users add expenses, list them, filter by category or date, and display total spending. Store data locally in a JSON file, validate invalid inputs, and provide clear exit codes and error messages. Include a concise README and a uv-managed Python project with a declared command-line entry point.",
         # "request": "Build an app that sum two numbers. The end user interactions happen via the terminal.",
         # "request": "Build a calculator app, all end user interactions happens via the terminal.",
@@ -52,19 +59,22 @@ def run() -> None:
         "tester_messages": [],
         "tester_status": TesterStatus.IDLE,
         "current_tester_summary": None,
-        "verification_history": [],
+        "tester_summary_history": [],
         "current_project_verification_result": None,
     }
 
     # generate_diagram(graph)
-    # result = graph.invoke(
-    #     initial_state,
-    #     config={"run_name": "multi_agent_sdlc"},
-    # )
 
+    initialize_workflow_runs_database()
+
+    workflow_run = create_workflow_run(request)
+
+    print(list_workflow_runs())
+
+    exit()
     config: RunnableConfig = {
         "configurable": {
-            "thread_id": str(uuid4()),
+            "thread_id": workflow_run.thread_id,
             "plan_review_decision": {
                 "decision": "approved",
                 "feedback": None,
@@ -82,6 +92,11 @@ def run() -> None:
     while interrupts:
         interrupt_value = interrupts[0].value
 
+        update_workflow_run_status(
+            get_thread_id(config),
+            WorkflowRunStatus.INTERRUPTED,
+        )
+
         if interrupt_value["type"] != "plan_review":
             raise ValueError(f"Unsupported interrupt type: {interrupt_value['type']!r}")
 
@@ -95,6 +110,13 @@ def run() -> None:
             Command(resume=review_response),
             config=config,
         )
+
+        interrupts = result.get("__interrupt__", ())
+
+    update_workflow_run_status(
+        get_thread_id(config),
+        WorkflowRunStatus.COMPLETED,
+    )
 
     print("\nGraph completed.")
 

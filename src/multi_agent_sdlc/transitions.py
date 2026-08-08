@@ -1,3 +1,6 @@
+from workflow.checkpointing import get_thread_id
+from langchain_core.runnables import RunnableConfig
+from workflow.runs import update_workflow_project_directory
 from multi_agent_sdlc.agents.presentation.plan_pdf import export_plan_to_pdf
 from multi_agent_sdlc.runtime.paths import create_project_directory
 from langchain_core.messages import HumanMessage
@@ -28,6 +31,7 @@ from multi_agent_sdlc.state import DevState
 
 def prepare_coder_implementation_node(
     state: DevState,
+    config: RunnableConfig,
 ) -> dict[str, object]:
     plan = state["plan"]
     plan_review_content = state["plan_review_content"]
@@ -39,6 +43,11 @@ def prepare_coder_implementation_node(
         raise ValueError("Plan review content cannot be None.")
 
     project_directory = create_project_directory(plan.project_id)
+
+    update_workflow_project_directory(
+        get_thread_id(config),
+        str(project_directory),
+    )
 
     export_plan_to_pdf(
         text=plan_review_content,
