@@ -34,6 +34,7 @@ class DevState(TypedDict):
     coder_messages: Annotated[list[BaseMessage], add_messages]
     coder_status: CoderStatus | None
     current_coder_summary: CoderSummary | None
+    coder_invalid_response_count: int
     coder_summary_history: Annotated[
         list[ImplementationCycle],
         add,

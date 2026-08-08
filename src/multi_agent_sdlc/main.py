@@ -47,6 +47,7 @@ def run() -> None:
         "coder_messages": [],
         "coder_status": CoderStatus.IDLE,
         "current_coder_summary": None,
+        "coder_invalid_response_count": 0,
         "coder_summary_history": [],
         "tester_messages": [],
         "tester_status": TesterStatus.IDLE,

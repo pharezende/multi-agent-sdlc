@@ -1,8 +1,14 @@
+from multi_agent_sdlc.agents.coder.prompt import (
+    CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
+    CODER_INVALID_RESPONSE_FEEDBACK,
+)
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.coder.model import coder_llm
 from multi_agent_sdlc.models import CoderStatus, CoderSummary
 from multi_agent_sdlc.state import DevState
+
+MAX_CONSECUTIVE_CODER_INVALID_RESPONSES = 3
 
 
 def coder_node(state: DevState) -> dict[str, object]:
@@ -13,48 +19,51 @@ def coder_node(state: DevState) -> dict[str, object]:
 
     response = coder_llm.invoke(coder_messages)
 
-    if response.tool_calls:
-        submit_calls = [
-            tool_call
-            for tool_call in response.tool_calls
-            if tool_call["name"] == "submit_coder_summary"
-        ]
+    if not response.tool_calls:
+        return _handle_invalid_coder_response(
+            state, response, feedback=CODER_INVALID_RESPONSE_FEEDBACK
+        )
 
-        if submit_calls:
-            if len(response.tool_calls) != 1:
-                return {
-                    "coder_messages": [
-                        response,
-                        HumanMessage(
-                            content=(
-                                "`submit_coder_summary` must be called alone. "
-                                "Complete any operational tool calls first, "
-                                "then submit the Coder summary in a separate "
-                                "response."
-                            )
-                        ),
-                    ],
-                }
+    has_submit_call = any(
+        tool_call["name"] == "submit_coder_summary" for tool_call in response.tool_calls
+    )
 
-            return _process_coder_summary_call(
+    if has_submit_call:
+        if len(response.tool_calls) > 1:
+            return _handle_invalid_coder_response(
+                state,
                 response,
+                feedback=CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
             )
 
+        return _process_coder_summary_call(response)
+
+    return {
+        "coder_messages": [response],
+        "coder_invalid_response_count": 0,
+    }
+
+
+def _handle_invalid_coder_response(
+    state: DevState,
+    response: AIMessage,
+    feedback: str,
+) -> dict[str, object]:
+    invalid_count = state["coder_invalid_response_count"] + 1
+
+    if invalid_count >= MAX_CONSECUTIVE_CODER_INVALID_RESPONSES:
         return {
             "coder_messages": [response],
+            "coder_invalid_response_count": invalid_count,
+            "coder_status": CoderStatus.FAILED,
         }
 
     return {
         "coder_messages": [
             response,
-            HumanMessage(
-                content=(
-                    "Invalid response. Return no explanatory text. "
-                    "Call one or more approved Coder operational tools, "
-                    "or call `submit_coder_summary` alone."
-                )
-            ),
+            HumanMessage(content=feedback),
         ],
+        "coder_invalid_response_count": invalid_count,
     }
 
 

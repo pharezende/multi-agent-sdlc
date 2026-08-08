@@ -441,3 +441,20 @@ CODER_REPAIR_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         ("human", CODER_REPAIR_HUMAN_PROMPT),
     ]
 )
+
+
+CODER_INVALID_RESPONSE_FEEDBACK = """
+Invalid response.
+Return no explanatory text.
+Call one or more approved Coder operational tools, or call
+`submit_coder_summary` alone.
+""".strip()
+
+
+CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK = """
+Invalid response.
+`submit_coder_summary` must be called alone.
+Do not combine it with operational tool calls.
+Complete any remaining Coder-owned operational actions first, then call
+`submit_coder_summary` alone in a separate response.
+""".strip()
