@@ -1,3 +1,4 @@
+from multi_agent_sdlc.models import TesterCycle
 from multi_agent_sdlc.models import PlanReviewDecision
 from multi_agent_sdlc.models import PlanReviewStatus
 from operator import add
@@ -9,10 +10,9 @@ from langgraph.graph import add_messages
 from multi_agent_sdlc.models import (
     CoderStatus,
     CoderSummary,
-    ImplementationCycle,
+    CoderCycle,
     TesterStatus,
     TesterSummary,
-    VerificationCycle,
 )
 from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
@@ -33,18 +33,18 @@ class DevState(TypedDict):
 
     coder_messages: Annotated[list[BaseMessage], add_messages]
     coder_status: CoderStatus | None
-    current_coder_summary: CoderSummary | None
-    coder_invalid_response_count: int
+    current_coder_summary: CoderSummary | None  # Refactor and remove later
+    coder_invalid_response_count: int  # Need for the tester as well.
     coder_summary_history: Annotated[
-        list[ImplementationCycle],
+        list[CoderCycle],
         add,
     ]
 
     tester_messages: Annotated[list[BaseMessage], add_messages]
     tester_status: TesterStatus | None
-    current_tester_summary: TesterSummary | None
-    verification_history: Annotated[
-        list[VerificationCycle],
+    current_tester_summary: TesterSummary | None  # Refactor and remove later
+    tester_summary_history: Annotated[
+        list[TesterCycle],
         add,
     ]
 

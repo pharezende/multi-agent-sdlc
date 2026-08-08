@@ -1,3 +1,5 @@
+from multi_agent_sdlc.models import CoderCycle
+from sys import implementation
 from multi_agent_sdlc.agents.coder.prompt import (
     CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
     CODER_INVALID_RESPONSE_FEEDBACK,
@@ -36,7 +38,7 @@ def coder_node(state: DevState) -> dict[str, object]:
                 feedback=CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
             )
 
-        return _process_coder_summary_call(response)
+        return _process_coder_summary_call(state, response)
 
     return {
         "coder_messages": [response],
@@ -68,14 +70,26 @@ def _handle_invalid_coder_response(
 
 
 def _process_coder_summary_call(
+    state: DevState,
     response: AIMessage,
 ) -> dict[str, object]:
     tool_call = response.tool_calls[0]
 
     coder_summary = CoderSummary.model_validate(tool_call["args"]["summary"])
 
+    coder_summary_history = state["coder_summary_history"]
+
+    coder_cycle = CoderCycle(
+        cycle_number=(
+            coder_summary_history[-1].cycle_number + 1 if coder_summary_history else 1
+        ),
+        coder_summary=coder_summary,
+    )
+
     return {
         "coder_messages": [response],
         "current_coder_summary": coder_summary,
+        "coder_summary_history": [coder_cycle],
         "coder_status": CoderStatus.COMPLETED,
+        "coder_invalid_response_count": 0,
     }

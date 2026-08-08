@@ -333,20 +333,19 @@ class TesterSummary(BaseModel):
     )
 
 
-class VerificationCycle(BaseModel):
-    cycle_number: int
-    tester_summary: TesterSummary
-
-
 class CoderMode(StrEnum):
     IMPLEMENTATION = "implementation"
     REPAIR = "repair"
 
 
-class ImplementationCycle(BaseModel):
+class CoderCycle(BaseModel):
     cycle_number: int
-    # mode: CoderMode
     coder_summary: CoderSummary
+
+
+class TesterCycle(BaseModel):
+    cycle_number: int
+    tester_summary: TesterSummary
 
 
 # Revisit the consistency of the Status in the future.

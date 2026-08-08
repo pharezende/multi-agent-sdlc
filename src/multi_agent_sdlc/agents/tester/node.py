@@ -1,7 +1,12 @@
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.tester.model import tester_llm
-from multi_agent_sdlc.models import TesterStatus, TesterSummary, VerificationType
+from multi_agent_sdlc.models import (
+    TesterCycle,
+    TesterStatus,
+    TesterSummary,
+    VerificationType,
+)
 from multi_agent_sdlc.state import DevState
 from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
@@ -68,7 +73,7 @@ def _process_tester_summary_call(
     tool_call = response.tool_calls[0]
     tester_summary = TesterSummary.model_validate(tool_call["args"]["summary"])
 
-    latest_project_verification = state.get("current_project_verification_result")
+    latest_project_verification = state["current_project_verification_result"]
 
     if tester_summary.overall_status == "passed" and not project_verification_passed(
         latest_project_verification
@@ -95,16 +100,21 @@ def _process_tester_summary_call(
         case "blocked":
             tester_status = TesterStatus.BLOCKED
 
-    update: dict[str, object] = {
+    tester_summary_history = state["tester_summary_history"]
+
+    tester_cycle = TesterCycle(
+        cycle_number=(
+            tester_summary_history[-1].cycle_number + 1 if tester_summary_history else 1
+        ),
+        tester_summary=tester_summary,
+    )
+
+    return {
         "tester_messages": [response],
         "current_tester_summary": tester_summary,
+        "tester_summary_history": [tester_cycle],
         "tester_status": tester_status,
     }
-
-    # if tester_status is TesterStatus.REPAIR_REQUIRED:
-    #    update["coder_status"] = CoderStatus.REPAIRING
-
-    return update
 
 
 def project_verification_passed(
