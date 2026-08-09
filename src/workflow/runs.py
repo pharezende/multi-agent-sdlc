@@ -216,3 +216,20 @@ def _row_to_workflow_run(
         updated_at=row["updated_at"],
         completed_at=row["completed_at"],
     )
+
+
+def get_resumable_workflow_run(
+    thread_id: str,
+) -> WorkflowRun:
+    workflow_run = get_workflow_run(thread_id)
+
+    if workflow_run is None:
+        raise ValueError(f"Workflow run not found: {thread_id}")
+
+    if workflow_run.status is WorkflowRunStatus.COMPLETED:
+        raise ValueError(
+            f"Workflow run {thread_id} cannot be resumed because its "
+            "completed already."
+        )
+
+    return workflow_run

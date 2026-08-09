@@ -1,4 +1,9 @@
 from langchain_core.runnables import RunnableConfig
+from collections.abc import Iterator
+from contextlib import contextmanager
+from pathlib import Path
+
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 
 def get_thread_id(config: RunnableConfig) -> str:
@@ -13,3 +18,28 @@ def get_thread_id(config: RunnableConfig) -> str:
         raise ValueError("RunnableConfig must contain a non-empty 'thread_id'.")
 
     return thread_id
+
+
+CHECKPOINT_DATABASE_PATH = Path(".data/checkpoints.sqlite")
+
+
+@contextmanager
+def create_checkpointer() -> Iterator[SqliteSaver]:
+    CHECKPOINT_DATABASE_PATH.parent.mkdir(
+        exist_ok=True,
+    )
+
+    with SqliteSaver.from_conn_string(str(CHECKPOINT_DATABASE_PATH)) as checkpointer:
+        yield checkpointer
+
+
+def build_workflow_config(thread_id: str) -> RunnableConfig:
+    return {
+        "configurable": {
+            "thread_id": thread_id,
+            "plan_review_decision": {
+                "decision": "approved",
+                "feedback": None,
+            },
+        }
+    }

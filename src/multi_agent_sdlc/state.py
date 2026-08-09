@@ -49,3 +49,25 @@ class DevState(TypedDict):
     ]
 
     current_project_verification_result: ProjectVerificationResult | None
+
+
+def build_initial_state(request: str) -> DevState:
+    return {
+        "request": request,
+        "plan": None,
+        "project_directory": None,
+        "plan_review_status": PlanReviewStatus.NOT_STARTED,
+        "plan_review_decision": None,
+        "plan_review_content": None,
+        "planner_messages": [],
+        "coder_messages": [],
+        "coder_status": CoderStatus.IDLE,
+        "current_coder_summary": None,
+        "coder_invalid_response_count": 0,
+        "coder_summary_history": [],
+        "tester_messages": [],
+        "tester_status": TesterStatus.IDLE,
+        "current_tester_summary": None,
+        "tester_summary_history": [],
+        "current_project_verification_result": None,
+    }

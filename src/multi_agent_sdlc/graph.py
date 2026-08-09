@@ -1,3 +1,4 @@
+from langgraph.checkpoint.base import BaseCheckpointSaver
 from multi_agent_sdlc.human_in_the_loop.routing import route_after_plan_review
 from multi_agent_sdlc.transitions import prepare_planner_revision_node
 from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
@@ -22,7 +23,7 @@ from multi_agent_sdlc.transitions import (
 )
 
 
-def build_graph():
+def build_graph(checkpointer: BaseCheckpointSaver):
 
     builder = StateGraph(DevState)
     coder_tool_node = ToolNode(
@@ -88,5 +89,5 @@ def build_graph():
     builder.add_edge("reviewer", END)
 
     return builder.compile(
-        checkpointer=InMemorySaver(),
+        checkpointer=checkpointer,
     )
