@@ -1,9 +1,10 @@
+from multi_agent_sdlc.llm.models import MODEL_PROVIDER_CONFIG
 from multi_agent_sdlc.llm.config import MODEL_CONFIG
 from multi_agent_sdlc.llm.factory import create_chat_model
 from multi_agent_sdlc.models import DevelopmentPlan
 
 base_planner_model = create_chat_model(
-    MODEL_CONFIG.planner,
+    MODEL_CONFIG.planner, provider=MODEL_PROVIDER_CONFIG.get(MODEL_CONFIG.planner)
 )
 
 
