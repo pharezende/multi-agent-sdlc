@@ -1,11 +1,11 @@
 from multi_agent_sdlc.agents.tester.model import TesterCycle
 from multi_agent_sdlc.agents.tester.model import TesterSummary
-from workflow.models import VerificationStatus
+from .models import VerificationStatus
 from multi_agent_sdlc.agents.coder.models import CoderCycle
 from multi_agent_sdlc.agents.coder.models import CoderSummary
-from workflow.models import DevelopmentStatus
-from workflow.models import PlanReviewDecision
-from workflow.models import PlanReviewStatus
+from .models import DevelopmentStatus
+from .models import PlanReviewDecision
+from .models import PlanReviewStatus
 from multi_agent_sdlc.agents.planner.models import DevelopmentPlan
 from operator import add
 from typing import Annotated, NotRequired, TypedDict

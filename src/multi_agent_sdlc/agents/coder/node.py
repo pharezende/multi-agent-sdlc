@@ -1,6 +1,7 @@
+from multi_agent_sdlc.workflow.models import DevelopmentStatus
+from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.agents.coder.models import CoderCycle
 from multi_agent_sdlc.agents.coder.models import CoderSummary
-from workflow.models import DevelopmentStatus
 from multi_agent_sdlc.agents.coder.prompt import (
     CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
     CODER_INVALID_RESPONSE_FEEDBACK,
@@ -8,7 +9,6 @@ from multi_agent_sdlc.agents.coder.prompt import (
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.coder.llm import coder_llm
-from workflow.state import DevState
 
 MAX_CONSECUTIVE_CODER_INVALID_RESPONSES = 3
 

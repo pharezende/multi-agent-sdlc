@@ -1,12 +1,12 @@
+from multi_agent_sdlc.workflow.models import VerificationStatus
+from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.agents.tester.model import VerificationType
 from multi_agent_sdlc.agents.tester.model import TesterCycle
-from workflow.models import VerificationStatus
 from multi_agent_sdlc.agents.tester.model import TesterSummary
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.tester.llm import tester_llm
 
-from workflow.state import DevState
 from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
 

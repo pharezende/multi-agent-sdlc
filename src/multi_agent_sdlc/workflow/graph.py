@@ -1,10 +1,10 @@
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from multi_agent_sdlc.human_in_the_loop.routing import route_after_plan_review
-from workflow.transitions import prepare_planner_revision_node
+from .transitions import prepare_planner_revision_node
 from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
-from workflow.transitions import prepare_plan_review_node
-from workflow.state import DevState
+from .transitions import prepare_plan_review_node
+from .state import DevState
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.memory import InMemorySaver
@@ -17,7 +17,7 @@ from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.agents.reviewer.reviewer import reviewer_node
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
-from workflow.transitions import (
+from .transitions import (
     prepare_coder_implementation_node,
     prepare_coder_repair_node,
     prepare_tester_node,
