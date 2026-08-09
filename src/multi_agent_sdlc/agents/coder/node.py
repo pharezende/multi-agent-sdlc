@@ -1,14 +1,14 @@
-from multi_agent_sdlc.models import CoderCycle
-from sys import implementation
+from multi_agent_sdlc.agents.coder.models import CoderCycle
+from multi_agent_sdlc.agents.coder.models import CoderSummary
+from workflow.models import DevelopmentStatus
 from multi_agent_sdlc.agents.coder.prompt import (
     CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
     CODER_INVALID_RESPONSE_FEEDBACK,
 )
 from langchain_core.messages import AIMessage, HumanMessage
 
-from multi_agent_sdlc.agents.coder.model import coder_llm
-from multi_agent_sdlc.models import CoderStatus, CoderSummary
-from multi_agent_sdlc.state import DevState
+from multi_agent_sdlc.agents.coder.llm import coder_llm
+from workflow.state import DevState
 
 MAX_CONSECUTIVE_CODER_INVALID_RESPONSES = 3
 
@@ -57,7 +57,7 @@ def _handle_invalid_coder_response(
         return {
             "coder_messages": [response],
             "coder_invalid_response_count": invalid_count,
-            "coder_status": CoderStatus.FAILED,
+            "coder_status": DevelopmentStatus.FAILED,
         }
 
     return {
@@ -90,6 +90,6 @@ def _process_coder_summary_call(
         "coder_messages": [response],
         "current_coder_summary": coder_summary,
         "coder_summary_history": [coder_cycle],
-        "coder_status": CoderStatus.COMPLETED,
+        "coder_status": DevelopmentStatus.COMPLETED,
         "coder_invalid_response_count": 0,
     }

@@ -1,53 +1,21 @@
-from typing import Any
-from workflow.checkpointing import build_workflow_config
-from multi_agent_sdlc.state import build_initial_state
-from workflow.runs import WorkflowRun
-from workflow.runs import get_workflow_run
-from workflow.checkpointing import create_checkpointer
-from workflow.runs import WorkflowRunStatus
-from workflow.runs import update_workflow_run_status
-from workflow.runs import create_workflow_run
-from workflow.runs import initialize_workflow_runs_database
-from multi_agent_sdlc.agents.presentation.terminal_plan_review import (
-    collect_plan_review_decision,
-)
-from langchain_core.runnables import RunnableConfig
-from langgraph.graph.state import CompiledStateGraph
-
-import argparse
-from langgraph.types import Command
-
-from .graph import build_graph
-
-
-def generate_diagram(graph: CompiledStateGraph) -> None:
-
-    png_data = graph.get_graph().draw_mermaid_png()
-
-    with open("multi_agent_sdlc_workflow.png", "wb") as file:
-        file.write(png_data)
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run the multi-agent SDLC workflow.")
-
-    parser.add_argument(
-        "--resume",
-        metavar="THREAD_ID",
-        help="Resume the workflow identified by THREAD_ID.",
-    )
-
-    return parser.parse_args()
+from workflow.models import PlanReviewDecision
+from multi_agent_sdlc.cli import parse_args
+from workflow.runner import resume_workflow
+from workflow.runner import run_new_workflow
+from workflow.run_repository import initialize_workflow_runs_database
 
 
 def run() -> None:
     args = parse_args()
 
-    initialize_workflow_runs_database()
+    automatic_plan_review_decision = PlanReviewDecision(
+        decision="approved"
+    ).model_dump()
 
     if args.resume:
         resume_workflow(
             thread_id=args.resume,
+            plan_review_decision=automatic_plan_review_decision,
         )
     else:
         request = """
@@ -78,147 +46,9 @@ def run() -> None:
         commands required to run and verify the application.
         """.strip()
 
-        run_new_workflow(request)
-
-    print("\nGraph completed.")
-
-
-def run_new_workflow(request: str) -> None:
-    workflow_run = create_workflow_run(request)
-
-    config = build_workflow_config(workflow_run.thread_id)
-
-    initial_state = build_initial_state(request)
-
-    with create_checkpointer() as checkpointer:
-        graph = build_graph(checkpointer)
-
-        result = graph.invoke(
-            initial_state,
-            config=config,
+        run_new_workflow(
+            request=request, plan_review_decision=automatic_plan_review_decision
         )
-
-        _process_workflow_result(
-            graph,
-            result,
-            workflow_run,
-            config,
-        )
-
-
-def resume_workflow(thread_id: str) -> None:
-    workflow_run = get_workflow_run(thread_id)
-
-    if workflow_run is None:
-        raise ValueError(f"Workflow with thread id {thread_id!r} was not found.")
-
-    if workflow_run.status in {
-        WorkflowRunStatus.COMPLETED,
-        WorkflowRunStatus.FAILED,
-    }:
-        raise ValueError(
-            f"Workflow run {thread_id} cannot be resumed because "
-            f"its status is {workflow_run.status!r}."
-        )
-
-    config = build_workflow_config(workflow_run.thread_id)
-
-    with create_checkpointer() as checkpointer:
-        graph = build_graph(checkpointer)
-
-        snapshot = graph.get_state(config)
-
-        if snapshot.interrupts:
-            interrupt_value = snapshot.interrupts[0].value
-
-            if interrupt_value["type"] != "plan_review":
-                raise ValueError(
-                    f"Unsupported interrupt type: " f"{interrupt_value['type']!r}"
-                )
-
-            print()
-            print(interrupt_value["content"])
-            print("\nGraph paused for plan review.")
-
-            review_response = collect_plan_review_decision()
-
-            update_workflow_run_status(
-                workflow_run.thread_id,
-                WorkflowRunStatus.RUNNING,
-            )
-
-            result = graph.invoke(
-                Command(resume=review_response),
-                config=config,
-            )
-
-        elif snapshot.next:
-            update_workflow_run_status(
-                workflow_run.thread_id,
-                WorkflowRunStatus.RUNNING,
-            )
-
-            result = graph.invoke(
-                None,
-                config=config,
-            )
-
-        else:
-            raise ValueError(
-                f"Workflow run {workflow_run.thread_id} " "has no pending work."
-            )
-
-        _process_workflow_result(
-            graph,
-            result,
-            workflow_run,
-            config,
-        )
-
-
-def _process_workflow_result(
-    graph,
-    result: dict[str, Any],
-    workflow_run: WorkflowRun,
-    config: RunnableConfig,
-) -> None:
-    interrupts = result.get("__interrupt__", ())
-
-    while interrupts:
-        interrupt_value = interrupts[0].value
-
-        update_workflow_run_status(
-            workflow_run.thread_id,
-            WorkflowRunStatus.INTERRUPTED,
-        )
-
-        if interrupt_value["type"] != "plan_review":
-            raise ValueError(
-                f"Unsupported interrupt type: " f"{interrupt_value['type']!r}"
-            )
-
-        print()
-        print(interrupt_value["content"])
-        print("\nGraph paused for plan review.")
-
-        review_response = collect_plan_review_decision()
-
-        update_workflow_run_status(
-            workflow_run.thread_id,
-            WorkflowRunStatus.RUNNING,
-        )
-
-        result = graph.invoke(
-            Command(resume=review_response),
-            config=config,
-        )
-
-        interrupts = result.get("__interrupt__", ())
-
-    update_workflow_run_status(
-        workflow_run.thread_id,
-        WorkflowRunStatus.COMPLETED,
-    )
 
 
 if __name__ == "__main__":

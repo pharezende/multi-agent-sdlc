@@ -1,6 +1,6 @@
+from multi_agent_sdlc.agents.coder.models import CoderSummary
 from langchain.tools import tool
 
-from multi_agent_sdlc.models import CoderSummary
 from multi_agent_sdlc.tools.coder.descriptions import SUBMIT_CODER_SUMMARY_DESCRIPTION
 
 

@@ -1,20 +1,20 @@
+from workflow.models import DevelopmentStatus
 from multi_agent_sdlc.agents.coder.node import MAX_CONSECUTIVE_CODER_INVALID_RESPONSES
 from typing import Literal
 
 from langchain_core.messages import AIMessage
 
-from multi_agent_sdlc.models import CoderStatus
-from multi_agent_sdlc.state import DevState
+from workflow.state import DevState
 
 
 def route_after_coder(
     state: DevState,
 ) -> Literal["coder_tools", "prepare_tester", "coder", "__end__"]:
     coder_status = state.get("coder_status")
-    if coder_status is CoderStatus.COMPLETED:
+    if coder_status is DevelopmentStatus.COMPLETED:
         return "prepare_tester"
     if (
-        coder_status is CoderStatus.FAILED
+        coder_status is DevelopmentStatus.FAILED
         and state["coder_invalid_response_count"]
         >= MAX_CONSECUTIVE_CODER_INVALID_RESPONSES
     ):

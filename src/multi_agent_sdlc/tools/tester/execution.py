@@ -9,7 +9,7 @@ from langgraph.types import Command
 
 from multi_agent_sdlc.runtime.process import execute_process
 from multi_agent_sdlc.runtime.workspace import get_project_directory
-from multi_agent_sdlc.state import DevState
+from workflow.state import DevState
 from multi_agent_sdlc.tools.tester.descriptions import (
     RUN_APPLICATION_DESCRIPTION,
     RUN_PYTHON_MODULE_DESCRIPTION,

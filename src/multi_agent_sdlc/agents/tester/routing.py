@@ -1,9 +1,9 @@
+from workflow.models import VerificationStatus
 from typing import Literal
 
 from langchain_core.messages import AIMessage
 
-from multi_agent_sdlc.models import TesterStatus
-from multi_agent_sdlc.state import DevState
+from workflow.state import DevState
 
 
 def route_after_tester(
@@ -16,10 +16,10 @@ def route_after_tester(
 ]:
     tester_status = state.get("tester_status")
 
-    if tester_status == TesterStatus.REPAIR_REQUIRED:
+    if tester_status == VerificationStatus.REPAIR_REQUIRED:
         return "prepare_coder_repair"
 
-    if tester_status == TesterStatus.PASSED:
+    if tester_status == VerificationStatus.PASSED:
         return "reviewer"
 
     # if tester_status is TesterStatus.BLOCKED:

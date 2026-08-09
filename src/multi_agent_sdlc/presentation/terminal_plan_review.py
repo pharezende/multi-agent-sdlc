@@ -1,4 +1,4 @@
-from multi_agent_sdlc.models import PlanReviewDecision
+from workflow.models import PlanReviewDecision
 
 
 def collect_plan_review_decision() -> PlanReviewDecision:

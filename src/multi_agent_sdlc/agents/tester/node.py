@@ -1,13 +1,12 @@
+from multi_agent_sdlc.agents.tester.model import VerificationType
+from multi_agent_sdlc.agents.tester.model import TesterCycle
+from workflow.models import VerificationStatus
+from multi_agent_sdlc.agents.tester.model import TesterSummary
 from langchain_core.messages import AIMessage, HumanMessage
 
-from multi_agent_sdlc.agents.tester.model import tester_llm
-from multi_agent_sdlc.models import (
-    TesterCycle,
-    TesterStatus,
-    TesterSummary,
-    VerificationType,
-)
-from multi_agent_sdlc.state import DevState
+from multi_agent_sdlc.agents.tester.llm import tester_llm
+
+from workflow.state import DevState
 from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
 
@@ -94,11 +93,11 @@ def _process_tester_summary_call(
 
     match tester_summary.overall_status:
         case "passed":
-            tester_status = TesterStatus.PASSED
+            tester_status = VerificationStatus.PASSED
         case "repair-required":
-            tester_status = TesterStatus.REPAIR_REQUIRED
+            tester_status = VerificationStatus.REPAIR_REQUIRED
         case "blocked":
-            tester_status = TesterStatus.BLOCKED
+            tester_status = VerificationStatus.BLOCKED
 
     tester_summary_history = state["tester_summary_history"]
 
