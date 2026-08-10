@@ -3,10 +3,10 @@ List files and directories inside the current project.
 
 Path rules:
 
-* `path` must be relative to the current project root.
-* Use `.` to list the project root.
-* Do not include `sandbox/`, the project name, or an absolute path.
-* Do not use `..`.
+* path must be relative to the current project root.
+* Use . to list the project root.
+* Do not include sandbox/, the project name, or an absolute path.
+* Do not use ...
 
 Correct examples:
 
@@ -33,9 +33,9 @@ Read a UTF-8 text file inside the current project.
 
 Path rules:
 
-* `path` must be relative to the current project root.
-* Do not include `sandbox/`, the project name, or an absolute path.
-* Do not use `..`.
+* path must be relative to the current project root.
+* Do not include sandbox/, the project name, or an absolute path.
+* Do not use ...
 
 Correct examples:
 
@@ -80,9 +80,9 @@ Permitted files include:
 
 Path rules:
 
-* `path` must be relative to the current project root.
-* Do not include `sandbox/`, the project name, or an absolute path.
-* Do not use `..`.
+* path must be relative to the current project root.
+* Do not include sandbox/, the project name, or an absolute path.
+* Do not use ...
 
 Correct examples:
 
@@ -107,7 +107,7 @@ Test ownership boundary:
 * Do not create, modify, rename, or delete automated tests.
 * Do not create or modify fixtures, mocks, test data, test helpers, or other
   Tester-owned assets.
-* Do not modify files under `test`, `tests`, `__tests__`, `spec`, or `specs`.
+* Do not modify files under test, tests, __tests__, spec, or specs.
 * Existing tests may be inspected, but test implementation belongs exclusively
   to the Tester.
 * Do not modify valid tests to make production code appear correct.
@@ -125,13 +125,13 @@ Quality-configuration boundary:
 
 Python project requirements:
 
-* Use `pyproject.toml` for project metadata and dependency declarations.
+* Use pyproject.toml for project metadata and dependency declarations.
 * Preserve established project-specific configuration files when they exist.
 * Generated setup, quality-check, and application-execution instructions must
-  use `uv`.
-* Do not document or generate `pip install`, `python -m pip`, `uv pip`, manual
-  virtual-environment activation, or direct modification of `.venv`.
-* Application execution instructions should use `uv run`.
+  use uv.
+* Do not document or generate pip install, python -m pip, uv pip, manual
+  virtual-environment activation, or direct modification of .venv.
+* Application execution instructions should use uv run.
   """.strip()
 
 CREATE_DIRECTORY_DESCRIPTION = """
@@ -148,9 +148,9 @@ Permitted directories include:
 
 Path rules:
 
-* `path` must be relative to the current project root.
-* Do not include `sandbox/`, the project name, or an absolute path.
-* Do not use `..`.
+* path must be relative to the current project root.
+* Do not include sandbox/, the project name, or an absolute path.
+* Do not use ...
 
 Correct examples:
 
@@ -170,12 +170,12 @@ Incorrect examples:
 
 Test ownership boundary:
 
-* Do not create `test`, `tests`, `__tests__`, `spec`, or `specs` directories.
+* Do not create test, tests, __tests__, spec, or specs directories.
 * Do not create fixture, mock, test-data, or Tester-owned verification
   directories.
 * Test-directory creation belongs exclusively to the Tester.
 
-This tool uses Python filesystem operations directly. It does not run `mkdir`,
+This tool uses Python filesystem operations directly. It does not run mkdir,
 shell commands, Python snippets, or project-management commands.
 """.strip()
 
@@ -191,7 +191,7 @@ uv run <entry_point> [arguments]
 
 The Coder provides only:
 
-* an entry-point name declared in `[project.scripts]` in `pyproject.toml`;
+* an entry-point name declared in [project.scripts] in pyproject.toml;
 * optional application arguments.
 
 Correct examples:
@@ -203,12 +203,12 @@ Correct examples:
 
 Important uv rules:
 
-* Do not include `uv run` in `entry_point`.
-* Do not activate `.venv` manually.
-* Do not use `python`, `pytest`, `pip`, `uv pip`, shell commands, or absolute
+* Do not include uv run in entry_point.
+* Do not activate .venv manually.
+* Do not use python, pytest, pip, uv pip, shell commands, or absolute
   paths.
-* The tool runs from the current project root, allowing `uv` to discover
-  `pyproject.toml` and use the project's managed environment.
+* The tool runs from the current project root, allowing uv to discover
+  pyproject.toml and use the project's managed environment.
 * Use this tool instead of requesting a generic shell command.
 
 Permitted use:
@@ -268,11 +268,11 @@ Incorrect examples:
 
 Important uv rules:
 
-* Do not include `uv run python -m` in `module`.
+* Do not include uv run python -m in module.
 * Do not provide a file path or Python source code.
-* Do not activate `.venv` manually.
-* Do not use direct `python`, `pytest`, `pip`, `uv pip`, or shell commands.
-* `uv` executes the module inside the current project's managed environment.
+* Do not activate .venv manually.
+* Do not use direct python, pytest, pip, uv pip, or shell commands.
+* uv executes the module inside the current project's managed environment.
 
 Permitted use:
 
@@ -294,17 +294,17 @@ Boundaries:
   """.strip()
 
 INSTALL_PACKAGE_DEPENDENCIES_DESCRIPTION = """
-Add required package dependencies to the current project using `uv`.
+Add required package dependencies to the current project using uv.
 
 The tool internally executes:
 
 
 uv add <package> [<package> ...]
 
-`uv add`:
+uv add:
 
-* records dependencies in `project.dependencies` in `pyproject.toml`;
-* updates `uv.lock`;
+* records dependencies in project.dependencies in pyproject.toml;
+* updates uv.lock;
 * synchronises the project's uv-managed environment.
 
 Provide only allowed package dependency specifications.
@@ -331,8 +331,8 @@ Incorrect examples:
 
 Important rules:
 
-* Do not use `pip`, `python -m pip`, or `uv pip install`.
-* Do not manually edit or activate `.venv`.
+* Do not use pip, python -m pip, or uv pip install.
+* Do not manually edit or activate .venv.
 * Use this tool only when the project genuinely requires an external package
   dependency.
 * Do not add packages already provided by the Python standard library.
@@ -355,22 +355,22 @@ uv sync
 
 Use this tool after:
 
-* creating or materially modifying `pyproject.toml`;
+* creating or materially modifying pyproject.toml;
 * adding or changing runtime dependencies;
 * adding or changing approved development dependencies;
 * changing the package structure;
 * changing build-system or packaging configuration;
 * changing application entry points;
 * changing quality-tool configuration that affects synchronisation;
-* repairing an earlier `uv sync` failure.
+* repairing an earlier uv sync failure.
 
 Correct usage examples:
 
-* After creating a new `pyproject.toml`.
-* After adding `click` to `[project.dependencies]`.
+* After creating a new pyproject.toml.
+* After adding click to [project.dependencies].
 * After adding Ruff or Mypy as an approved development dependency.
-* After changing the package path from `src/app` to `src/my_app`.
-* After adding or modifying an entry under `[project.scripts]`.
+* After changing the package path from src/app to src/my_app.
+* After adding or modifying an entry under [project.scripts].
 * After correcting Hatchling build configuration.
 
 Do not provide a command, path, package name, or application argument.
@@ -378,7 +378,7 @@ This tool requires no project-specific input other than the optional timeout.
 
 A successful result confirms that:
 
-* `pyproject.toml` can be parsed;
+* pyproject.toml can be parsed;
 * declared runtime and development dependencies can be resolved;
 * the project can be built and installed into its uv-managed environment;
 * the declared package structure is compatible with the build configuration.
@@ -420,9 +420,9 @@ uv run <command> [arguments]
 
 Approved commands:
 
-* `ruff` for linting, formatting checks, safe automatic fixes, and formatting;
-* `mypy` for static type checking;
-* `coverage` for coverage reporting and analysis.
+* ruff for linting, formatting checks, safe automatic fixes, and formatting;
+* mypy for static type checking;
+* coverage for coverage reporting and analysis.
 
 The Coder may use this tool during initial implementation and repair cycles to
 detect and address problems in Coder-owned production code, production
@@ -431,12 +431,12 @@ entry points.
 
 Ruff permissions:
 
-* `ruff check` is permitted.
-* `ruff check --fix` is permitted for safe automatic fixes.
-* `ruff check --diff` is permitted.
-* `ruff format` is permitted.
-* `ruff format --check` is permitted.
-* `--unsafe-fixes` is prohibited.
+* ruff check is permitted.
+* ruff check --fix is permitted for safe automatic fixes.
+* ruff check --diff is permitted.
+* ruff format is permitted.
+* ruff format --check is permitted.
+* --unsafe-fixes is prohibited.
 * Automatic fixes and formatting must target only Coder-owned files.
 * Do not run automatic fixes against test directories or Tester-owned files.
 * After applying fixes or formatting, rerun the relevant Ruff check.
@@ -468,12 +468,12 @@ Coverage permissions:
 
 Prohibited commands:
 
-* `pytest`;
-* `python`;
-* `python3`;
-* `unittest`;
-* `tox`;
-* `nox`;
+* pytest;
+* python;
+* python3;
+* unittest;
+* tox;
+* nox;
 * shell interpreters;
 * arbitrary executables.
 
@@ -483,13 +483,13 @@ Command boundaries:
 * Direct Python execution cannot be used through this tool.
 * Existing tests and authoritative test execution belong exclusively to the
   Tester.
-* Application entry points must be executed with `run_application`.
+* Application entry points must be executed with run_application.
 * Importable application modules must normally be executed with
-  `run_python_module`.
+  run_python_module.
 * Do not use an approved command as a wrapper for a prohibited command.
-* Do not use `coverage run` to bypass the prohibition against Pytest, arbitrary
+* Do not use coverage run to bypass the prohibition against Pytest, arbitrary
   Python scripts, or inline Python.
-* Do not include `uv run` in `command`.
+* Do not include uv run in command.
 
 General rules:
 
@@ -550,7 +550,7 @@ The summary must:
   verification;
 * identify unresolved failures, blockers, uncertainties, and incomplete work;
 * identify Tester repair requests addressed during a repair cycle;
-* provide concise `tester_notes` describing checks, coverage gaps, behaviours,
+* provide concise tester_notes describing checks, coverage gaps, behaviours,
   and acceptance criteria requiring independent verification or
   re-verification.
 

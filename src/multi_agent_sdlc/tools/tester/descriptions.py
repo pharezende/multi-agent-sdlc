@@ -8,9 +8,9 @@ Permitted files include:
 - development-tool configuration required by Tester-owned tasks.
 
 Path rules:
-- `path` must be relative to the current project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
+- path must be relative to the current project root.
+- Do not include sandbox/, the project name, or an absolute path.
+- Do not use ...
 
 Correct examples:
 - tests/test_calculator.py
@@ -36,17 +36,17 @@ Production boundary:
 - Do not change application behaviour to make verification pass.
 - Do not modify runtime dependencies, build configuration, or application entry
   points unless the approved plan explicitly assigns that work to the Tester.
-- `pyproject.toml` may be modified only for Tester-owned development
+- pyproject.toml may be modified only for Tester-owned development
   dependencies or verification-tool configuration.
 - Production implementation and repair belong to the Coder.
 - Do not retry rejected production work using another path, tool, or mechanism.
 
 Python project requirements:
-- Use `pyproject.toml` or an established project-specific configuration file for
+- Use pyproject.toml or an established project-specific configuration file for
   verification tooling.
-- Generated verification instructions must use `uv`.
-- Do not generate `pip install`, `python -m pip`, manual virtual-environment
-  activation, or direct tool execution outside `uv run`.
+- Generated verification instructions must use uv.
+- Do not generate pip install, python -m pip, manual virtual-environment
+  activation, or direct tool execution outside uv run.
 """.strip()
 
 
@@ -57,9 +57,9 @@ Use this tool for test suites, fixtures, mocks, test data, and other
 verification assets.
 
 Path rules:
-- `path` must be relative to the current project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
+- path must be relative to the current project root.
+- Do not include sandbox/, the project name, or an absolute path.
+- Do not use ...
 
 Correct examples:
 - tests
@@ -82,7 +82,7 @@ Production boundary:
 - Directory creation must support Tester-owned verification work.
 - Production directory creation belongs to the Coder.
 
-This tool uses Python filesystem operations directly. It does not run `mkdir`,
+This tool uses Python filesystem operations directly. It does not run mkdir,
 shell commands, Python snippets, or project-management commands.
 """.strip()
 
@@ -96,7 +96,7 @@ The tool internally executes:
     uv run <entry_point> [arguments]
 
 The Tester provides only:
-- an entry-point name declared in `[project.scripts]` in `pyproject.toml`;
+- an entry-point name declared in [project.scripts] in pyproject.toml;
 - optional application arguments.
 
 Correct examples:
@@ -106,11 +106,11 @@ Correct examples:
 - entry_point="my-app", arguments=["--help"]
 
 Important uv rules:
-- Do not include `uv run` in `entry_point`.
-- Do not activate `.venv` manually.
-- Do not use `python`, `pip`, `uv pip`, shell commands, or absolute paths.
-- The tool runs from the current project root, so `uv` discovers
-  `pyproject.toml` and uses the project's managed environment.
+- Do not include uv run in entry_point.
+- Do not activate .venv manually.
+- Do not use python, pip, uv pip, shell commands, or absolute paths.
+- The tool runs from the current project root, so uv discovers
+  pyproject.toml and uses the project's managed environment.
 - Use this tool instead of requesting a generic shell command.
 
 Verification boundary:
@@ -154,11 +154,11 @@ Incorrect examples:
 - module="-c"
 
 Important uv rules:
-- Do not include `uv run python -m` in `module`.
+- Do not include uv run python -m in module.
 - Do not provide a file path or Python source code.
-- Do not activate `.venv` manually.
-- Do not use direct `python`, `pip`, `uv pip`, or shell commands.
-- `uv` executes the module inside the current project's managed environment.
+- Do not activate .venv manually.
+- Do not use direct python, pip, uv pip, or shell commands.
+- uv executes the module inside the current project's managed environment.
 
 Verification boundary:
 - Use this tool only to verify importable application modules.
@@ -172,15 +172,15 @@ Verification boundary:
 
 INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION = """
 Add required development and verification dependencies to the current project
-using `uv`.
+using uv.
 
 The tool internally executes:
 
     uv add --dev <package> [<package> ...]
 
-`uv add --dev`:
-- records dependencies as development dependencies in `pyproject.toml`;
-- updates `uv.lock`;
+uv add --dev:
+- records dependencies as development dependencies in pyproject.toml;
+- updates uv.lock;
 - synchronises the project's uv-managed environment.
 
 Provide only dependencies required for Tester-owned verification work.
@@ -203,8 +203,8 @@ Incorrect examples:
 - ["package @ https://example.com/package.whl"]
 
 Important uv rules:
-- Do not use `pip`, `python -m pip`, or `uv pip install`.
-- Do not manually edit or activate `.venv`.
+- Do not use pip, python -m pip, or uv pip install.
+- Do not manually edit or activate .venv.
 - Use this tool only when an approved Tester-owned task genuinely requires an
   external development or verification dependency.
 - Do not add packages already provided by the Python standard library.
@@ -232,13 +232,13 @@ Use this tool after:
 - modifying Tester-owned verification configuration;
 - repairing a development-dependency synchronization failure;
 - receiving a project from the Coder before executing verification;
-- an earlier `uv sync` operation failed.
+- an earlier uv sync operation failed.
 
 Do not provide a command, path, package name, or application argument.
 This tool requires no project-specific input other than the optional timeout.
 
 A successful result confirms that:
-- `pyproject.toml` can be parsed;
+- pyproject.toml can be parsed;
 - declared dependencies can be resolved;
 - the project can be installed into its uv-managed environment;
 - the declared package structure is compatible with the build configuration.
@@ -268,7 +268,7 @@ Do not use this tool to:
 """.strip()
 
 TESTER_RUN_BUILD_DESCRIPTION = """
-    Run `uv build` in the approved project directory to verify that the
+    Run uv build in the approved project directory to verify that the
     project can be packaged successfully and produce distribution artifacts.
 """.strip()
 
@@ -325,16 +325,16 @@ uv-managed environment.
 
 The tool internally executes:
 
-```
+
 uv run <command> [arguments]
-```
+
 
 Approved commands:
 
-* `pytest` for executing tests;
-* `ruff` for linting and formatting checks;
-* `mypy` for static type checking;
-* `coverage` for test coverage operations.
+* pytest for executing tests;
+* ruff for linting and formatting checks;
+* mypy for static type checking;
+* coverage for test coverage operations.
 
 Examples:
 
@@ -348,12 +348,12 @@ Examples:
 Rules:
 
 * Use only an approved command.
-* Do not include `uv run` in the command or arguments.
+* Do not include uv run in the command or arguments.
 * Do not execute Python, shell commands, arbitrary executables, application
   entry points, or temporary scripts.
-* Ruff may only perform non-mutating checks. Do not use `--fix`,
-  `--unsafe-fixes`, or `ruff format` without `--check`.
-* Coverage may execute only Pytest through `coverage run -m pytest`.
+* Ruff may only perform non-mutating checks. Do not use --fix,
+  --unsafe-fixes, or ruff format without --check.
+* Coverage may execute only Pytest through coverage run -m pytest.
 * Do not install dependencies or modify the environment.
 * Do not weaken tests, assertions, linting rules, type-checking rules, or
   coverage thresholds to obtain a passing result.
@@ -380,7 +380,7 @@ the command, exit code, timeout status, standard output, and standard error for
 each check, together with an overall pass or fail result.
 
 Use this tool as the authoritative final verification gate before submitting a
-Tester summary with `overall_status="passed"`.
+Tester summary with overall_status="passed".
 
 Rules:
 - Run this tool after implementing or repairing Tester-owned tests and
@@ -388,7 +388,7 @@ Rules:
 - Run it again after any change that could affect verification results.
 - A successful targeted test or individual verification command does not
   replace this complete project verification.
-- Do not report `passed` unless the latest complete project verification
+- Do not report passed unless the latest complete project verification
   finished without timeouts and every mandatory check returned exit code 0.
 - When a check fails, inspect its full result to determine whether the failure
   originates from production code, Tester-owned files, verification
@@ -396,7 +396,7 @@ Rules:
 - Repair failures only when they originate from Tester-owned tests or
   verification configuration.
 - Report valid production-code failures through focused Coder repair requests.
-- Report an external or unresolvable verification obstacle as `blocked`.
+- Report an external or unresolvable verification obstacle as blocked.
 - Do not weaken tests, assertions, linting rules, formatting rules,
   type-checking rules, or project configuration merely to obtain a passing
   result.

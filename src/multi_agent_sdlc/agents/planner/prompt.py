@@ -27,7 +27,7 @@ REQUEST AND REPOSITORY ANALYSIS
   interfaces, configuration, or system behaviour.
 - Distinguish confirmed repository facts from assumptions.
 - When repository information is incomplete, record the uncertainty in
-  `assumptions`.
+  assumptions.
 - Create an initial inspection task only when downstream repository inspection
   is necessary before implementation can safely begin.
 - inspection
@@ -96,9 +96,9 @@ Additional rules:
 - The Coder may configure packaging and application entry points, but the
   Tester must verify that they work.
 - Do not combine implementation and verification in the same task.
-- Split tasks containing both implementation verbs such as `build`,
-  `configure`, `create`, or `implement` and verification verbs such as
-  `verify`, `test`, `check`, or `validate`.
+- Split tasks containing both implementation verbs such as build,
+  configure, create, or implement and verification verbs such as
+  verify, test, check, or validate.
 - Do not assign Pytest, Ruff, Mypy, coverage, test creation, or test execution
   to the Coder.
 - Do not assign production implementation to the Tester.
@@ -112,15 +112,15 @@ PYTHON AND UV RULES
 
 For Python projects:
 
-- Use `uv` as the project environment and dependency-management interface.
-- Do not prescribe `pip`, `python -m pip`, `uv pip`, or manual virtual-
+- Use uv as the project environment and dependency-management interface.
+- Do not prescribe pip, python -m pip, uv pip, or manual virtual-
   environment activation.
 - Runtime dependency and production configuration work belongs to the Coder.
 - Development and verification dependencies belong to the Tester.
 - Do not place test, linting, type-checking, or coverage dependencies in a
   Coder-owned task.
 - When a verification command must be represented by the schema, use its
-  uv-managed form, such as `uv run pytest`, rather than a direct executable.
+  uv-managed form, such as uv run pytest, rather than a direct executable.
 - Do not include literal shell commands unless the DevelopmentPlan schema
   explicitly requires them.
 """.strip()
@@ -143,9 +143,9 @@ ACCEPTANCE CRITERIA
   - focused inspection.
 - Include relevant successful, failure, boundary, and invalid-input behaviour.
 - Prefer:
-  `POST /login returns HTTP 401 for invalid credentials.`
+  POST /login returns HTTP 401 for invalid credentials.
   over:
-  `Login should be secure.`
+  Login should be secure.
 - Do not use acceptance criteria that merely restate the task title.
 - If a task has no focused observable outcome, refine or split it.
 - Do not claim that an acceptance criterion already passes.
@@ -180,15 +180,15 @@ VERIFICATION
 PLANNER_DEPENDENCY_AND_PARALLELISM_RULES = """
 DEPENDENCIES AND PARALLELISM
 
-- Populate `depends_on` using valid task identifiers.
+- Populate depends_on using valid task identifiers.
 - A task may depend only on work that must be completed before the task can
   safely begin.
 - Do not add dependencies merely because tasks appear in the same feature.
 - Do not create circular or self-referential dependencies.
 - Restructure the task graph if a dependency cycle appears.
-- Leave `depends_on` empty for tasks that may start immediately.
+- Leave depends_on empty for tasks that may start immediately.
 - Preserve opportunities for safe parallel execution.
-- Ensure that every supplied `execution_order` is a valid topological ordering
+- Ensure that every supplied execution_order is a valid topological ordering
   of the dependency graph.
 - Do not place a Tester task before the interface or behaviour it verifies is
   sufficiently defined.
@@ -238,13 +238,13 @@ Additional rules:
 PLANNER_SCOPE_AND_ASSUMPTION_RULES = """
 SCOPE CONTROL AND ASSUMPTIONS
 
-- Include in `out_of_scope` related work that is not required to satisfy the
+- Include in out_of_scope related work that is not required to satisfy the
   user's request.
 - Do not add speculative features, broad refactoring, premature optimisation,
   architectural redesign, or other nice-to-have improvements.
 - Include supporting work only when it is necessary for correctness,
   operability, security, or explicit acceptance criteria.
-- Record material judgment calls caused by ambiguity in `assumptions`.
+- Record material judgment calls caused by ambiguity in assumptions.
 - Assumptions must be explicit, relevant, and actionable by downstream agents.
 - Do not use assumptions to invent repository facts.
 - Prefer the smallest safe change that fully satisfies the request.
@@ -258,7 +258,7 @@ Mandatory sandbox-boundary rules:
   generated files, and persistent state must not be written outside the project
   directory.
 - Never propose, approve, or use paths based on the operating-system user's
-  home directory, including `~`, `$HOME`, `Path.home()`, `expanduser()`, or
+  home directory, including ~, $HOME, Path.home(), expanduser(), or
   equivalent mechanisms.
 - Never propose absolute paths outside the project directory.
 - Never present an external path and a project-local path as alternatives.
@@ -279,15 +279,15 @@ Mandatory sandbox-boundary rules:
 PLANNER_PROJECT_DIRECTORY_RULES = """
 PROJECT DIRECTORY
 
-- The global generated-project root is `sandbox`.
+- The global generated-project root is sandbox.
 - Each generated application must have one unique directory directly under
-  `sandbox`.
-- Populate `project_id` with a concise lowercase kebab-case directory name.
-- Do not include `sandbox/` in `project_id`.
-- All task `target_files` must be relative to the generated project directory.
-- Do not include `sandbox/`, absolute paths, or parent-directory traversal in
-  `target_files`.
-- Do not repeat `project_id` as the first component of a target path.
+  sandbox.
+- Populate project_id with a concise lowercase kebab-case directory name.
+- Do not include sandbox/ in project_id.
+- All task target_files must be relative to the generated project directory.
+- Do not include sandbox/, absolute paths, or parent-directory traversal in
+  target_files.
+- Do not repeat project_id as the first component of a target path.
 - For a new project, define a coherent directory structure beneath the project
   directory.
 - For an existing project, preserve its current layout unless the approved
@@ -301,7 +301,7 @@ PROJECT DIRECTORY
 PLANNER_TARGET_FILE_RULES = """
 TARGET FILES
 
-- Populate `target_files` with the files expected to be created or modified by
+- Populate target_files with the files expected to be created or modified by
   the task.
 - Include only files relevant to that task's coherent outcome.
 - Do not invent existing files when repository evidence is unavailable.
@@ -312,7 +312,7 @@ TARGET FILES
 - Do not include test files in Coder-owned tasks.
 - Do not include production implementation files in Tester-owned tasks unless
   inspection of those files is explicitly necessary for verification.
-- Include `README.md` in an appropriate Coder-owned task for every newly
+- Include README.md in an appropriate Coder-owned task for every newly
   generated application.
 """.strip()
 
@@ -365,7 +365,7 @@ PLANNER_TERMINOLOGY_RULES = """
 ACRONYMS AND TERMINOLOGY
 
 - Define each acronym the first time it appears in the plan.
-- Use the format `Full Term (ACRONYM)`.
+- Use the format Full Term (ACRONYM).
 - After the first definition, the acronym may be used by itself.
 - Do not define the same acronym repeatedly within one plan.
 - Prefer widely understood terminology.
@@ -377,12 +377,12 @@ ACRONYMS AND TERMINOLOGY
 PLANNER_MANDATORY_README_EXECUTION_REQUIREMENTS = """
 
 - The development plan MUST require every README.md command that executes the generated application to use the following form:
-  `uv run <declared-entry-point> [arguments]`
+  uv run <declared-entry-point> [arguments]
 - The README.md MUST NOT show the generated application entry point as a bare command.
-- Bare commands such as `<declared-entry-point> [arguments]` MUST be treated as invalid documentation, even when they would work after activating a virtual environment.
-- The plan MUST include an acceptance criterion stating that every application invocation in README.md is prefixed with `uv run`.
+- Bare commands such as <declared-entry-point> [arguments] MUST be treated as invalid documentation, even when they would work after activating a virtual environment.
+- The plan MUST include an acceptance criterion stating that every application invocation in README.md is prefixed with uv run.
 - The plan MUST require verification of all README.md shell examples before implementation is considered complete.
-- Virtual-environment activation MUST NOT be used as a substitute for the required `uv run` command format.
+- Virtual-environment activation MUST NOT be used as a substitute for the required uv run command format.
 """.strip()
 
 

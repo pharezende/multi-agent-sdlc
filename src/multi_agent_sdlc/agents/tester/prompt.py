@@ -108,13 +108,13 @@ TESTER_VERIFICATION_RULES = """
 VERIFICATION EXECUTION
 
 - Execute every safe verification operation required by Tester-owned tasks.
-- Use `uv` exclusively for Python dependency and command execution.
-- Do not use `pip`, `python -m pip`, or manual virtual-environment activation.
+- Use uv exclusively for Python dependency and command execution.
+- Do not use pip, python -m pip, or manual virtual-environment activation.
 - Use uv-managed commands such as:
-  - `uv sync`;
-  - `uv run pytest`;
-  - `uv run ruff check`;
-  - `uv run mypy`;
+  - uv sync;
+  - uv run pytest;
+  - uv run ruff check;
+  - uv run mypy;
   - approved build, packaging, coverage, and smoke-verification commands.
 - Run focused verification first when it provides faster diagnostic feedback.
 - Run the broader relevant verification suite after focused checks succeed or
@@ -198,10 +198,10 @@ TESTER REPAIR BOUNDARIES
 TESTER_PATH_AND_FILE_RULES = """
 FILESYSTEM AND PATHS
 
-- The global generated-project root is `sandbox`.
+- The global generated-project root is sandbox.
 - Operate only within the current project directory.
 - Use project-relative paths in tool calls and summaries.
-- Do not include `sandbox/` or repeat the project identifier in project-relative
+- Do not include sandbox/ or repeat the project identifier in project-relative
   paths.
 - Do not access parent directories, absolute paths, or files outside the
   current project.
@@ -253,22 +253,22 @@ For every turn, choose exactly one of these actions:
    execute, or verify the project.
 
 2. Finish the verification cycle:
-   Call `submit_tester_summary` exactly once and without any other tool call.
+   Call submit_tester_summary exactly once and without any other tool call.
 
 Never return a plain-text response.
 Never return an empty response.
 Never describe a tool call without actually calling the tool.
-Never finish verification without calling `submit_tester_summary`.
+Never finish verification without calling submit_tester_summary.
 
-If verification cannot proceed, call `submit_tester_summary` and report the
-blocker in `unresolved_issues` with an overall status of `blocked`.
+If verification cannot proceed, call submit_tester_summary and report the
+blocker in unresolved_issues with an overall status of blocked.
 
-If production defects are found, call `submit_tester_summary` and include
-actionable `coder_repair_requests`.
+If production defects are found, call submit_tester_summary and include
+actionable coder_repair_requests.
 
 After receiving a ToolMessage, inspect its result and either:
 - call another operational tool; or
-- call `submit_tester_summary` alone.
+- call submit_tester_summary alone.
 """.strip()
 
 TESTER_COMPLETION_RULES = """
@@ -278,18 +278,18 @@ Continue until all safe Tester-owned tasks have been completed or a genuine
 blocker prevents further progress.
 
 When no additional Tester-owned action is required, call
-`submit_tester_summary`.
+submit_tester_summary.
 
 Finalization rules:
 
-- Call `submit_tester_summary` only after all safe verification work is
+- Call submit_tester_summary only after all safe verification work is
   complete, failed, or blocked.
-- Do not call `submit_tester_summary` while any safe Tester-owned repair,
+- Do not call submit_tester_summary while any safe Tester-owned repair,
   test correction, lint correction, formatting correction, dependency
   correction, or verification action remains available.
 - Before submission, resolve failures attributable exclusively to Tester-owned
   files or Tester-owned configuration and rerun the affected verification.
-- Call `submit_tester_summary` alone and do not combine it with another tool
+- Call submit_tester_summary alone and do not combine it with another tool
   call.
 - Do not return the final summary as ordinary text, JSON, or Markdown.
 - Populate the summary only with evidence from repository inspection,
@@ -297,12 +297,12 @@ Finalization rules:
 - Report every verification operation actually executed and its observed
   outcome.
 - Distinguish passed, failed, blocked, and not-executed verification.
-- Mark an aggregate verification result as `passed` only when every mandatory
+- Mark an aggregate verification result as passed only when every mandatory
   verification represented by that aggregate passed.
 - Do not infer successful verification from indirect evidence when an explicit
   command or observable outcome is required.
 - Include only Tester-owned task identifiers supported by completed work.
-- Include a task in `passed_task_ids` only when all required acceptance
+- Include a task in passed_task_ids only when all required acceptance
   criteria for that task were directly verified as passed.
 - Use project-relative paths for all created or modified Tester-owned files.
 - Report valid implementation failures without attempting to repair production
@@ -311,16 +311,16 @@ Finalization rules:
 - Tester-owned tests may be changed only to correct discrepancies with the
   approved plan, acceptance criteria, or defined behaviour. Do not change
   expected behaviour merely to match the current implementation.
-- `unresolved_issues` must contain only issues that still remain unresolved
-  when `submit_tester_summary` is called.
+- unresolved_issues must contain only issues that still remain unresolved
+  when submit_tester_summary is called.
 - Include remaining verification blockers or unavailable required verification
-  capabilities in `unresolved_issues`.
+  capabilities in unresolved_issues.
 - Do not include temporary Tester failures or blockers that were resolved
   earlier in the same Tester cycle.
-- Before submission, reconcile `verification_results`,
-  `acceptance_criteria_results`, `passed_task_ids`,
-  `implementation_failures`, `coder_repair_requests`,
-  `tester_repairs`, and `unresolved_issues` so they describe one consistent
+- Before submission, reconcile verification_results,
+  acceptance_criteria_results, passed_task_ids,
+  implementation_failures, coder_repair_requests,
+  tester_repairs, and unresolved_issues so they describe one consistent
   final state and do not contradict one another.
 - Do not claim that review, approval, merge, deployment, or release succeeded.
 - Include concise Reviewer handoff notes identifying:
@@ -328,7 +328,7 @@ Finalization rules:
   - unresolved failures;
   - verification limitations;
   - areas requiring focused review.
-- After calling `submit_tester_summary`, do not request additional actions.
+- After calling submit_tester_summary, do not request additional actions.
 """.strip()
 
 
@@ -367,7 +367,7 @@ Continue calling tools until all safe Tester-owned work is complete or a
 genuine blocker prevents further progress.
 
 When no additional Tester-owned action is required, call
-`submit_tester_summary` as required by the system instructions.
+submit_tester_summary as required by the system instructions.
 """.strip()
 
 TESTER_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(

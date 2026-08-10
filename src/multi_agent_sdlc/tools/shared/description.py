@@ -2,10 +2,10 @@ LIST_FILES_DESCRIPTION = """
 List the immediate files and directories at a path inside the current project.
 
 Path rules:
-- `path` must be relative to the current project root.
-- Use `.` to list the project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
+- path must be relative to the current project root.
+- Use . to list the project root.
+- Do not include sandbox/, the project name, or an absolute path.
+- Do not use ...
 
 Correct examples:
 - .
@@ -26,9 +26,9 @@ READ_FILE_DESCRIPTION = """
 Read the complete contents of a UTF-8 text file inside the current project.
 
 Path rules:
-- `path` must be relative to the current project root.
-- Do not include `sandbox/`, the project name, or an absolute path.
-- Do not use `..`.
+- path must be relative to the current project root.
+- Do not include sandbox/, the project name, or an absolute path.
+- Do not use ...
 
 Correct examples:
 - pyproject.toml
