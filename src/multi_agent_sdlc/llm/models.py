@@ -18,7 +18,7 @@ MODEL_PROVIDER_CONFIG: dict[
     OpenRouterProviderConfig,
 ] = {
     ModelId.DEEPSEEK_V4_FLASH_0731_PAID: {
-        "only": ["baidu/fp8", "novita/fp8"],
+        "only": ["deepinfra/fp4", "novita/fp8"],
         "allow_fallbacks": True,
     },
 }
