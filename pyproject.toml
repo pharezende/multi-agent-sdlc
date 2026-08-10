@@ -29,3 +29,10 @@ multi-agent-sdlc = "multi_agent_sdlc.main:run"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+[tool.ruff.lint]
+select = ["E", "F", "W"] 
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 120
