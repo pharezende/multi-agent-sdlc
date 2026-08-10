@@ -1,7 +1,7 @@
-from re import fullmatch
-from multi_agent_sdlc.config import SANDBOX_ROOT
-
 from pathlib import Path, PurePosixPath
+from re import fullmatch
+
+from multi_agent_sdlc.config import SANDBOX_ROOT
 
 
 def normalise_relative_path(path: str) -> PurePosixPath:

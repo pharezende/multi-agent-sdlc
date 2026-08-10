@@ -1,11 +1,9 @@
-from enum import StrEnum
-
 import sqlite3
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from enum import StrEnum
 from pathlib import Path
 from uuid import uuid4
-
 
 WORKFLOW_RUNS_DATABASE_PATH = Path(".data/workflow_runs.sqlite")
 

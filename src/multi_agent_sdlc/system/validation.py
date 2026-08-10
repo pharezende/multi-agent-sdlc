@@ -1,9 +1,11 @@
-from .paths import normalise_relative_path
-from multi_agent_sdlc.tools.shared.validation import MODULE_PATTERN
 from collections.abc import Callable
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
+
+from multi_agent_sdlc.tools.shared.validation import MODULE_PATTERN
+
+from .paths import normalise_relative_path
 
 
 def validate_application_arguments(
@@ -88,9 +90,9 @@ def create_dependency_validator(
     role: str,
     prohibited_dependencies: set[str],
 ) -> Callable[[str], str]:
-    canonical_dependencies = set(
+    canonical_dependencies = {
         canonicalize_name(name) for name in prohibited_dependencies
-    )
+    }
 
     def validate_dependency(
         dependency: str,

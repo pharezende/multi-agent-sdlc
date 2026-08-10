@@ -1,6 +1,6 @@
-from multi_agent_sdlc.workflow.state import DevState
-from pathlib import Path
 from typing import Any
+
+from multi_agent_sdlc.workflow.state import DevState
 
 
 def build_coder_implementation_context(state: DevState) -> dict[str, Any]:

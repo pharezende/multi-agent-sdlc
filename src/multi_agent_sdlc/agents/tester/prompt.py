@@ -332,7 +332,7 @@ Finalization rules:
 """.strip()
 
 
-TESTER_SYSTEM_RULES = "\n\n".join(
+TESTER_SYSTEM_RULES = "\n\n".join(  # noqa: FLY002
     [
         TESTER_ROLE_AND_SCOPE_RULES,
         TESTER_CONTEXT_AND_EVIDENCE_RULES,

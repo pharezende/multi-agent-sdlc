@@ -1,6 +1,6 @@
-from multi_agent_sdlc.llm.models import MODEL_PROVIDER_CONFIG
 from multi_agent_sdlc.llm.config import MODEL_CONFIG
 from multi_agent_sdlc.llm.factory import create_chat_model
+from multi_agent_sdlc.llm.models import MODEL_PROVIDER_CONFIG
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
 
 base_coder_model = create_chat_model(

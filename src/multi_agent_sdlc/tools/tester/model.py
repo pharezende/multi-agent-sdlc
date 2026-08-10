@@ -1,18 +1,17 @@
-from multi_agent_sdlc.tools.shared.models import ProcessResult
-from multi_agent_sdlc.system.validation import create_module_name_validator
-from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_DEPENDENCIES
-from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_PYTHON_MODULES
-from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_ENTRY_POINTS
-from typing import NotRequired
-import re
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypedDict
 
 from pydantic import AfterValidator, Field, StringConstraints
-from typing import TypedDict
 
 from multi_agent_sdlc.system.validation import (
-    create_entry_point_validator,
     create_dependency_validator,
+    create_entry_point_validator,
+    create_module_name_validator,
+)
+from multi_agent_sdlc.tools.shared.models import ProcessResult
+from multi_agent_sdlc.tools.tester.validation import (
+    PROHIBITED_TESTER_DEPENDENCIES,
+    PROHIBITED_TESTER_ENTRY_POINTS,
+    PROHIBITED_TESTER_PYTHON_MODULES,
 )
 
 validate_tester_entry_point = create_entry_point_validator(

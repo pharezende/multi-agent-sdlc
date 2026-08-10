@@ -398,7 +398,7 @@ OUTPUT CONTRACT
 """.strip()
 
 
-PLANNER_SYSTEM_RULES = "\n\n".join(
+PLANNER_SYSTEM_RULES = "\n\n".join(  # noqa: FLY002
     [
         PLANNER_ROLE_RULES,
         PLANNER_REQUEST_AND_REPOSITORY_RULES,

@@ -1,6 +1,6 @@
-from multi_agent_sdlc.agents.tester.model import TesterSummary
 from langchain.tools import tool
 
+from multi_agent_sdlc.agents.tester.model import TesterSummary
 from multi_agent_sdlc.tools.tester.descriptions import SUBMIT_TESTER_SUMMARY_DESCRIPTION
 
 

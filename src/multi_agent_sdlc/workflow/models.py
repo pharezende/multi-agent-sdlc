@@ -1,6 +1,5 @@
-from typing import TypedDict
-from enum import Enum, StrEnum
-from typing import Literal
+from enum import StrEnum
+from typing import Literal, TypedDict
 
 from pydantic import BaseModel, ConfigDict, Field
 

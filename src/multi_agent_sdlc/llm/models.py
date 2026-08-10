@@ -1,5 +1,5 @@
-from typing import TypedDict
 from enum import StrEnum
+from typing import TypedDict
 
 
 class OpenRouterProviderConfig(TypedDict):

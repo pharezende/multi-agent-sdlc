@@ -1,8 +1,8 @@
-from multi_agent_sdlc.agents.coder.models import CoderSummary
 import json
 
 from langchain_core.prompts import ChatPromptTemplate
 
+from multi_agent_sdlc.agents.coder.models import CoderSummary
 
 CODER_ROLE_AND_PLAN_RULES = """
 You are the Coder in a sandboxed multi-agent software-development workflow:
@@ -372,7 +372,7 @@ CODER_SUMMARY_SCHEMA = json.dumps(
     ensure_ascii=False,
 )
 
-CODER_SYSTEM_RULES = "\n\n".join(
+CODER_SYSTEM_RULES = "\n\n".join(  # noqa: FLY002
     [
         CODER_ROLE_AND_PLAN_RULES,
         CODER_ARCHITECTURE_AND_SCOPE_RULES,

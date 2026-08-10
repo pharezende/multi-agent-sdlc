@@ -1,4 +1,3 @@
-from multi_agent_sdlc.workflow.state import DevState
 import json
 
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -12,6 +11,7 @@ from multi_agent_sdlc.agents.tester.prompt import (
     TESTER_RETEST_HUMAN_PROMPT,
     TESTER_SYSTEM_RULES,
 )
+from multi_agent_sdlc.workflow.state import DevState
 
 
 def build_tester_initial_messages(

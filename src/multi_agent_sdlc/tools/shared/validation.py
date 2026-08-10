@@ -1,9 +1,10 @@
 import re
-from multi_agent_sdlc.system.paths import normalise_relative_path
 from collections.abc import Callable
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
+
+from multi_agent_sdlc.system.paths import normalise_relative_path
 
 MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
@@ -96,9 +97,9 @@ def create_dependency_validator(
     role: str,
     prohibited_dependencies: set[str],
 ) -> Callable[[str], str]:
-    canonical_dependencies = set(
+    canonical_dependencies = {
         canonicalize_name(name) for name in prohibited_dependencies
-    )
+    }
 
     def validate_dependency(
         dependency: str,
