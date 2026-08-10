@@ -104,7 +104,7 @@ def prepare_coder_implementation_node(
     )
 
     return {
-        "project_directory": str(project_directory),
+        "project_directory": project_directory.resolve(),
         "development_status": DevelopmentStatus.IMPLEMENTING,
         "coder_messages": prompt_value.to_messages(),
     }

@@ -1,3 +1,4 @@
+from pathlib import Path
 from operator import add
 from typing import Annotated, TypedDict
 
@@ -26,7 +27,7 @@ class DevState(TypedDict):
         add_messages,
     ]
 
-    project_directory: str | None
+    project_directory: Path | None
     coder_messages: Annotated[list[BaseMessage], add_messages]
     current_coder_summary: CoderSummary | None
     coder_invalid_response_count: int  # Need for the tester as well.
