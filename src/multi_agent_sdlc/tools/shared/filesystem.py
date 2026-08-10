@@ -3,8 +3,8 @@ from pathlib import Path
 
 from langchain.tools import ToolRuntime, tool
 
-from multi_agent_sdlc.runtime.paths import resolve_project_path
-from multi_agent_sdlc.runtime.workspace import get_project_directory
+from multi_agent_sdlc.system.paths import resolve_project_path
+from multi_agent_sdlc.system.workspace import get_project_directory
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.tools.shared.description import (
     LIST_FILES_DESCRIPTION,

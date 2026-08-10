@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.shared.models import ProcessResult
 from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
 from multi_agent_sdlc.tools.tester.model import VerificationCommand
 from multi_agent_sdlc.tools.tester.model import PythonModuleName
@@ -13,8 +14,8 @@ from langchain.tools import ToolRuntime, tool
 from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 
-from multi_agent_sdlc.runtime.process import execute_process
-from multi_agent_sdlc.runtime.workspace import get_project_directory
+from multi_agent_sdlc.system.process import execute_process
+from multi_agent_sdlc.system.workspace import get_project_directory
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.tools.tester.descriptions import (
     RUN_APPLICATION_DESCRIPTION,

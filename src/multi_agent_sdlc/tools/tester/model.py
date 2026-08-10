@@ -1,5 +1,5 @@
 from multi_agent_sdlc.tools.shared.models import ProcessResult
-from multi_agent_sdlc.runtime.validation import create_module_name_validator
+from multi_agent_sdlc.system.validation import create_module_name_validator
 from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_DEPENDENCIES
 from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_PYTHON_MODULES
 from multi_agent_sdlc.tools.tester.validation import PROHIBITED_TESTER_ENTRY_POINTS
@@ -10,7 +10,7 @@ from typing import Annotated, Literal
 from pydantic import AfterValidator, Field, StringConstraints
 from typing import TypedDict
 
-from multi_agent_sdlc.runtime.validation import (
+from multi_agent_sdlc.system.validation import (
     create_entry_point_validator,
     create_dependency_validator,
 )

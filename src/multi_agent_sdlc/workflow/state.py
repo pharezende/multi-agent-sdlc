@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
 from multi_agent_sdlc.agents.tester.model import TesterCycle
 from multi_agent_sdlc.agents.tester.model import TesterSummary
 from .models import VerificationStatus
@@ -12,8 +13,6 @@ from typing import Annotated, NotRequired, TypedDict
 
 from langchain_core.messages import BaseMessage
 from langgraph.graph import add_messages
-
-from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
 
 class DevState(TypedDict):

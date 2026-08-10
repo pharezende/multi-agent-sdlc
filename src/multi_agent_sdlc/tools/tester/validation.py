@@ -5,17 +5,9 @@ from typing import Annotated
 from pydantic import AfterValidator, Field, StringConstraints
 from typing import TypedDict
 
-from multi_agent_sdlc.runtime.validation import (
+from multi_agent_sdlc.system.validation import (
     create_entry_point_validator,
     create_dependency_validator,
-)
-
-MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
-
-DEPENDENCY_PATTERN = re.compile(
-    r"^[A-Za-z0-9][A-Za-z0-9._-]*"
-    r"(?:\[[A-Za-z0-9._,-]+\])?"
-    r"(?:(?:===|==|~=|!=|<=|>=|<|>)[A-Za-z0-9.*+!_-]+)?$"
 )
 
 

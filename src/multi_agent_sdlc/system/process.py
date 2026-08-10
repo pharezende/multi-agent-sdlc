@@ -5,7 +5,7 @@ import os
 import signal
 
 
-from multi_agent_sdlc.runtime.environment import build_sandbox_environment
+from .environment import build_sandbox_environment
 
 
 def normalise_process_output(

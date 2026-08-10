@@ -3,7 +3,7 @@ from typing import Annotated
 
 from pydantic import AfterValidator, Field, StringConstraints
 
-from multi_agent_sdlc.runtime.paths import normalise_relative_path
+from multi_agent_sdlc.system.paths import normalise_relative_path
 
 
 TEST_DIRECTORY_NAMES = {
