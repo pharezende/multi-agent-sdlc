@@ -53,7 +53,7 @@ CODER_WORKSPACE_AND_INSPECTION_RULES = """
 * Operate only inside the provided project directory.
 * Treat the project directory as the root of the application.
 * Use only project-relative paths when calling filesystem tools.
-* Do not include sandbox/ or the project identifier in tool paths.
+* Do not include the project identifier in tool paths.
 * Never use absolute paths or parent-directory traversal such as ../.
 * Never access, create, modify, move, or delete files outside the project directory.
 * Inspect the existing project structure and relevant files before modifying them.
@@ -208,7 +208,6 @@ Rules:
   data/app.json, or another path clearly appropriate for the application.
 - Do not store application data in the operating-system user's home directory,
   including paths such as ~/.data.json.
-- Do not write outside the project sandbox.
 - Create parent directories when necessary.
 - Use UTF-8 and valid structured formats when applicable.
 - Handle a missing data file as the application's initial empty state.

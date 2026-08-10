@@ -279,23 +279,23 @@ Mandatory sandbox-boundary rules:
 PLANNER_PROJECT_DIRECTORY_RULES = """
 PROJECT DIRECTORY
 
-- The global generated-project root is sandbox.
+- Generated projects are created under an application-managed root directory.
 - Each generated application must have one unique directory directly under
-  sandbox.
+  that root directory.
 - Populate project_id with a concise lowercase kebab-case directory name.
-- Do not include sandbox/ in project_id.
+- Do not include any parent directory in project_id.
 - All task target_files must be relative to the generated project directory.
-- Do not include sandbox/, absolute paths, or parent-directory traversal in
+- Do not include the project root, absolute paths, or parent-directory traversal in
   target_files.
 - Do not repeat project_id as the first component of a target path.
 - For a new project, define a coherent directory structure beneath the project
   directory.
 - For an existing project, preserve its current layout unless the approved
   request requires a change.
-- Treat the project directory as the writable sandbox boundary.
+- Treat the project directory as the writable project boundary.
 - Planned application, test, configuration, cache, log, and generated-data
   paths must remain within that directory.
-""".strip()
+  """.strip()
 
 
 PLANNER_TARGET_FILE_RULES = """

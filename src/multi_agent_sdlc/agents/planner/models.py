@@ -56,7 +56,7 @@ class DevelopmentPlan(BaseModel):
     goal: str = Field(description="Restated user objective")
     tasks: list[Task]
     execution_order: list[str] = Field(
-        description="Task ids in dependency-resolved order — Planner computes this so downstream nodes don't need a topo-sort"
+        description="Task ids in dependency-resolved order"
     )
     assumptions: list[str] = Field(
         default_factory=list, description="Things the Planner assumed due to ambiguity"

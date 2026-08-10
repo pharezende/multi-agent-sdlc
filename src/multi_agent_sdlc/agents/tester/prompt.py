@@ -198,11 +198,10 @@ TESTER REPAIR BOUNDARIES
 TESTER_PATH_AND_FILE_RULES = """
 FILESYSTEM AND PATHS
 
-- The global generated-project root is sandbox.
+- Generated projects are created under an application-managed root directory.
 - Operate only within the current project directory.
 - Use project-relative paths in tool calls and summaries.
-- Do not include sandbox/ or repeat the project identifier in project-relative
-  paths.
+- Do not include any parent directory in project_id.
 - Do not access parent directories, absolute paths, or files outside the
   current project.
 - Production files may be read for verification but must not be modified.
