@@ -1,12 +1,10 @@
+from multi_agent_sdlc.tools.shared.validation import validate_application_arguments
+from multi_agent_sdlc.tools.shared.validation import validate_file_content
+from multi_agent_sdlc.tools.shared.validation import validate_project_relative_path
 from typing import Annotated, NotRequired, TypedDict
 
 from pydantic import AfterValidator, Field
 
-from multi_agent_sdlc.system.validation import (
-    validate_application_arguments,
-    validate_file_content,
-    validate_project_relative_path,
-)
 
 ProjectRelativePath = Annotated[
     str,

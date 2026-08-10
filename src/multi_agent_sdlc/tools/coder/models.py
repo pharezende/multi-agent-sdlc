@@ -1,12 +1,11 @@
+from multi_agent_sdlc.tools.shared.validation import create_dependency_validator
+from multi_agent_sdlc.tools.shared.validation import create_module_name_validator
+from multi_agent_sdlc.tools.shared.validation import create_entry_point_validator
 from typing import Annotated, Literal
 
 from pydantic import AfterValidator, Field, StringConstraints
 
-from multi_agent_sdlc.system.validation import (
-    create_dependency_validator,
-    create_entry_point_validator,
-    create_module_name_validator,
-)
+
 from multi_agent_sdlc.tools.coder.validation import (
     PROHIBITED_CODER_DEPENDENCY_PACKAGES,
     PROHIBITED_CODER_ENTRY_POINTS,
