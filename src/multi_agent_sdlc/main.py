@@ -7,14 +7,15 @@ from multi_agent_sdlc.cli import parse_args
 def run() -> None:
     args = parse_args()
 
-    automatic_plan_review_decision = PlanReviewDecision(
-        decision="approved"
-    ).model_dump()
+    automatic_plan_review_config = (
+        {"plan_review_decision": PlanReviewDecision(decision="approved").model_dump()}
+        if args.auto_approve_plan
+        else {}
+    )
 
     if args.resume:
         resume_workflow(
-            thread_id=args.resume,
-            plan_review_decision=automatic_plan_review_decision,
+            thread_id=args.resume, plan_review_decision=automatic_plan_review_config
         )
     else:
         request = """
@@ -46,7 +47,8 @@ def run() -> None:
         """.strip()
 
         run_new_workflow(
-            request=request, plan_review_decision=automatic_plan_review_decision
+            request=request,
+            plan_review_decision=automatic_plan_review_config,
         )
 
 
