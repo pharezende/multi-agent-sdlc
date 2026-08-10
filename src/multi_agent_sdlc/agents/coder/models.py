@@ -40,7 +40,7 @@ class CoderSummary(BaseModel):
     entry_points: list[str] = Field(
         default_factory=list,
         description=(
-            "Command-line entry-point names configured under " "`[project.scripts]`."
+            "Command-line entry-point names configured under " "[project.scripts]."
         ),
     )
 
@@ -48,7 +48,7 @@ class CoderSummary(BaseModel):
         default_factory=list,
         description=(
             "Operations actually executed by Coder tools and their observed "
-            "outcomes, such as successful `uv sync` or application launch."
+            "outcomes, such as successful uv sync or application launch."
         ),
     )
 

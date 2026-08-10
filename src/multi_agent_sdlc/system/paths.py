@@ -45,7 +45,7 @@ def reject_repeated_project_prefix(
 
         raise PermissionError(
             "Do not include the sandbox or project-directory prefix. "
-            f"Use `{suggested_path}` instead of `{path}`."
+            f"Use {suggested_path} instead of {path}."
         )
 
 

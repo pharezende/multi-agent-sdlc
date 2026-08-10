@@ -7,7 +7,7 @@ from multi_agent_sdlc.tools.shared.models import ExecutionTimeout
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.system.process import execute_process
-from multi_agent_sdlc.system.workspace import get_project_directory
+
 from multi_agent_sdlc.workflow.state import DevState
 
 
@@ -21,7 +21,7 @@ def tester_install_verification_dependencies(
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [

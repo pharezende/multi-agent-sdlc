@@ -154,14 +154,14 @@ class TesterSummary(BaseModel):
     verification_results: list[VerificationResult] = Field(
         description=(
             "Verification operations actually executed. This field must contain "
-            "sufficient successful evidence when `overall_status` is `passed`."
+            "sufficient successful evidence when overall_status is passed."
         )
     )
 
     acceptance_criteria_results: list[AcceptanceCriterionResult] = Field(
         description=(
             "Results for all applicable approved acceptance criteria when "
-            "`overall_status` is `passed`."
+            "overall_status is passed."
         )
     )
 
@@ -182,17 +182,17 @@ class TesterSummary(BaseModel):
             "Issues that remain unresolved, could not be safely classified, or "
             "prevented required verification from completing. Do not duplicate "
             "confirmed Coder-owned defects already recorded in "
-            "`implementation_failures` and `coder_repair_requests`. This field "
-            "should normally be non-empty only when `overall_status` is `blocked`."
+            "implementation_failures and coder_repair_requests. This field "
+            "should normally be non-empty only when overall_status is blocked."
         )
     )
 
     overall_status: Literal["passed", "repair-required", "blocked"] = Field(
         description=(
-            "Final Tester outcome. Use `passed` only when the latest complete "
+            "Final Tester outcome. Use passed only when the latest complete "
             "project verification passed and every applicable acceptance criterion "
-            "passed. Use `failed` when verification produced evidence of at least "
-            "one Coder-owned production defect requiring repair. Use `blocked` only "
+            "passed. Use failed when verification produced evidence of at least "
+            "one Coder-owned production defect requiring repair. Use blocked only "
             "when required verification could not be completed or a failure could "
             "not be safely classified because of an external, environmental, tool, "
             "dependency, or access limitation."

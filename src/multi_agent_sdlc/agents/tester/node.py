@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
 from multi_agent_sdlc.workflow.models import VerificationStatus
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.agents.tester.model import VerificationType
@@ -30,10 +31,10 @@ def tester_node(state: DevState) -> dict[str, object]:
                         response,
                         HumanMessage(
                             content=(
-                                "`submit_tester_summary` must be called alone. "
+                                "submit_tester_summary must be called alone. "
                                 "Do not combine it with operational tool calls. "
                                 "Correct the response and call "
-                                "`submit_tester_summary` again."
+                                "submit_tester_summary again."
                             )
                         ),
                     ],
@@ -55,7 +56,7 @@ def tester_node(state: DevState) -> dict[str, object]:
                 content=(
                     "Invalid response. Return no explanatory text. "
                     "Call one or more approved Tester operational tools, "
-                    "or call `submit_tester_summary` alone."
+                    "or call submit_tester_summary alone."
                 )
             ),
         ],
@@ -80,8 +81,8 @@ def _process_tester_summary_call(
                 response,
                 HumanMessage(
                     content=(
-                        "The Tester summary cannot report `passed`. "
-                        "Run `tester_run_project_verification` and ensure "
+                        "The Tester summary cannot report passed. "
+                        "Run tester_run_project_verification and ensure "
                         "all mandatory Ruff, Mypy, and Pytest checks complete "
                         "successfully before submitting the summary again."
                     )

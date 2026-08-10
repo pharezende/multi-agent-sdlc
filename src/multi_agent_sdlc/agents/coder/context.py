@@ -3,9 +3,7 @@ from pathlib import Path
 from typing import Any
 
 
-def build_coder_implementation_context(
-    state: DevState, project_directory: Path
-) -> dict[str, Any]:
+def build_coder_implementation_context(state: DevState) -> dict[str, Any]:
 
     plan = state.get("plan")
     if plan is None:
@@ -19,7 +17,6 @@ def build_coder_implementation_context(
 
     return {
         "request": state["request"],
-        "project_directory": str(project_directory),
         "project_id": plan.project_id,
         "goal": plan.goal,
         "assumptions": plan.assumptions,
@@ -57,7 +54,6 @@ def build_coder_repair_context(
     ]
 
     return {
-        "project_directory": state["project_directory"],
         "related_coder_tasks": related_coder_tasks,
         "coder_repair_requests": [
             request.model_dump(mode="json")

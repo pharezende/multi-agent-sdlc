@@ -15,7 +15,7 @@ from langchain_core.messages import ToolMessage
 from langgraph.types import Command
 
 from multi_agent_sdlc.system.process import execute_process
-from multi_agent_sdlc.system.workspace import get_project_directory
+
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.tools.tester.descriptions import (
     RUN_APPLICATION_DESCRIPTION,
@@ -38,7 +38,7 @@ def tester_run_application(
     timeout_seconds: ExecutionTimeout = 15,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [
@@ -65,7 +65,7 @@ def tester_run_python_module(
     timeout_seconds: ExecutionTimeout = 15,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [
@@ -90,7 +90,7 @@ def tester_sync_project(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         ["uv", "sync"],
@@ -109,7 +109,7 @@ def tester_run_build(
 ) -> ProcessResult:
     """Build the project distributions using uv."""
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         command=["uv", "build"],
@@ -128,7 +128,7 @@ def tester_run_verification_command(
     arguments: str | None = None,
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         ["uv", "run", command, *(arguments or [])],
@@ -152,7 +152,7 @@ def tester_run_project_verification(
         ["uv", "run", "pytest"],
     ]
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     checks = [
         execute_process(

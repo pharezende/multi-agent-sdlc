@@ -39,8 +39,8 @@ class Task(BaseModel):
     target_files: list[str] = Field(
         description=(
             "File paths relative to the application's project directory. "
-            "Do not include `sandbox/` or the project id. "
-            "Examples: `src/calculator/core.py`, `tests/test_core.py`."
+            "Do not include sandbox/ or the project id. "
+            "Examples: src/calculator/core.py, tests/test_core.py."
         )
     )
     risk: RiskLevel = Field(description="Risk level of the task")
@@ -50,7 +50,7 @@ class DevelopmentPlan(BaseModel):
     project_id: str = Field(
         description=(
             "Unique lowercase kebab-case identifier used as the project "
-            "directory under `sandbox`, for example `terminal-calculator`."
+            "directory under sandbox, for example terminal-calculator."
         )
     )
     goal: str = Field(description="Restated user objective")

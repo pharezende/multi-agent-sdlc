@@ -77,9 +77,7 @@ def create_module_name_validator(
         root_module = cleaned.split(".", maxsplit=1)[0].lower()
 
         if root_module in prohibited_python_modules:
-            raise PermissionError(
-                f"The {role} cannot execute Python module `{cleaned}`."
-            )
+            raise PermissionError(f"The {role} cannot execute Python module {cleaned}.")
 
         return cleaned
 

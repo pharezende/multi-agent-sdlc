@@ -1,3 +1,4 @@
+from multi_agent_sdlc.system.paths import create_project_directory
 from multi_agent_sdlc.presentation.plan_formatter import format_plan
 from .models import PlanReviewStatus
 from .models import VerificationStatus
@@ -6,7 +7,6 @@ from multi_agent_sdlc.presentation.plan_pdf import export_plan_to_pdf
 from .checkpointing import get_thread_id
 from langchain_core.runnables import RunnableConfig
 from .run_repository import update_workflow_project_directory
-from multi_agent_sdlc.system.paths import create_project_directory
 from langchain_core.messages import HumanMessage
 from multi_agent_sdlc.agents.planner.prompt import (
     PLANNER_REVISION_HUMAN_PROMPT_TEMPLATE,
@@ -56,7 +56,6 @@ def prepare_coder_implementation_node(
 
     coder_context = build_coder_implementation_context(
         state=state,
-        project_directory=project_directory,
     )
 
     prompt_value = CODER_CHAT_PROMPT_TEMPLATE.invoke(

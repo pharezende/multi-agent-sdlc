@@ -6,7 +6,7 @@ from multi_agent_sdlc.tools.coder.models import VerificationCommand
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.system.process import execute_process
-from multi_agent_sdlc.system.workspace import get_project_directory
+
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.tools.coder.descriptions import (
     RUN_APPLICATION_DESCRIPTION,
@@ -32,7 +32,7 @@ def coder_run_application(
     timeout_seconds: ExecutionTimeout = 15,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [
@@ -59,7 +59,7 @@ def coder_run_python_module(
     timeout_seconds: ExecutionTimeout = 15,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [
@@ -84,7 +84,7 @@ def coder_sync_project(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         ["uv", "sync"],
@@ -103,7 +103,7 @@ def coder_run_verification_command(
     arguments: ApplicationArguments | None = None,
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         ["uv", "run", command, *(arguments or [])],

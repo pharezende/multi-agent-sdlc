@@ -1,9 +1,9 @@
+from multi_agent_sdlc.system.paths import resolve_project_path
+
 from multi_agent_sdlc.tools.shared.models import FileContent
 from multi_agent_sdlc.tools.shared.models import ProjectRelativePath
 from langchain.tools import ToolRuntime, tool
 
-from multi_agent_sdlc.runtime.paths import resolve_project_path
-from multi_agent_sdlc.runtime.workspace import get_project_directory
 from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.tools.coder.descriptions import (
     CREATE_DIRECTORY_DESCRIPTION,
@@ -25,7 +25,7 @@ def coder_write_file(
 ) -> str:
     reject_coder_test_path(path)
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
     file_path = resolve_project_path(project_directory, path)
 
     if file_path.exists() and file_path.is_dir():
@@ -54,7 +54,7 @@ def coder_create_directory(
 ) -> str:
     reject_coder_test_path(path)
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
     directory_path = resolve_project_path(
         project_directory,
         path,

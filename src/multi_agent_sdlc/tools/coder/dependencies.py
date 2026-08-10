@@ -1,3 +1,5 @@
+from multi_agent_sdlc.system.process import execute_process
+
 from multi_agent_sdlc.tools.coder.descriptions import (
     INSTALL_PACKAGE_DEPENDENCIES_DESCRIPTION,
 )
@@ -18,7 +20,7 @@ def coder_install_package_dependencies(
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
 
-    project_directory = get_project_directory(runtime)
+    project_directory = runtime.state["project_directory"]
 
     return execute_process(
         [

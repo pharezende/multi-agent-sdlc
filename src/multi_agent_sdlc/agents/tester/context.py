@@ -11,7 +11,6 @@ def build_tester_context(state: DevState) -> dict[str, object]:
         raise ValueError("This workflow stage requires an approved plan.")
 
     return {
-        "project_directory": state["project_directory"],
         "plan": plan.model_dump(mode="json"),
         "coder_summary": current_coder_summary.model_dump(mode="json"),
     }
@@ -30,7 +29,6 @@ def build_tester_retest_context(
         raise ValueError("Tester retest context requires the previous Tester summary.")
 
     return {
-        "project_directory": state["project_directory"],
         "latest_coder_summary": coder_summary.model_dump(mode="json"),
         "previous_implementation_failures": [
             failure.model_dump(mode="json")
