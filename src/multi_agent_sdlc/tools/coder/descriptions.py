@@ -185,9 +185,9 @@ uv-managed environment.
 
 The tool internally executes:
 
-```
+
 uv run <entry_point> [arguments]
-```
+
 
 The Coder provides only:
 
@@ -240,9 +240,7 @@ environment.
 
 The tool internally executes:
 
-```
 uv run python -m <module> [arguments]
-```
 
 The Coder provides only:
 
@@ -295,14 +293,13 @@ Boundaries:
   independent Tester verification.
   """.strip()
 
-INSTALL_RUNTIME_DEPENDENCIES_DESCRIPTION = """
-Add required production runtime dependencies to the current project using `uv`.
+INSTALL_PACKAGE_DEPENDENCIES_DESCRIPTION = """
+Add required package dependencies to the current project using `uv`.
 
 The tool internally executes:
 
-```
+
 uv add <package> [<package> ...]
-```
 
 `uv add`:
 
@@ -310,7 +307,7 @@ uv add <package> [<package> ...]
 * updates `uv.lock`;
 * synchronises the project's uv-managed environment.
 
-Provide only runtime dependency specifications.
+Provide only allowed package dependency specifications.
 
 Correct examples:
 
@@ -318,6 +315,8 @@ Correct examples:
 * ["requests>=2.32"]
 * ["pydantic>=2"]
 * ["fastapi", "uvicorn"]
+* ["ruff"]
+* ["mypy"]
 
 Incorrect examples:
 
@@ -325,8 +324,7 @@ Incorrect examples:
 * ["pip install click"]
 * ["--dev", "ruff"]
 * ["pytest"]
-* ["ruff"]
-* ["mypy"]
+* ["pytest-cov"]
 * ["coverage"]
 * ["git+https://example.com/repository.git"]
 * ["package @ https://example.com/package.whl"]
@@ -335,77 +333,17 @@ Important rules:
 
 * Do not use `pip`, `python -m pip`, or `uv pip install`.
 * Do not manually edit or activate `.venv`.
-* Use this tool only when the production application genuinely requires an
-  external runtime dependency.
+* Use this tool only when the project genuinely requires an external package
+  dependency.
 * Do not add packages already provided by the Python standard library.
 * Do not add direct URL, Version Control System, SSH, or local-file
   dependencies.
-* Do not add linting, formatting, type-checking, coverage, testing, build, or
-  other development dependencies with this tool.
-* Record every runtime dependency actually added or changed.
+* Linting, formatting, and type-checking dependencies are allowed.
+* Do not add testing, test-coverage, or other test-specific dependencies with
+  this tool.
+* Record every package dependency actually added or changed.
   """.strip()
 
-INSTALL_DEVELOPMENT_DEPENDENCIES_DESCRIPTION = """
-Add required Coder-side quality and development dependencies to the current
-project using `uv`.
-
-The tool internally executes:
-
-```
-uv add --dev <package> [<package> ...]
-```
-
-`uv add --dev`:
-
-* records dependencies as development dependencies in `pyproject.toml`;
-* updates `uv.lock`;
-* synchronises the project's uv-managed environment.
-
-Use this tool only for dependencies required to perform approved preliminary
-Coder-side operations such as:
-
-* linting and formatting with Ruff;
-* static type checking with Mypy;
-* coverage reporting or analysis;
-* build and packaging validation when supported by an approved Coder tool.
-
-Correct examples:
-
-* ["ruff"]
-* ["mypy"]
-* ["coverage[toml]>=7"]
-* ["build"]
-
-Incorrect examples:
-
-* ["uv", "add", "--dev", "ruff"]
-* ["pip install ruff"]
-* ["--dev", "mypy"]
-* ["pytest"]
-* ["pytest-cov"]
-* ["requests"]
-* ["fastapi"]
-* ["git+https://example.com/repository.git"]
-* ["package @ https://example.com/package.whl"]
-
-Important rules:
-
-* Pytest and other test runners are not Coder-owned dependencies.
-* Do not add Pytest, pytest-cov, Hypothesis, Tox, Nox, or other Tester-owned
-  testing dependencies.
-* Do not use `pip`, `python -m pip`, or `uv pip install`.
-* Do not manually edit or activate `.venv`.
-* Reuse existing development dependencies whenever possible.
-* Add only dependencies genuinely required for approved Coder-side quality
-  operations.
-* Do not add direct URL, Version Control System, SSH, or local-file
-  dependencies.
-* Do not add a production requirement as a development dependency.
-* Record every development dependency added and explain why it was necessary.
-
-Coder-side quality results remain preliminary. The Tester must independently
-execute the applicable checks before the workflow proceeds to review.
-""".strip()
 
 RUN_SYNC_PROJECT = """
 Synchronise the current Python project and validate its declared environment
@@ -413,9 +351,7 @@ using uv.
 
 The tool internally executes:
 
-```
 uv sync
-```
 
 Use this tool after:
 
@@ -478,9 +414,9 @@ uv-managed environment.
 
 The tool internally executes:
 
-```
+
 uv run <command> [arguments]
-```
+
 
 Approved commands:
 

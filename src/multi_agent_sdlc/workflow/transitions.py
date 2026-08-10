@@ -72,7 +72,7 @@ def prepare_coder_implementation_node(
 
     return {
         "project_directory": str(project_directory),
-        "coder_status": DevelopmentStatus.IMPLEMENTING,
+        "development_status": DevelopmentStatus.IMPLEMENTING,
         "coder_messages": prompt_value.to_messages(),
     }
 
@@ -96,7 +96,7 @@ def prepare_tester_node(
         messages = build_tester_initial_messages(state)
 
     return {
-        "tester_status": VerificationStatus.TESTING,
+        "verification_status": VerificationStatus.TESTING,
         "tester_messages": messages,
         "current_project_verification_result": None,
     }
@@ -116,7 +116,7 @@ def prepare_coder_repair_node(
     )
 
     return {
-        "coder_status": DevelopmentStatus.REPAIRING,
+        "development_status": DevelopmentStatus.REPAIRING,
         "coder_messages": prompt_value.to_messages(),
         "current_coder_summary": None,
     }

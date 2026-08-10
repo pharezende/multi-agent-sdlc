@@ -32,7 +32,11 @@ def reject_repeated_project_prefix(
     parts = candidate.parts
     project_name = project_directory.name
 
-    if len(parts) >= 2 and parts[0].lower() == "sandbox" and parts[1] == project_name:
+    if (
+        len(parts) >= 2
+        and parts[0].lower() == SANDBOX_ROOT
+        and parts[1] == project_name
+    ):
         remaining_parts = parts[2:]
 
         suggested_path = (

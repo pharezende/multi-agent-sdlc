@@ -1,4 +1,8 @@
-from multi_agent_sdlc.tools.tester.validation import ProcessResult
+from multi_agent_sdlc.tools.shared.models import ProcessResult
+from multi_agent_sdlc.tools.shared.models import ExecutionTimeout
+from multi_agent_sdlc.tools.shared.models import StandardInput
+from multi_agent_sdlc.tools.shared.models import ApplicationArguments
+from multi_agent_sdlc.tools.coder.models import VerificationCommand
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.runtime.process import execute_process
@@ -10,12 +14,9 @@ from multi_agent_sdlc.tools.coder.descriptions import (
     RUN_SYNC_PROJECT,
     RUN_VERIFICATION_COMMAND_DESCRIPTION,
 )
-from multi_agent_sdlc.tools.coder.validation import (
-    ApplicationArguments,
+from multi_agent_sdlc.tools.coder.models import (
     EntryPoint,
-    ExecutionTimeout,
     PythonModuleName,
-    StandardInput,
 )
 
 
@@ -90,25 +91,6 @@ def coder_sync_project(
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
     )
-
-
-from typing import Annotated, Literal
-
-from pydantic import Field
-
-VerificationCommand = Annotated[
-    Literal[
-        "ruff",
-        "mypy",
-        "coverage",
-    ],
-    Field(
-        description=(
-            "Approved development or verification executable to run "
-            "inside the project's uv-managed environment."
-        )
-    ),
-]
 
 
 @tool(

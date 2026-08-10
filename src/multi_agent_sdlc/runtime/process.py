@@ -1,4 +1,4 @@
-from multi_agent_sdlc.tools.tester.validation import ProcessResult
+from multi_agent_sdlc.tools.shared.models import ProcessResult
 import subprocess
 from pathlib import Path
 import os

@@ -1,14 +1,14 @@
-from multi_agent_sdlc.tools.tester.validation import ProcessResult
+from multi_agent_sdlc.tools.shared.models import ProcessResult
+from multi_agent_sdlc.tools.tester.model import VerificationDependencies
+from multi_agent_sdlc.tools.tester.descriptions import (
+    INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION,
+)
+from multi_agent_sdlc.tools.shared.models import ExecutionTimeout
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.runtime.process import execute_process
 from multi_agent_sdlc.runtime.workspace import get_project_directory
 from multi_agent_sdlc.workflow.state import DevState
-from multi_agent_sdlc.tools.coder.validation import ExecutionTimeout
-from multi_agent_sdlc.tools.tester.descriptions import (
-    INSTALL_VERIFICATION_DEPENDENCIES_DESCRIPTION,
-)
-from multi_agent_sdlc.tools.tester.validation import VerificationDependencies
 
 
 @tool(

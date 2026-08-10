@@ -18,19 +18,16 @@ from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
 
 class DevState(TypedDict):
     request: str
+
     plan: DevelopmentPlan | None
-    project_directory: str | None
     planner_messages: Annotated[
         list[BaseMessage],
         add_messages,
     ]
-    plan_review_status: PlanReviewStatus
-    plan_review_decision: PlanReviewDecision | None
-    plan_review_content: str | None
 
+    project_directory: str | None
     coder_messages: Annotated[list[BaseMessage], add_messages]
-    coder_status: DevelopmentStatus | None
-    current_coder_summary: CoderSummary | None  # Refactor and remove later
+    current_coder_summary: CoderSummary | None
     coder_invalid_response_count: int  # Need for the tester as well.
     coder_summary_history: Annotated[
         list[CoderCycle],
@@ -38,14 +35,19 @@ class DevState(TypedDict):
     ]
 
     tester_messages: Annotated[list[BaseMessage], add_messages]
-    tester_status: VerificationStatus | None
-    current_tester_summary: TesterSummary | None  # Refactor and remove later
+    current_tester_summary: TesterSummary | None
     tester_summary_history: Annotated[
         list[TesterCycle],
         add,
     ]
 
     current_project_verification_result: ProjectVerificationResult | None
+
+    plan_review_status: PlanReviewStatus
+    plan_review_decision: PlanReviewDecision | None
+    plan_review_content: str | None
+    development_status: DevelopmentStatus | None
+    verification_status: VerificationStatus | None
 
 
 def build_initial_state(request: str) -> DevState:
@@ -58,12 +60,12 @@ def build_initial_state(request: str) -> DevState:
         "plan_review_content": None,
         "planner_messages": [],
         "coder_messages": [],
-        "coder_status": DevelopmentStatus.IDLE,
+        "development_status": DevelopmentStatus.NOT_STARTED,
         "current_coder_summary": None,
         "coder_invalid_response_count": 0,
         "coder_summary_history": [],
         "tester_messages": [],
-        "tester_status": VerificationStatus.IDLE,
+        "verification_status": VerificationStatus.NOT_STARTED,
         "current_tester_summary": None,
         "tester_summary_history": [],
         "current_project_verification_result": None,

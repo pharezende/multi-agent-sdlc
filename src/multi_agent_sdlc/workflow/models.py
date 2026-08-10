@@ -4,11 +4,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from multi_agent_sdlc.tools.tester.validation import NonBlankStr
-
 
 class DevelopmentStatus(StrEnum):
-    IDLE = "idle"
+    NOT_STARTED = "not_started"
     IMPLEMENTING = "implementing"
     REPAIRING = "repairing"
     COMPLETED = "completed"
@@ -17,7 +15,7 @@ class DevelopmentStatus(StrEnum):
 
 
 class VerificationStatus(StrEnum):
-    IDLE = "idle"
+    NOT_STARTED = "not_started"
     TESTING = "testing"
     PASSED = "passed"
     REPAIR_REQUIRED = "repair_required"

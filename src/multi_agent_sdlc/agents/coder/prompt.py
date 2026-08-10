@@ -100,21 +100,21 @@ For a newly generated Python project:
 
 Use this structure for a command-line entry point:
 
-```
+
 [project.scripts]
 command-name = "package.module:function"
-```
+
 
 For a new `src/`-layout project using Hatchling, use:
 
-```
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/package_name"]
-```
+
 
 Additional rules:
 

@@ -7,8 +7,6 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.tester.llm import tester_llm
 
-from multi_agent_sdlc.tools.tester.validation import ProjectVerificationResult
-
 
 def tester_node(state: DevState) -> dict[str, object]:
     tester_messages = state["tester_messages"]
@@ -93,11 +91,11 @@ def _process_tester_summary_call(
 
     match tester_summary.overall_status:
         case "passed":
-            tester_status = VerificationStatus.PASSED
+            verification_status = VerificationStatus.PASSED
         case "repair-required":
-            tester_status = VerificationStatus.REPAIR_REQUIRED
+            verification_status = VerificationStatus.REPAIR_REQUIRED
         case "blocked":
-            tester_status = VerificationStatus.BLOCKED
+            verification_status = VerificationStatus.BLOCKED
 
     tester_summary_history = state["tester_summary_history"]
 
@@ -112,7 +110,7 @@ def _process_tester_summary_call(
         "tester_messages": [response],
         "current_tester_summary": tester_summary,
         "tester_summary_history": [tester_cycle],
-        "tester_status": tester_status,
+        "verification_status": verification_status,
     }
 
 

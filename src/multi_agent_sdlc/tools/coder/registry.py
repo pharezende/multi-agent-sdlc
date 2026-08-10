@@ -1,6 +1,4 @@
-from multi_agent_sdlc.tools.coder.dependencies import (
-    coder_install_runtime_dependencies,
-)
+from multi_agent_sdlc.tools.coder.dependencies import coder_install_package_dependencies
 from multi_agent_sdlc.tools.coder.execution import (
     coder_run_application,
     coder_run_python_module,
@@ -22,7 +20,7 @@ CODER_TOOLS = [
     coder_sync_project,
     coder_run_application,
     coder_run_python_module,
-    coder_install_runtime_dependencies,
+    coder_install_package_dependencies,
     coder_run_verification_command,
     submit_coder_summary,
 ]

@@ -1,3 +1,5 @@
+from multi_agent_sdlc.tools.shared.models import FileContent
+from multi_agent_sdlc.tools.shared.models import ProjectRelativePath
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.runtime.paths import resolve_project_path
@@ -8,8 +10,6 @@ from multi_agent_sdlc.tools.coder.descriptions import (
     WRITE_FILE_DESCRIPTION,
 )
 from multi_agent_sdlc.tools.coder.validation import (
-    FileContent,
-    ProjectRelativePath,
     reject_coder_test_path,
 )
 

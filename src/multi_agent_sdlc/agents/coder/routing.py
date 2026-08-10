@@ -9,11 +9,11 @@ from langchain_core.messages import AIMessage
 def route_after_coder(
     state: DevState,
 ) -> Literal["coder_tools", "prepare_tester", "coder", "__end__"]:
-    coder_status = state.get("coder_status")
-    if coder_status is DevelopmentStatus.COMPLETED:
+    development_status = state.get("development_status")
+    if development_status is DevelopmentStatus.COMPLETED:
         return "prepare_tester"
     if (
-        coder_status is DevelopmentStatus.FAILED
+        development_status is DevelopmentStatus.FAILED
         and state["coder_invalid_response_count"]
         >= MAX_CONSECUTIVE_CODER_INVALID_RESPONSES
     ):
@@ -22,7 +22,7 @@ def route_after_coder(
             "responses. Stopping workflow execution."
         )
         return "__end__"  # future
-    # if coder_status is CoderStatus.BLOCKED:
+    # if development_status is CoderStatus.BLOCKED:
     #     return "human_intervention"  # future
 
     messages = state.get("coder_messages", [])

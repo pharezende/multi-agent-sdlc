@@ -57,7 +57,7 @@ def _handle_invalid_coder_response(
         return {
             "coder_messages": [response],
             "coder_invalid_response_count": invalid_count,
-            "coder_status": DevelopmentStatus.FAILED,
+            "development_status": DevelopmentStatus.FAILED,
         }
 
     return {
@@ -90,6 +90,6 @@ def _process_coder_summary_call(
         "coder_messages": [response],
         "current_coder_summary": coder_summary,
         "coder_summary_history": [coder_cycle],
-        "coder_status": DevelopmentStatus.COMPLETED,
+        "development_status": DevelopmentStatus.COMPLETED,
         "coder_invalid_response_count": 0,
     }

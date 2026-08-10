@@ -13,15 +13,15 @@ def route_after_tester(
     "reviewer",
     "tester",
 ]:
-    tester_status = state.get("tester_status")
+    verification_status = state.get("verification_status")
 
-    if tester_status == VerificationStatus.REPAIR_REQUIRED:
+    if verification_status == VerificationStatus.REPAIR_REQUIRED:
         return "prepare_coder_repair"
 
-    if tester_status == VerificationStatus.PASSED:
+    if verification_status == VerificationStatus.PASSED:
         return "reviewer"
 
-    # if tester_status is TesterStatus.BLOCKED:
+    # if verification_status is TesterStatus.BLOCKED:
     #     return "human_intervention"  # future
 
     messages = state.get("tester_messages", [])

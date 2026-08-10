@@ -4,8 +4,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from multi_agent_sdlc.tools.tester.validation import NonBlankStr
-
 
 class CoderSummary(BaseModel):
     implementation_summary: str = Field(

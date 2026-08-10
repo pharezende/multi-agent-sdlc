@@ -1,10 +1,10 @@
+from multi_agent_sdlc.tools.shared.validation import MODULE_PATTERN
 from collections.abc import Callable
 
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
 from multi_agent_sdlc.runtime.paths import normalise_relative_path
-from multi_agent_sdlc.tools.coder.validation import MODULE_PATTERN
 
 
 def validate_application_arguments(
@@ -87,15 +87,15 @@ def create_module_name_validator(
     return validate_module_name
 
 
-def create_testing_dependency_validator(
+def create_dependency_validator(
     role: str,
-    prohibited_tester_dependencies: set[str],
+    prohibited_dependencies: set[str],
 ) -> Callable[[str], str]:
-    canonical_prohibited_dependencies = set(
-        canonicalize_name(name) for name in prohibited_tester_dependencies
+    canonical_dependencies = set(
+        canonicalize_name(name) for name in prohibited_dependencies
     )
 
-    def validate_testing_dependency(
+    def validate_dependency(
         dependency: str,
     ) -> str:
         cleaned = dependency.strip()
@@ -118,12 +118,12 @@ def create_testing_dependency_validator(
 
         dependency_name = canonicalize_name(requirement.name)
 
-        if dependency_name in canonical_prohibited_dependencies:
+        if dependency_name in canonical_dependencies:
             raise PermissionError(f"The {role} cannot add dependency {cleaned!r}.")
 
         return cleaned
 
-    return validate_testing_dependency
+    return validate_dependency
 
 
 def parse_dependency(

@@ -1,6 +1,12 @@
+from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
+from multi_agent_sdlc.tools.tester.model import VerificationCommand
+from multi_agent_sdlc.tools.tester.model import PythonModuleName
+from multi_agent_sdlc.tools.shared.models import ExecutionTimeout
+from multi_agent_sdlc.tools.shared.models import StandardInput
+from multi_agent_sdlc.tools.shared.models import ApplicationArguments
+from multi_agent_sdlc.tools.tester.model import EntryPoint
 from multi_agent_sdlc.tools.tester.descriptions import TESTER_RUN_BUILD_DESCRIPTION
 from datetime import time
-from multi_agent_sdlc.tools.tester.validation import ProcessResult
 import json
 
 from langchain.tools import ToolRuntime, tool
@@ -16,14 +22,6 @@ from multi_agent_sdlc.tools.tester.descriptions import (
     SYNC_PROJECT_DESCRIPTION,
     TESTER_RUN_PROJECT_VERIFICATION_DESCRIPTION,
     TESTER_RUN_VERIFICATION_COMMAND_DESCRIPTION,
-)
-from multi_agent_sdlc.tools.tester.validation import (
-    ApplicationArguments,
-    EntryPoint,
-    ExecutionTimeout,
-    ProjectVerificationResult,
-    PythonModuleName,
-    StandardInput,
 )
 
 
@@ -98,26 +96,6 @@ def tester_sync_project(
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
     )
-
-
-from typing import Annotated, Literal
-
-from pydantic import Field
-
-VerificationCommand = Annotated[
-    Literal[
-        "pytest",
-        "ruff",
-        "mypy",
-        "coverage",
-    ],
-    Field(
-        description=(
-            "Approved development or verification executable to run "
-            "inside the project's uv-managed environment."
-        )
-    ),
-]
 
 
 @tool(
