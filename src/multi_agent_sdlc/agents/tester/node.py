@@ -1,3 +1,13 @@
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
+)
+from multi_agent_sdlc.agents.tester.prompt import TESTER_INVALID_RESPONSE_FEEDBACK
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
+)
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_PASSED_SUMMARY_WITHOUT_SUCCESSFUL_VERIFICATION_FEEDBACK,
+)
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.tester.llm import tester_llm
@@ -19,49 +29,47 @@ def tester_node(state: DevState) -> dict[str, object]:
 
     response = tester_llm.invoke(tester_messages)
 
-    if response.tool_calls:  # Also change for planner.
-        submit_calls = [
-            tool_call
-            for tool_call in response.tool_calls
-            if tool_call["name"] == "submit_tester_summary"
-        ]
-
-        if submit_calls:
-            if len(response.tool_calls) != 1:
-                return {
-                    "tester_messages": [
-                        response,
-                        HumanMessage(
-                            content=(
-                                "submit_tester_summary must be called alone. "
-                                "Do not combine it with operational tool calls. "
-                                "Correct the response and call "
-                                "submit_tester_summary again."
-                            )
-                        ),
-                    ],
-                }
-
-            return _process_tester_summary_call(
-                state,
-                response,
-            )
-
+    if not response.tool_calls:
         return {
-            "tester_messages": [response],
+            "tester_messages": [
+                response,
+                HumanMessage(content=TESTER_INVALID_RESPONSE_FEEDBACK),
+            ],
+        }
+
+    has_submit_call = any(
+        tool_call["name"] == "submit_tester_summary"
+        for tool_call in response.tool_calls
+    )
+
+    if has_submit_call:
+        if len(response.tool_calls) > 1:
+            return {
+                "tester_messages": [
+                    response,
+                    HumanMessage(
+                        content=TESTER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK
+                    ),
+                ],
+            }
+
+        return _process_tester_summary_call(
+            state,
+            response,
+        )
+
+    if _has_multiple_project_verification_calls(response):
+        return {
+            "tester_messages": [
+                response,
+                HumanMessage(
+                    content=TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK
+                ),
+            ],
         }
 
     return {
-        "tester_messages": [
-            response,
-            HumanMessage(
-                content=(
-                    "Invalid response. Return no explanatory text. "
-                    "Call one or more approved Tester operational tools, "
-                    "or call submit_tester_summary alone."
-                )
-            ),
-        ],
+        "tester_messages": [response],
     }
 
 
@@ -82,12 +90,7 @@ def _process_tester_summary_call(
             "tester_messages": [
                 response,
                 HumanMessage(
-                    content=(
-                        "The Tester summary cannot report passed. "
-                        "Run tester_run_project_verification and ensure "
-                        "all mandatory Ruff, Mypy, and Pytest checks complete "
-                        "successfully before submitting the summary again."
-                    )
+                    content=TESTER_PASSED_SUMMARY_WITHOUT_SUCCESSFUL_VERIFICATION_FEEDBACK
                 ),
             ],
         }
@@ -132,4 +135,14 @@ def project_verification_passed(
             not check["timed_out"] and check["exit_code"] == 0
             for check in result["checks"]
         )
+    )
+
+
+def _has_multiple_project_verification_calls(response: AIMessage) -> bool:
+    return (
+        sum(
+            tool_call["name"] == "tester_run_project_verification"
+            for tool_call in response.tool_calls
+        )
+        > 1
     )

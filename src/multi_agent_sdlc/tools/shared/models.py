@@ -40,7 +40,6 @@ ExecutionTimeout = Annotated[
 StandardInput = Annotated[
     str,
     Field(
-        min_length=1,
         max_length=10_000,
         description=(
             "Text sent to the application's standard input. Separate "

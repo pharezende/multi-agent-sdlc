@@ -106,6 +106,7 @@ def prepare_coder_implementation_node(
     return {
         "project_directory": project_directory.resolve(),
         "development_status": DevelopmentStatus.IMPLEMENTING,
+        "coder_invalid_response_count": 0,
         "coder_messages": prompt_value.to_messages(),
     }
 

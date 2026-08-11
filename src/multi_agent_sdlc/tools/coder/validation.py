@@ -1,6 +1,12 @@
-
-
 from multi_agent_sdlc.system.paths import normalise_relative_path
+
+TEST_FILE_PREFIXES = {
+    "test_",
+}
+
+TEST_FILE_SUFFIXES = {
+    "_test.py",
+}
 
 TEST_DIRECTORY_NAMES = {
     "test",
@@ -46,10 +52,19 @@ PROHIBITED_CODER_DEPENDENCY_PACKAGES = {
 
 
 def is_test_related_path(path: str) -> bool:
-    """Return True when a path includes a blocked test directory."""
+    """Return True when a path refers to test-owned content."""
     candidate = normalise_relative_path(path)
 
-    return any(part.lower() in TEST_DIRECTORY_NAMES for part in candidate.parts)
+    if any(part.lower() in TEST_DIRECTORY_NAMES for part in candidate.parts[:-1]):
+        return True
+
+    filename = candidate.name.lower()
+
+    return (
+        filename.startswith(tuple(TEST_FILE_PREFIXES))
+        or filename.endswith(tuple(TEST_FILE_SUFFIXES))
+        or "_test_" in filename
+    )
 
 
 def reject_coder_test_path(path: str) -> None:

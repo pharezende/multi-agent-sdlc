@@ -405,3 +405,27 @@ TESTER_RETEST_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
         ("human", TESTER_RETEST_HUMAN_PROMPT),
     ]
 )
+
+TESTER_INVALID_RESPONSE_FEEDBACK = (
+    "Invalid response. Return no explanatory text. "
+    "Call one or more approved Tester operational tools, "
+    "or call submit_tester_summary alone."
+)
+
+TESTER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK = (
+    "submit_tester_summary must be called alone. "
+    "Do not combine it with operational tool calls. "
+    "Correct the response and call submit_tester_summary again."
+)
+
+TESTER_PASSED_SUMMARY_WITHOUT_SUCCESSFUL_VERIFICATION_FEEDBACK = (
+    "The Tester summary cannot report passed. "
+    "Run tester_run_project_verification and ensure "
+    "all mandatory Ruff, Mypy, and Pytest checks complete "
+    "successfully before submitting the summary again."
+)
+
+TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK = (
+    "tester_run_project_verification may be called only once per response. "
+    "Correct the response and call it again."
+)

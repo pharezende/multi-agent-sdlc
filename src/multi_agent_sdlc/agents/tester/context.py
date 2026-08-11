@@ -23,7 +23,7 @@ def build_tester_retest_context(
     tester_summary = state["current_tester_summary"]
 
     if coder_summary is None:
-        raise ValueError("Tester retest context requires the previous Tester summary.")
+        raise ValueError("Tester retest context requires the previous Coder summary.")
 
     if tester_summary is None:
         raise ValueError("Tester retest context requires the previous Tester summary.")

@@ -29,14 +29,17 @@ class PlanReviewStatus(StrEnum):
     REJECTED = "rejected"
 
 
+PlanReviewDecisionValue = Literal[
+    "approved",
+    "revision_required",
+    "rejected",
+]
+
+
 class PlanReviewDecision(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    decision: Literal[
-        "approved",
-        "revision_required",
-        "rejected",
-    ]
+    decision: PlanReviewDecisionValue
 
     feedback: str | None = Field(
         default=None,
