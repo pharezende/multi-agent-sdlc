@@ -8,12 +8,7 @@ from multi_agent_sdlc.workflow.state import DevState
 
 def route_after_tester(
     state: DevState,
-) -> Literal[
-    "prepare_coder_repair",
-    "tester_tools",
-    "reviewer",
-    "tester",
-]:
+) -> Literal["prepare_coder_repair", "tester_tools", "reviewer", "tester", "__end__"]:
     verification_status = state.get("verification_status")
 
     if verification_status == VerificationStatus.REPAIR_REQUIRED:
@@ -22,8 +17,8 @@ def route_after_tester(
     if verification_status == VerificationStatus.PASSED:
         return "reviewer"
 
-    # if verification_status is TesterStatus.BLOCKED:
-    #     return "human_intervention"  # future
+    if verification_status is VerificationStatus.BLOCKED:
+        return "__end__"  # "human_intervention"  future
 
     messages = state.get("tester_messages", [])
 

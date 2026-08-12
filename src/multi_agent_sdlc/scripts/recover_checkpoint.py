@@ -1,4 +1,3 @@
-from multi_agent_sdlc.config import SANDBOX_ROOT
 from typing_extensions import List
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import StateSnapshot
@@ -12,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 THREAD_ID = "7f5814dc-36b3-4686-afcb-43307f18f7b5"
-CHECKPOINT_ID = "1f195c97-3468-608b-8098-7158ff6f662a"
+CHECKPOINT_ID = "1f196743-bfa5-61b8-80ad-33889d39e792"
 
 
 def _get_checkpoint_id(

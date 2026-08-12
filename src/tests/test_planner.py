@@ -1,7 +1,6 @@
 from langchain_core.messages import BaseMessage
 from multi_agent_sdlc.workflow.models import PlanReviewStatus
 from multi_agent_sdlc.agents.planner.prompt import PLANNER_SYSTEM_RULES
-from multi_agent_sdlc.agents.coder.prompt import CODER_SYSTEM_RULES
 from langchain_core.messages import AIMessage, SystemMessage
 from multi_agent_sdlc.agents.planner.models import Task
 from multi_agent_sdlc.agents.planner.models import RiskLevel

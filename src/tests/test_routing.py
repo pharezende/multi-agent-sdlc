@@ -3,7 +3,6 @@ from multi_agent_sdlc.workflow.models import PlanReviewStatus
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.agents.coder.node import MAX_CONSECUTIVE_CODER_INVALID_RESPONSES
 from langchain_core.messages import AIMessage
-import pytest
 from multi_agent_sdlc.agents.coder.routing import route_after_coder
 from multi_agent_sdlc.workflow.models import DevelopmentStatus, VerificationStatus
 from multi_agent_sdlc.workflow.state import build_initial_state
