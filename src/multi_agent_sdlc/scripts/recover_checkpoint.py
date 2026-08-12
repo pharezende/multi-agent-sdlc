@@ -1,11 +1,53 @@
+from multi_agent_sdlc.config import SANDBOX_ROOT
+from typing_extensions import List
+from langchain_core.runnables import RunnableConfig
+from langgraph.types import StateSnapshot
 from multi_agent_sdlc.workflow.graph import build_graph
 from multi_agent_sdlc.workflow.checkpointing import (
     build_workflow_config,
     create_checkpointer,
 )
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 THREAD_ID = "7f5814dc-36b3-4686-afcb-43307f18f7b5"
-CHECKPOINT_ID = "1f195c98-7e49-627b-809c-d222b46cc3c9"
+CHECKPOINT_ID = "1f195c97-3468-608b-8098-7158ff6f662a"
+
+
+def _get_checkpoint_id(
+    config: RunnableConfig | None,
+) -> str | None:
+    if config is None:
+        return None
+
+    checkpoint_id = config.get("configurable", {}).get("checkpoint_id")
+
+    return checkpoint_id if isinstance(checkpoint_id, str) else None
+
+
+def _find_forks(
+    history: List[StateSnapshot],
+) -> dict[str, list[str]]:
+    children_by_parent: dict[str, list[str]] = {}
+
+    for snapshot in history:
+        checkpoint_id = _get_checkpoint_id(snapshot.config)
+        parent_checkpoint_id = _get_checkpoint_id(snapshot.parent_config)
+
+        if checkpoint_id is None or parent_checkpoint_id is None:
+            continue
+
+        children_by_parent.setdefault(
+            parent_checkpoint_id,
+            [],
+        ).append(checkpoint_id)
+
+    return {
+        parent: children
+        for parent, children in children_by_parent.items()
+        if len(children) > 1
+    }
 
 
 def main() -> None:
@@ -17,21 +59,50 @@ def main() -> None:
 
         history = list(graph.get_state_history(thread_config))
 
+        forks = _find_forks(history)
+
         print("Available checkpoints:\n")
 
         for snapshot in history:
-            configurable = snapshot.config.get("configurable", {})
-            checkpoint_id = configurable.get("checkpoint_id")
+            checkpoint_id = _get_checkpoint_id(snapshot.config)
+            parent_checkpoint_id = _get_checkpoint_id(snapshot.parent_config)
 
-            print(f"checkpoint_id={checkpoint_id} " f"next={snapshot.next}")
+            markers: list[str] = []
+
+            if checkpoint_id == CHECKPOINT_ID:
+                markers.append("selected for recovery")
+
+            if checkpoint_id in forks:
+                markers.append(f"FORK POINT ({len(forks[checkpoint_id])} branches)")
+
+            marker_text = f" <-- {', '.join(markers)}" if markers else ""
+
+            print(
+                f"checkpoint_id={checkpoint_id} "
+                f"parent_checkpoint_id={parent_checkpoint_id} "
+                f"next={snapshot.next}"
+                f"{marker_text}"
+            )
+
+        if forks:
+            print("\nDetected forks:\n")
+
+            for parent_checkpoint_id, children in forks.items():
+                print(f"Fork point: {parent_checkpoint_id}")
+
+                for child_checkpoint_id in children:
+                    print(f"  └─> {child_checkpoint_id}")
+
+                print()
+        else:
+            print("\nNo checkpoint forks detected.")
 
         # Find the exact checkpoint selected for recovery.
         checkpoint = next(
             (
                 snapshot
                 for snapshot in history
-                if snapshot.config.get("configurable", {}).get("checkpoint_id")
-                == CHECKPOINT_ID
+                if _get_checkpoint_id(snapshot.config) == CHECKPOINT_ID
             ),
             None,
         )
@@ -45,8 +116,18 @@ def main() -> None:
         print(
             "\nResuming from checkpoint:"
             f"\n  id: {CHECKPOINT_ID}"
+            f"\n  parent: "
+            f"{_get_checkpoint_id(checkpoint.parent_config)}"
             f"\n  next: {checkpoint.next}"
         )
+
+        if CHECKPOINT_ID in forks:
+            print("\nWARNING: The selected checkpoint is already " "a fork point.")
+
+            print("Existing branches:")
+
+            for child_checkpoint_id in forks[CHECKPOINT_ID]:
+                print(f"  - {child_checkpoint_id}")
 
         if not checkpoint.next:
             raise RuntimeError(
