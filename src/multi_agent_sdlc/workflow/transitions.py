@@ -46,7 +46,7 @@ def prepare_plan_review_node(
 
 def prepare_planner_revision_node(
     state: DevState,
-) -> dict[str, object]:
+) -> dict[str, list[HumanMessage]]:
     review_decision = state["plan_review_decision"]
 
     if review_decision is None:

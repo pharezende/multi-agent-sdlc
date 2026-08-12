@@ -53,24 +53,17 @@ def coder_summary() -> CoderSummary:
 
 def test_coder_node_increments_invalid_response_count(
     initial_dev_state: DevState,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     response = AIMessage(content="I have completed the implementation.")
 
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    monkeypatch.setattr(
-        coder_module,
-        "coder_llm",
-        mock_llm,
-    )
-
     initial_dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application.")
     ]
 
-    result = coder_module.coder_node(initial_dev_state)
+    result = coder_module.coder_node(initial_dev_state, mock_llm)
 
     assert result["coder_invalid_response_count"] == 1
     messages = result["coder_messages"]
@@ -81,7 +74,6 @@ def test_coder_node_increments_invalid_response_count(
 
 def test_coder_node_fails_after_max_invalid_responses(
     initial_dev_state: DevState,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     response = AIMessage(
         content="The implementation is complete.",
@@ -89,12 +81,6 @@ def test_coder_node_fails_after_max_invalid_responses(
 
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
-
-    monkeypatch.setattr(
-        coder_module,
-        "coder_llm",
-        mock_llm,
-    )
 
     initial_dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
@@ -104,7 +90,7 @@ def test_coder_node_fails_after_max_invalid_responses(
         MAX_CONSECUTIVE_CODER_INVALID_RESPONSES - 1
     )
 
-    result = coder_module.coder_node(initial_dev_state)
+    result = coder_module.coder_node(initial_dev_state, mock_llm)
 
     assert (
         result["coder_invalid_response_count"]
@@ -118,7 +104,6 @@ def test_coder_node_fails_after_max_invalid_responses(
 def test_coder_node_accepts_summary_called_alone(
     initial_dev_state: DevState,
     coder_summary: CoderSummary,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     response = AIMessage(
         content="",
@@ -137,19 +122,13 @@ def test_coder_node_accepts_summary_called_alone(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    monkeypatch.setattr(
-        coder_module,
-        "coder_llm",
-        mock_llm,
-    )
-
     initial_dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
     initial_dev_state["development_status"] = DevelopmentStatus.IMPLEMENTING
     initial_dev_state["coder_invalid_response_count"] = 1
 
-    result = coder_module.coder_node(initial_dev_state)
+    result = coder_module.coder_node(initial_dev_state, mock_llm)
 
     assert result["development_status"] == DevelopmentStatus.COMPLETED
     assert result["current_coder_summary"] == coder_summary
@@ -161,7 +140,6 @@ def test_coder_node_accepts_summary_called_alone(
 
 def test_coder_node_accepts_multiple_operational_tool_calls(
     initial_dev_state: DevState,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     response = AIMessage(
         content="",
@@ -190,18 +168,12 @@ def test_coder_node_accepts_multiple_operational_tool_calls(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    monkeypatch.setattr(
-        coder_module,
-        "coder_llm",
-        mock_llm,
-    )
-
     initial_dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
     initial_dev_state["coder_invalid_response_count"] = 1
 
-    result = coder_module.coder_node(initial_dev_state)
+    result = coder_module.coder_node(initial_dev_state, mock_llm)
 
     assert result["coder_messages"] == [response]
     assert result["coder_invalid_response_count"] == 0
@@ -210,7 +182,6 @@ def test_coder_node_accepts_multiple_operational_tool_calls(
 def test_coder_node_rejects_summary_with_other_tool_call(
     initial_dev_state: DevState,
     coder_summary: CoderSummary,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     response = AIMessage(
         content="",
@@ -238,17 +209,11 @@ def test_coder_node_rejects_summary_with_other_tool_call(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    monkeypatch.setattr(
-        coder_module,
-        "coder_llm",
-        mock_llm,
-    )
-
     initial_dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
 
-    result = coder_module.coder_node(initial_dev_state)
+    result = coder_module.coder_node(initial_dev_state, mock_llm)
 
     assert result["coder_invalid_response_count"] == 1
 

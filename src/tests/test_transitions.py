@@ -1,3 +1,6 @@
+from unittest.mock import MagicMock
+from pathlib import Path
+from collections.abc import Iterator
 from multi_agent_sdlc.workflow.transitions import prepare_coder_repair_node
 from multi_agent_sdlc.agents.tester import model as tester_model
 from multi_agent_sdlc.agents.tester.prompt import TESTER_SYSTEM_RULES
@@ -31,6 +34,7 @@ from multi_agent_sdlc.workflow.state import DevState
 from multi_agent_sdlc.workflow.state import build_initial_state
 import pytest
 from unittest.mock import patch
+import multi_agent_sdlc.workflow.transitions as transitions_module
 
 
 @pytest.fixture
@@ -185,11 +189,20 @@ def test_prepare_coder_implementation_sets_state(
     dev_state: DevState,
     development_plan: DevelopmentPlan,
     runnable_config: RunnableConfig,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     dev_state["plan"] = development_plan
     dev_state["plan_review_content"] = format_plan(dev_state["plan"])
 
-    project_directory = create_project_directory(development_plan.project_id)
+    tmp_path = Path("/tmp/")
+    project_directory = tmp_path / development_plan.project_id
+    create_project_directory_mock = MagicMock(return_value=project_directory)
+
+    monkeypatch.setattr(
+        transitions_module,
+        "create_project_directory",
+        create_project_directory_mock,
+    )
 
     with patch(
         "multi_agent_sdlc.workflow.transitions.update_workflow_project_directory"

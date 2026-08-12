@@ -1,7 +1,6 @@
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.sqlite import SqliteSaver
@@ -35,9 +34,9 @@ def create_checkpointer() -> Iterator[SqliteSaver]:
 
 def build_workflow_config(
     thread_id: str,
-    configurable: dict[str, Any] | None = None,
+    configurable: dict[str, object] | None = None,
 ) -> RunnableConfig:
-    configurable_values: dict[str, Any] = {
+    configurable_values: dict[str, object] = {
         "thread_id": thread_id,
     }
 

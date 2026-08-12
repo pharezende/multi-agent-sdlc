@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langgraph.graph.state import Runnable
 
-from multi_agent_sdlc.agents.planner.llm import planner_llm
 from multi_agent_sdlc.agents.planner.models import DevelopmentPlan
 from multi_agent_sdlc.agents.planner.prompt import (
     PLANNER_INITIAL_HUMAN_PROMPT_TEMPLATE,
@@ -10,9 +10,7 @@ from multi_agent_sdlc.workflow.models import PlanReviewStatus
 from multi_agent_sdlc.workflow.state import DevState
 
 
-def _generate_initial_plan(
-    state: DevState,
-) -> dict[str, object]:
+def _generate_initial_plan(state: DevState, planner_llm: Runnable) -> dict[str, object]:
     user_request = state["request"].strip()
 
     if not user_request:
@@ -46,7 +44,7 @@ def _generate_initial_plan(
     }
 
 
-def planner_node(state: DevState) -> dict[str, object]:
+def planner_node(state: DevState, planner_llm: Runnable) -> dict[str, object]:
     """Generate the initial plan or revise the existing plan."""
 
     plan_review_status = state["plan_review_status"]
@@ -70,4 +68,4 @@ def planner_node(state: DevState) -> dict[str, object]:
             ],
         }
 
-    return _generate_initial_plan(state)
+    return _generate_initial_plan(state, planner_llm)

@@ -1,6 +1,6 @@
 from langchain_core.messages import AIMessage, HumanMessage
+from langgraph.graph.state import Runnable
 
-from multi_agent_sdlc.agents.coder.llm import coder_llm
 from multi_agent_sdlc.agents.coder.models import CoderCycle, CoderSummary
 from multi_agent_sdlc.agents.coder.prompt import (
     CODER_INVALID_RESPONSE_FEEDBACK,
@@ -12,7 +12,7 @@ from multi_agent_sdlc.workflow.state import DevState
 MAX_CONSECUTIVE_CODER_INVALID_RESPONSES = 3
 
 
-def coder_node(state: DevState) -> dict[str, object]:
+def coder_node(state: DevState, coder_llm: Runnable) -> dict[str, object]:
     coder_messages = state["coder_messages"]
 
     if not coder_messages:

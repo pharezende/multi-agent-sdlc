@@ -1,3 +1,7 @@
+from multi_agent_sdlc.agents.planner.llm import create_planner_llm
+from multi_agent_sdlc.agents.coder.llm import create_coder_llm
+from functools import partial
+from multi_agent_sdlc.agents.tester.llm import create_tester_llm
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -45,15 +49,21 @@ def build_graph(checkpointer: BaseCheckpointSaver):
         messages_key="tester_messages",
         handle_tool_errors=True,
     )
-    builder.add_node("planner", planner_node)
+    planner_llm = create_planner_llm()
+    planner_action = partial(planner_node, planner_llm=planner_llm)
+    coder_llm = create_coder_llm()
+    coder_action = partial(coder_node, coder_llm=coder_llm)
+    tester_llm = create_tester_llm()
+    tester_action = partial(tester_node, tester_llm=tester_llm)
+    builder.add_node("planner", planner_action)
     builder.add_node("prepare_plan_review", prepare_plan_review_node)
     builder.add_node("human_plan_review", human_plan_review_node)
     builder.add_node("prepare_planner_revision", prepare_planner_revision_node)
     builder.add_node("prepare_coder_implementation", prepare_coder_implementation_node)
-    builder.add_node("coder", coder_node)
+    builder.add_node("coder", coder_action)
     builder.add_node("coder_tools", coder_tool_node)
     builder.add_node("prepare_tester", prepare_tester_node)
-    builder.add_node("tester", tester_node)
+    builder.add_node("tester", tester_action)
     builder.add_node("tester_tools", tester_tool_node)
     builder.add_node("prepare_coder_repair", prepare_coder_repair_node)
     builder.add_node("reviewer", reviewer_node)

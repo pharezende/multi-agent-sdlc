@@ -1,9 +1,7 @@
-from typing import Any
-
 from multi_agent_sdlc.workflow.state import DevState
 
 
-def build_coder_implementation_context(state: DevState) -> dict[str, Any]:
+def build_coder_implementation_context(state: DevState) -> dict[str, object]:
 
     plan = state.get("plan")
     if plan is None:

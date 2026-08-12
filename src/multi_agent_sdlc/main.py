@@ -1,7 +1,10 @@
+from dotenv import load_dotenv
 from textwrap import dedent
 from multi_agent_sdlc.cli import parse_args
 from multi_agent_sdlc.workflow.models import PlanReviewDecision
 from multi_agent_sdlc.workflow.runner import resume_workflow, run_new_workflow
+
+load_dotenv(override=True)
 
 
 def run() -> None:

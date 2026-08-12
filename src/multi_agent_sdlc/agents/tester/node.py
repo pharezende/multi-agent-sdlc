@@ -1,3 +1,4 @@
+from langchain_core.runnables import Runnable
 from multi_agent_sdlc.agents.tester.prompt import (
     TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
 )
@@ -10,7 +11,6 @@ from multi_agent_sdlc.agents.tester.prompt import (
 )
 from langchain_core.messages import AIMessage, HumanMessage
 
-from multi_agent_sdlc.agents.tester.llm import tester_llm
 from multi_agent_sdlc.agents.tester.model import (
     TesterCycle,
     TesterSummary,
@@ -21,7 +21,7 @@ from multi_agent_sdlc.workflow.models import VerificationStatus
 from multi_agent_sdlc.workflow.state import DevState
 
 
-def tester_node(state: DevState) -> dict[str, object]:
+def tester_node(state: DevState, tester_llm: Runnable) -> dict[str, object]:
     tester_messages = state["tester_messages"]
 
     if not tester_messages:

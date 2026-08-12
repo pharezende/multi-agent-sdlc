@@ -1,5 +1,5 @@
 from typing import Any
-
+from langgraph.types import Interrupt
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import Command
 
@@ -114,19 +114,24 @@ def resume_workflow(thread_id: str, plan_review_decision: dict[str, Any]) -> Non
 
 def _process_workflow_result(
     graph,
-    result: dict[str, Any],
+    result: dict[str, object],
     workflow_run: WorkflowRun,
     config: RunnableConfig,
 ) -> None:
     interrupts = result.get("__interrupt__", ())
 
-    while interrupts:
-        interrupt_value = interrupts[0].value
+    while isinstance(interrupts, tuple) and interrupts:
+        interrupt = interrupts[0]
+
+        if not isinstance(interrupt, Interrupt):
+            raise TypeError(f"Expected Interrupt, got {type(interrupt).__name__}.")
 
         update_workflow_run_status(
             workflow_run.thread_id,
             WorkflowRunStatus.INTERRUPTED,
         )
+
+        interrupt_value = interrupt.value
 
         if interrupt_value["type"] != "plan_review":
             raise ValueError(
