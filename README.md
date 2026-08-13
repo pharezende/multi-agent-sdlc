@@ -12,11 +12,35 @@ short_description: Multi-Agent AI application for automating the Software Dev
 
 A sandboxed multi-agent software development workflow built with LangGraph.
 
-The project explores how specialized AI agents can collaborate across the software development lifecycle with explicit role boundaries, controlled tools, persistent state, automated verification, bounded repair loops, and human approval.
+The project explores how specialized AI agents can collaborate across the software development lifecycle with deterministic graph-based orchestration, explicit role boundaries, controlled tools, persistent state, automated verification, bounded repair loops, and human approval.
 
 > **Status:** Work in progress. Planner, Coder, Tester, workflow transitions, persistence, and plan review are implemented. Reviewer and Deployer are planned.
 
 ## Workflow
+![Multi-Agent SDLC Workflow](asserts/multi_agent_sdlc_workflow.png)
+
+### Node Categories
+
+**Agent Nodes** — LLM-driven nodes that do the core work
+`planner`, `coder`, `tester`, `reviewer` *(WIP)*, `deployer` *(WIP)*
+
+**Preparation Nodes** — assemble context for the following agent node
+`prepare_coder_implementation`, `prepare_coder_repair`,
+`prepare_tester_run`, `prepare_planner_replan`, `prepare_human_plan_review`
+
+**Human Review** — interrupt nodes that pause execution for external input
+`human_plan_review`
+
+
+| Preparation Node | Feeds |
+|---|---|
+| `prepare_plan_review` | `human` |
+| `prepare_coder_implementation` | `coder` |
+| `prepare_coder_repair` | `coder` |
+| `prepare_tester` | `tester` |
+| `prepare_planner_revision` | `planner` |
+
+
 ### Planner
 
 Creates a structured development plan containing tasks, ownership, dependencies, target files, assumptions, and acceptance criteria.
