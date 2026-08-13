@@ -17,7 +17,7 @@ The project explores how specialized AI agents can collaborate across the softwa
 > **Status:** Work in progress. Planner, Coder, Tester, workflow transitions, persistence, and plan review are implemented. Reviewer and Deployer are planned.
 
 ## Workflow
-![Multi-Agent SDLC Workflow](asserts/multi_agent_sdlc_workflow.png)
+![Multi-Agent SDLC Workflow](assets/multi_agent_sdlc_workflow.png)
 
 ### Node Categories
 
