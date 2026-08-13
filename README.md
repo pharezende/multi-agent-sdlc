@@ -14,21 +14,21 @@ A sandboxed multi-agent software development workflow built with LangGraph.
 
 The project explores how specialized AI agents can collaborate across the software development lifecycle with deterministic graph-based orchestration, explicit role boundaries, controlled tools, persistent state, automated verification, bounded repair loops, and human approval.
 
-> **Status:** Work in progress. Planner, Coder, Tester, workflow transitions, persistence, and plan review are implemented. Reviewer and Deployer are planned.
+> **Status:** Work in progress. Planner, Coder, Tester, workflow transitions, persistence, and plan review are implemented. Reviewer and Deployer are in progress.
 
 ## Workflow
 ![Multi-Agent SDLC Workflow](assets/multi_agent_sdlc_workflow.png)
 
 ### Node Categories
 
-**Agent Nodes** — LLM-driven nodes that do the core work
+**Agent Nodes** — LLM-driven nodes responsible for the core workflow tasks:
 `planner`, `coder`, `tester`, `reviewer` *(WIP)*, `deployer` *(WIP)*
 
-**Preparation Nodes** — assemble context for the following agent node
-`prepare_coder_implementation`, `prepare_coder_repair`,
-`prepare_tester_run`, `prepare_planner_replan`, `prepare_human_plan_review`
+**Preparation Nodes** — deterministic nodes that prepare context and state for subsequent workflow stages:
+`prepare_plan_review`, `prepare_coder_implementation`,
+`prepare_coder_repair`, `prepare_tester`, `prepare_planner_revision`
 
-**Human Review** — interrupt nodes that pause execution for external input
+**Human Review** — human-in-the-loop nodes that pause workflow execution to collect external review or approval input:
 `human_plan_review`
 
 
@@ -39,7 +39,6 @@ The project explores how specialized AI agents can collaborate across the softwa
 | `prepare_coder_repair` | `coder` |
 | `prepare_tester` | `tester` |
 | `prepare_planner_revision` | `planner` |
-
 
 ### Planner
 
