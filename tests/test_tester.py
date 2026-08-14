@@ -157,7 +157,7 @@ def test_tester_node_accepts_tool_call(
     initial_dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.TESTING
+    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
 
     result = tester_module.tester_node(initial_dev_state, mock_llm)
 
@@ -205,7 +205,7 @@ def test_tester_node_processes_non_passed_summary(
     initial_dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.TESTING
+    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
 
     result = tester_module.tester_node(initial_dev_state, mock_llm)
 
@@ -320,7 +320,7 @@ def test_tester_node_accepts_multiple_operational_tool_calls(
     initial_dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.TESTING
+    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
 
     result = tester_module.tester_node(initial_dev_state, mock_llm)
 
@@ -357,7 +357,7 @@ def test_tester_node_rejects_multiple_tool_calls_with_summary(
     initial_dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.TESTING
+    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
 
     result = tester_module.tester_node(initial_dev_state, mock_llm)
 

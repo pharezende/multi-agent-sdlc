@@ -8,7 +8,7 @@ def build_tester_context(state: DevState) -> dict[str, object]:
 
     current_coder_summary = state["current_coder_summary"]
     if current_coder_summary is None:
-        raise ValueError("This workflow stage requires an approved plan.")
+        raise ValueError("This workflow stage requires a coder summary.")
 
     return {
         "plan": plan.model_dump(mode="json"),

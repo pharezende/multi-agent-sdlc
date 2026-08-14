@@ -1,3 +1,4 @@
+from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
 from enum import StrEnum
 from typing import Literal, TypedDict
 
@@ -15,7 +16,7 @@ class DevelopmentStatus(StrEnum):
 
 class VerificationStatus(StrEnum):
     NOT_STARTED = "not_started"
-    TESTING = "testing"
+    VERIFYING = "verifying"
     PASSED = "passed"
     REPAIR_REQUIRED = "repair_required"
     BLOCKED = "blocked"
@@ -54,3 +55,17 @@ class PreparePlanReviewUpdate(TypedDict):
     plan_review_status: PlanReviewStatus
     plan_review_decision: PlanReviewDecision | None
     plan_review_content: str
+
+
+class ReviewStatus(StrEnum):
+    NOT_STARTED = "not_started"
+    REVIEWING = "reviewing"
+    PASSED = "passed"
+    REPAIR_REQUIRED = "repair_required"
+    BLOCKED = "blocked"
+
+
+class ReviewCycle(BaseModel):
+    cycle_number: int
+    # review_status: ReviewStatus
+    reviewer_summary: ReviewerSummary

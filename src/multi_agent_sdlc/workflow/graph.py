@@ -1,6 +1,8 @@
+from multi_agent_sdlc.agents.reviewer.llm import create_reviewer_llm
 from multi_agent_sdlc.agents.planner.llm import create_planner_llm
 from multi_agent_sdlc.agents.coder.llm import create_coder_llm
 from functools import partial
+from multi_agent_sdlc.agents.reviewer.routing import route_after_reviewer
 from multi_agent_sdlc.agents.tester.llm import create_tester_llm
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.graph import END, START, StateGraph
@@ -10,12 +12,13 @@ from langgraph.prebuilt import ToolNode
 from multi_agent_sdlc.agents.coder.node import coder_node
 from multi_agent_sdlc.agents.coder.routing import route_after_coder
 from multi_agent_sdlc.agents.planner.node import planner_node
-from multi_agent_sdlc.agents.reviewer.reviewer import reviewer_node
+from multi_agent_sdlc.agents.reviewer.node import reviewer_node
 from multi_agent_sdlc.agents.tester.node import tester_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
 from multi_agent_sdlc.human_in_the_loop.routing import route_after_plan_review
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
+from multi_agent_sdlc.tools.reviewer.registry import REVIEWER_TOOLS
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
 
 from .state import DevState
@@ -49,12 +52,19 @@ def build_graph(checkpointer: BaseCheckpointSaver):
         messages_key="tester_messages",
         handle_tool_errors=True,
     )
+    reviewer_tool_node = ToolNode(
+        REVIEWER_TOOLS,
+        messages_key="reviewer_messages",
+        handle_tool_errors=True,
+    )
     planner_llm = create_planner_llm()
     planner_action = partial(planner_node, planner_llm=planner_llm)
     coder_llm = create_coder_llm()
     coder_action = partial(coder_node, coder_llm=coder_llm)
     tester_llm = create_tester_llm()
     tester_action = partial(tester_node, tester_llm=tester_llm)
+    reviewer_llm = create_reviewer_llm()
+    reviewer_action = partial(reviewer_node, reviewer_llm=reviewer_llm)
     builder.add_node("planner", planner_action)
     builder.add_node("prepare_plan_review", prepare_plan_review_node)
     builder.add_node("human_plan_review", human_plan_review_node)
@@ -66,7 +76,8 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     builder.add_node("tester", tester_action)
     builder.add_node("tester_tools", tester_tool_node)
     builder.add_node("prepare_coder_repair", prepare_coder_repair_node)
-    builder.add_node("reviewer", reviewer_node)
+    builder.add_node("reviewer", reviewer_action)
+    builder.add_node("reviewer_tools", reviewer_tool_node)
 
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "prepare_plan_review")
@@ -105,7 +116,21 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     )
     builder.add_edge("prepare_coder_repair", "coder")
     builder.add_edge("tester_tools", "tester")
-    builder.add_edge("reviewer", END)
+    builder.add_edge("tester", "reviewer")
+
+    builder.add_conditional_edges(
+        "reviewer",
+        route_after_reviewer,
+        {
+            # "deployer": "deployer",
+            "prepare_coder_repair": "prepare_coder_repair",
+            "reviewer": "reviewer",
+            "reviewer_tools": "reviewer_tools",
+            "__end__": "__end__",
+        },
+    )
+
+    builder.add_edge("reviewer_tools", "reviewer")
 
     return builder.compile(
         checkpointer=checkpointer,

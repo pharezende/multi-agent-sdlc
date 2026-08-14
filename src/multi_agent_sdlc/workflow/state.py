@@ -1,3 +1,6 @@
+from multi_agent_sdlc.workflow.models import ReviewCycle
+from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
+from multi_agent_sdlc.workflow.models import ReviewStatus
 from pathlib import Path
 from operator import add
 from typing import Annotated, TypedDict
@@ -45,11 +48,21 @@ class DevState(TypedDict):
 
     current_project_verification_result: ProjectVerificationResult | None
 
+    reviewer_messages: Annotated[list[BaseMessage], add_messages]
+    current_reviewer_summary: ReviewerSummary | None
+    reviewer_summary_history: Annotated[
+        list[ReviewCycle],
+        add,
+    ]
+
     plan_review_status: PlanReviewStatus
     plan_review_decision: PlanReviewDecision | None
     plan_review_content: str | None
     development_status: DevelopmentStatus | None
     verification_status: VerificationStatus | None
+    review_status: (
+        ReviewStatus | None
+    )  # I think all status will move to the respective Cycle later.
 
 
 def build_initial_state(request: str) -> DevState:
@@ -71,4 +84,8 @@ def build_initial_state(request: str) -> DevState:
         "current_tester_summary": None,
         "tester_summary_history": [],
         "current_project_verification_result": None,
+        "reviewer_messages": [],
+        "current_reviewer_summary": None,
+        "reviewer_summary_history": [],
+        "review_status": ReviewStatus.NOT_STARTED,
     }

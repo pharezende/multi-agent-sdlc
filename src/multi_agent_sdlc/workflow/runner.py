@@ -61,7 +61,6 @@ def resume_workflow(thread_id: str, plan_review_decision: dict[str, Any]) -> Non
 
     with create_checkpointer() as checkpointer:
         graph = build_graph(checkpointer)
-
         snapshot = graph.get_state(config)
 
         if snapshot.interrupts:

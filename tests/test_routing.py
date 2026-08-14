@@ -71,7 +71,7 @@ def test_route_after_tester_repair_required_routes_to_reviewer() -> None:
 
 def test_route_after_tester_tool_call_routes_to_tester_tools():
     state: DevState = build_initial_state("test request")
-    state["verification_status"] = VerificationStatus.TESTING
+    state["verification_status"] = VerificationStatus.VERIFYING
     state["tester_messages"] = [
         AIMessage(
             content="test",
@@ -82,7 +82,7 @@ def test_route_after_tester_tool_call_routes_to_tester_tools():
 
 def test_route_after_tester_without_tool_call_routes_to_tester():
     state: DevState = build_initial_state("test request")
-    state["verification_status"] = VerificationStatus.TESTING
+    state["verification_status"] = VerificationStatus.VERIFYING
     state["tester_messages"] = [
         AIMessage(
             content="",

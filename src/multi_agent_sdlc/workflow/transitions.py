@@ -1,3 +1,6 @@
+from multi_agent_sdlc.workflow.models import ReviewStatus
+from multi_agent_sdlc.agents.reviewer.messages import build_reviewer_rereview_messages
+from multi_agent_sdlc.agents.reviewer.messages import build_reviewer_initial_messages
 import json
 
 from langchain_core.messages import HumanMessage
@@ -7,7 +10,7 @@ from multi_agent_sdlc.agents.coder.context import (
     build_coder_implementation_context,
     build_coder_repair_context,
 )
-from multi_agent_sdlc.agents.coder.messages import (
+from multi_agent_sdlc.agents.tester.messages import (
     build_tester_initial_messages,
     build_tester_retest_messages,
 )
@@ -130,7 +133,7 @@ def prepare_tester_node(
         messages = build_tester_initial_messages(state)
 
     return {
-        "verification_status": VerificationStatus.TESTING,
+        "verification_status": VerificationStatus.VERIFYING,
         "tester_messages": messages,
         "current_project_verification_result": None,
     }
@@ -153,4 +156,22 @@ def prepare_coder_repair_node(
         "development_status": DevelopmentStatus.REPAIRING,
         "coder_messages": prompt_value.to_messages(),
         "current_coder_summary": None,
+    }
+
+
+def prepare_reviewer_node(state: DevState) -> dict[str, object]:
+    reviewer_history = state.get("reviewer_summary_history", [])
+
+    if not reviewer_history:
+        reviewer_messages = build_reviewer_initial_messages(state)
+    else:
+        reviewer_messages = [
+            *state["reviewer_messages"],
+            *build_reviewer_rereview_messages(state),
+        ]
+
+    return {
+        "reviewer_messages": reviewer_messages,
+        "review_status": ReviewStatus.REVIEWING,
+        "current_reviewer_summary": None,
     }

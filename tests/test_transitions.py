@@ -229,7 +229,7 @@ def test_prepare_tester_sets_state(
 
     messages = result["tester_messages"]
 
-    assert result["verification_status"] == VerificationStatus.TESTING
+    assert result["verification_status"] == VerificationStatus.VERIFYING
     assert result["current_project_verification_result"] is None
 
     assert isinstance(messages, list)
