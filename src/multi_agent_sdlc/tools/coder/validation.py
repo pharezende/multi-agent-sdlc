@@ -1,4 +1,4 @@
-from multi_agent_sdlc.system.paths import normalise_relative_path
+from multi_agent_sdlc.system.path_utils import normalise_relative_path
 
 TEST_FILE_PREFIXES = {
     "test_",

@@ -25,28 +25,32 @@ def normalise_relative_path(path: str) -> PurePosixPath:
 
 def reject_repeated_project_prefix(
     project_directory: Path,
-    path: str,
+    candidate: PurePosixPath,
 ) -> None:
-    """Reject paths such as sandbox/project-name/src/file.py."""
-    candidate = normalise_relative_path(path)
+    """Reject paths prefixed with the current project directory."""
     parts = candidate.parts
-    project_name = project_directory.name
+    project_id = project_directory.name
+    sandbox_root = project_directory.parent.name
 
-    if (
-        len(parts) >= 2
-        and parts[0].lower() == SANDBOX_ROOT
-        and parts[1] == project_name
-    ):
-        remaining_parts = parts[2:]
+    if parts and parts[0] == project_id:
+        prefix_length = 1
 
-        suggested_path = (
-            PurePosixPath(*remaining_parts).as_posix() if remaining_parts else "."
-        )
+    elif len(parts) >= 2 and parts[0] == sandbox_root and parts[1] == project_id:
+        prefix_length = 2
 
-        raise PermissionError(
-            "Do not include the sandbox or project-directory prefix. "
-            f"Use {suggested_path} instead of {path}."
-        )
+    else:
+        return
+
+    remaining_parts = parts[prefix_length:]
+
+    suggested_path = (
+        PurePosixPath(*remaining_parts).as_posix() if remaining_parts else "."
+    )
+
+    raise PermissionError(
+        "Do not include the project-directory prefix. "
+        f"Use {suggested_path} instead of {candidate.as_posix()}."
+    )
 
 
 def resolve_project_path(
@@ -55,14 +59,12 @@ def resolve_project_path(
 ) -> Path:
     """Resolve a project-relative path and ensure it stays inside the project."""
 
-    cleaned_path = path.strip()
+    relative_path = normalise_relative_path(path)
 
     reject_repeated_project_prefix(
         project_directory,
-        cleaned_path,
+        relative_path,
     )
-
-    relative_path = normalise_relative_path(cleaned_path)
 
     root = project_directory.resolve()
     resolved = (root / relative_path).resolve()

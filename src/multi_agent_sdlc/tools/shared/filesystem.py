@@ -2,7 +2,7 @@ from pathlib import Path
 
 from langchain.tools import ToolRuntime, tool
 
-from multi_agent_sdlc.system.paths import resolve_project_path
+from multi_agent_sdlc.system.path_utils import resolve_project_path
 from multi_agent_sdlc.tools.shared.description import (
     LIST_FILES_DESCRIPTION,
     READ_FILE_DESCRIPTION,

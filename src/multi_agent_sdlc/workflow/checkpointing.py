@@ -25,6 +25,7 @@ def get_thread_id(config: RunnableConfig) -> str:
 @contextmanager
 def create_checkpointer() -> Iterator[SqliteSaver]:
     CHECKPOINT_DATABASE_PATH.parent.mkdir(
+        parents=True,
         exist_ok=True,
     )
 

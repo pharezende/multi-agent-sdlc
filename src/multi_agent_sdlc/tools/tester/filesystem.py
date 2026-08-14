@@ -1,6 +1,6 @@
 from langchain.tools import ToolRuntime, tool
 
-from multi_agent_sdlc.system.paths import resolve_project_path
+from multi_agent_sdlc.system.path_utils import resolve_project_path
 from multi_agent_sdlc.tools.coder.descriptions import (
     CREATE_DIRECTORY_DESCRIPTION,
     WRITE_FILE_DESCRIPTION,

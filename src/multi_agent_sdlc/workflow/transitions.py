@@ -24,7 +24,7 @@ from multi_agent_sdlc.agents.planner.prompt import (
 )
 from multi_agent_sdlc.presentation.plan_formatter import format_plan
 from multi_agent_sdlc.presentation.plan_pdf import export_plan_to_pdf
-from multi_agent_sdlc.system.paths import create_project_directory
+from multi_agent_sdlc.system.path_utils import create_project_directory
 
 from .checkpointing import get_thread_id
 from .models import DevelopmentStatus, PlanReviewStatus, VerificationStatus

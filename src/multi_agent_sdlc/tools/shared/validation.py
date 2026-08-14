@@ -4,7 +4,7 @@ from collections.abc import Callable
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.utils import canonicalize_name
 
-from multi_agent_sdlc.system.paths import normalise_relative_path
+from multi_agent_sdlc.system.path_utils import normalise_relative_path
 
 MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
