@@ -55,7 +55,7 @@ def is_test_related_path(path: str) -> bool:
     """Return True when a path refers to test-owned content."""
     candidate = normalise_relative_path(path)
 
-    if any(part.lower() in TEST_DIRECTORY_NAMES for part in candidate.parts[:-1]):
+    if any(part.lower() in TEST_DIRECTORY_NAMES for part in candidate.parts):
         return True
 
     filename = candidate.name.lower()

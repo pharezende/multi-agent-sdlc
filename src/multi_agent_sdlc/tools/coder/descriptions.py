@@ -112,6 +112,65 @@ This tool uses Python filesystem operations directly. It does not run mkdir,
 shell commands, Python snippets, or project-management commands.
 """.strip()
 
+MOVE_PATH_DESCRIPTION = """
+Move or rename a production file or directory within the project directory.
+
+Use this tool when an implementation task requires:
+- renaming an existing production file or directory; or
+- moving an existing production file or directory to another location.
+
+Both source_path and destination_path must be project-relative paths.
+The source must exist and the destination must not already exist.
+
+Do not use this tool for Tester-owned test files or directories.
+Do not use it to move paths outside the project directory.
+""".strip()
+
+DELETE_FILE_DESCRIPTION = """
+Delete an existing production file from the project.
+
+Use this tool when removing a production file is necessary to complete the
+approved implementation, including refactoring, cleanup of obsolete code, or
+correction of files created unintentionally during the current coding work.
+
+The path must be project-relative and must identify an existing file.
+This tool cannot delete directories or Tester-owned files.
+
+Do not:
+- use this tool for files under Tester-owned test paths;
+- use this tool to delete directories;
+- use absolute paths or paths outside the project directory;
+- delete files unrelated to the approved implementation or current coding work;
+- delete files when a safer edit, rename, or move operation would achieve the
+  intended result without unnecessary removal.
+""".strip()
+
+DELETE_DIRECTORY_DESCRIPTION = """
+Delete an existing production directory and all of its contents from the
+project.
+
+Use this tool when removing a production directory is necessary to complete
+the approved implementation, including refactoring, cleanup of obsolete code,
+or correction of directories created unintentionally during the current
+coding work.
+
+The path must be project-relative and must identify an existing production
+directory. The project root and Tester-owned directories cannot be deleted.
+
+This operation recursively removes all files and subdirectories contained in
+the target directory.
+
+Do not:
+- use this tool for directories under Tester-owned test paths;
+- use this tool to delete the project root;
+- use this tool to delete individual files;
+- use absolute paths or paths outside the project directory;
+- delete directories unrelated to the approved implementation or current
+  coding work;
+- delete a directory when a safer rename, move, or targeted file operation
+  would achieve the intended result without unnecessary removal.
+""".strip()
+
 RUN_APPLICATION_DESCRIPTION = """
 Run a declared project application entry point inside the current project's
 uv-managed environment.
