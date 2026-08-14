@@ -69,3 +69,16 @@ class ReviewCycle(BaseModel):
     cycle_number: int
     # review_status: ReviewStatus
     reviewer_summary: ReviewerSummary
+
+
+class VerificationBlockDecision(StrEnum):
+    RETRY = "retry"
+    CODER_REPAIR = "coder-repair"
+    PLAN_REVISION = "plan-revision"
+    PROCEED_WITH_OVERRIDE = "proceed-with-override"
+    ABORT = "abort"
+
+
+class VerificationBlockReview(BaseModel):
+    decision: VerificationBlockDecision
+    reason: str | None = None

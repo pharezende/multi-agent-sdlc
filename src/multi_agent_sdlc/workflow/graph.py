@@ -1,3 +1,10 @@
+from multi_agent_sdlc.human_in_the_loop.verification_block_review.routing import (
+    route_after_verification_block_review,
+)
+from multi_agent_sdlc.workflow.transitions import prepare_reviewer_node
+from multi_agent_sdlc.human_in_the_loop.verification_block_review.verification_block_review import (
+    human_verification_block_review_node,
+)
 from multi_agent_sdlc.agents.reviewer.llm import create_reviewer_llm
 from multi_agent_sdlc.agents.planner.llm import create_planner_llm
 from multi_agent_sdlc.agents.coder.llm import create_coder_llm
@@ -69,7 +76,11 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     builder.add_node("prepare_plan_review", prepare_plan_review_node)
     builder.add_node("human_plan_review", human_plan_review_node)
     builder.add_node("prepare_planner_revision", prepare_planner_revision_node)
+    builder.add_node("prepare_reviewer", prepare_reviewer_node)
     builder.add_node("prepare_coder_implementation", prepare_coder_implementation_node)
+    builder.add_node(
+        "human_verification_block_review", human_verification_block_review_node
+    )
     builder.add_node("coder", coder_action)
     builder.add_node("coder_tools", coder_tool_node)
     builder.add_node("prepare_tester", prepare_tester_node)
@@ -82,17 +93,20 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "prepare_plan_review")
     builder.add_edge("prepare_plan_review", "human_plan_review")
+
     builder.add_conditional_edges(
         "human_plan_review",
         route_after_plan_review,
         {
             "prepare_coder_implementation": "prepare_coder_implementation",
             "prepare_planner_revision": "prepare_planner_revision",
-            "__end__": "__end__",
+            "__end__": END,
         },
     )
+
     builder.add_edge("prepare_planner_revision", "planner")
     builder.add_edge("prepare_coder_implementation", "coder")
+
     builder.add_conditional_edges(
         "coder",
         route_after_coder,
@@ -102,31 +116,47 @@ def build_graph(checkpointer: BaseCheckpointSaver):
             "prepare_tester": "prepare_tester",
         },
     )
+
     builder.add_edge("coder_tools", "coder")
     builder.add_edge("prepare_tester", "tester")
+
     builder.add_conditional_edges(
         "tester",
         route_after_tester,
         {
-            "tester_tools": "tester_tools",
-            "reviewer": "reviewer",
-            "prepare_coder_repair": "prepare_coder_repair",
             "tester": "tester",
+            "tester_tools": "tester_tools",
+            "prepare_coder_repair": "prepare_coder_repair",
+            "prepare_reviewer": "prepare_reviewer",
+            "human_verification_block_review": "human_verification_block_review",
         },
     )
-    builder.add_edge("prepare_coder_repair", "coder")
+
     builder.add_edge("tester_tools", "tester")
-    builder.add_edge("tester", "reviewer")
+    builder.add_edge("prepare_coder_repair", "coder")
+
+    builder.add_conditional_edges(
+        "human_verification_block_review",
+        route_after_verification_block_review,
+        {
+            "prepare_tester": "prepare_tester",
+            "prepare_coder_repair": "prepare_coder_repair",
+            "prepare_planner_revision": "prepare_planner_revision",
+            "prepare_reviewer": "prepare_reviewer",
+            "__end__": END,
+        },
+    )
+
+    builder.add_edge("prepare_reviewer", "reviewer")
 
     builder.add_conditional_edges(
         "reviewer",
         route_after_reviewer,
         {
-            # "deployer": "deployer",
             "prepare_coder_repair": "prepare_coder_repair",
             "reviewer": "reviewer",
             "reviewer_tools": "reviewer_tools",
-            "__end__": "__end__",
+            "__end__": END,
         },
     )
 
