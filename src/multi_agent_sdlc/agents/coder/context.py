@@ -27,48 +27,33 @@ def build_coder_repair_context(
     state: DevState,
 ) -> dict[str, object]:
     plan = state["plan"]
+
     if plan is None:
         raise ValueError("This workflow stage requires an approved plan.")
+
     tester_summary = state["current_tester_summary"]
+
     if tester_summary is None:
         raise ValueError("This workflow stage requires a tester summary.")
 
-    related_task_ids = {
-        task_id
-        for repair_request in tester_summary.coder_repair_requests
-        for task_id in repair_request.related_task_ids
-    }
+    reviewer_summary = state.get("current_reviewer_summary")
+    verification_block_review = state.get("verification_block_review")
 
-    related_task_ids.update(
-        task_id
-        for failure in tester_summary.implementation_failures
-        for task_id in failure.related_task_ids
-    )
-
-    related_coder_tasks = [
-        task.model_dump(mode="json")
-        for task in plan.tasks
-        if task.owner == "coder" and task.id in related_task_ids
+    coder_tasks = [
+        task.model_dump(mode="json") for task in plan.tasks if task.owner == "coder"
     ]
 
     return {
-        "related_coder_tasks": related_coder_tasks,
-        "coder_repair_requests": [
-            request.model_dump(mode="json")
-            for request in tester_summary.coder_repair_requests
-        ],
-        "implementation_failures": [
-            failure.model_dump(mode="json")
-            for failure in tester_summary.implementation_failures
-        ],
-        "failed_acceptance_criteria": [
-            result.model_dump(mode="json")
-            for result in tester_summary.acceptance_criteria_results
-            if result.status == "failed" and result.task_id in related_task_ids
-        ],
-        "failed_verification_results": [
-            result.model_dump(mode="json")
-            for result in tester_summary.verification_results
-            if result.status == "failed"
-        ],
+        "coder_tasks": coder_tasks,
+        "tester_summary": tester_summary.model_dump(mode="json"),
+        "reviewer_summary": (
+            reviewer_summary.model_dump(mode="json")
+            if reviewer_summary is not None
+            else None
+        ),
+        "verification_block_review": (
+            verification_block_review.model_dump(mode="json")
+            if verification_block_review is not None
+            else None
+        ),
     }

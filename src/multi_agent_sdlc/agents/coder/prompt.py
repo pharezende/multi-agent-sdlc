@@ -444,21 +444,29 @@ CODER_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
 )
 
 CODER_REPAIR_HUMAN_PROMPT = """
-The Tester identified production defects that require repair.
-
-The following JSON contains the repair input:
+The following JSON contains the approved repair context:
 
 {coder_repair_input}
 
-Inspect the current project state and repair the reported production-code
-defects.
+Repair the production implementation within the scope of the approved Coder
+tasks.
 
-Do not modify Tester-owned files merely to make verification pass. Limit
-changes to Coder-owned production files and directly necessary production
-configuration.
+Use the available handoff evidence as follows:
 
-When the repair is complete, call submit_coder_summary as required by the
-system instructions.
+- If a verification block review is present and requests Coder repair, consider
+  the human decision and rationale together with the Tester evidence.
+- If the Reviewer requests changes, address the material Reviewer findings.
+  A previously passing Tester summary does not override Reviewer findings.
+- If the Tester requires repair, address the reported implementation failures,
+  failed acceptance criteria, failed verification results, and repair requests.
+- Treat summaries from earlier stages as supporting context rather than assuming
+  that every historical finding still applies.
+
+Inspect the current repository state before making changes. Address only issues
+supported by the current repair context, remain within the approved Coder task
+scope, and avoid unrelated changes.
+
+When the repair is complete, follow the normal Coder completion protocol.
 """.strip()
 
 
