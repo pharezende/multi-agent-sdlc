@@ -74,7 +74,6 @@ class ReviewCycle(BaseModel):
 class VerificationBlockDecision(StrEnum):
     RETRY = "retry"
     CODER_REPAIR = "coder-repair"
-    PLAN_REVISION = "plan-revision"
     PROCEED_WITH_OVERRIDE = "proceed-with-override"
     ABORT = "abort"
 

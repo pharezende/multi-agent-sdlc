@@ -6,3 +6,5 @@ __pycache__/
 sandbox
 artifacts
 .data
+.coverage
+htmlcov

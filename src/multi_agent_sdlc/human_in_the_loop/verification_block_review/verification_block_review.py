@@ -25,5 +25,5 @@ def human_verification_block_review_node(
     review = VerificationBlockReview.model_validate(response)
 
     return {
-        "verification_block_decision": review.decision,
+        "verification_block_review": review,
     }

@@ -1,7 +1,7 @@
+from multi_agent_sdlc.workflow.transitions import prepare_reviewer_node
 from multi_agent_sdlc.human_in_the_loop.verification_block_review.routing import (
     route_after_verification_block_review,
 )
-from multi_agent_sdlc.workflow.transitions import prepare_reviewer_node
 from multi_agent_sdlc.human_in_the_loop.verification_block_review.verification_block_review import (
     human_verification_block_review_node,
 )
@@ -141,7 +141,6 @@ def build_graph(checkpointer: BaseCheckpointSaver):
         {
             "prepare_tester": "prepare_tester",
             "prepare_coder_repair": "prepare_coder_repair",
-            "prepare_planner_revision": "prepare_planner_revision",
             "prepare_reviewer": "prepare_reviewer",
             "__end__": END,
         },

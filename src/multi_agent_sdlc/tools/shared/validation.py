@@ -8,12 +8,6 @@ from multi_agent_sdlc.system.path_utils import normalise_relative_path
 
 MODULE_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
-DEPENDENCY_PATTERN = re.compile(
-    r"^[A-Za-z0-9][A-Za-z0-9._-]*"
-    r"(?:\[[A-Za-z0-9._,-]+\])?"
-    r"(?:(?:===|==|~=|!=|<=|>=|<|>)[A-Za-z0-9.*+!_-]+)?$"
-)
-
 
 def validate_application_arguments(
     arguments: list[str],

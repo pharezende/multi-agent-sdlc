@@ -211,3 +211,89 @@ REVIEWER_INVALID_RESPONSE_MESSAGE = """
 Continue the code review using the available read-only tools, or call
 submit_reviewer_summary alone when the review is complete.
 """
+
+
+REVIEWER_INITIAL_OVERRIDE_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "{reviewer_rules}",
+        ),
+        (
+            "human",
+            """
+The following JSON contains the approved implementation and verification
+context for the initial code review:
+
+{reviewer_context}
+
+The latest verification attempt ended in a blocked state, and a human reviewer
+explicitly chose to proceed with an override.
+
+Verification block review:
+
+{verification_block_review}
+
+Review the current implementation against the approved development plan and
+the current repository state.
+
+Take the blocked verification result and human override into account. Do not
+interpret the override as evidence that verification passed.
+
+Use the available read-only tools as needed to inspect the implementation and
+gather concrete evidence.
+
+Focus on material engineering issues that may not be captured by functional
+verification, including maintainability, architecture, readability,
+reliability, security, unnecessary complexity, duplication, scope violations,
+and brittle implementation choices.
+
+Do not modify the repository or implement fixes.
+
+When the review is complete, submit the Reviewer summary using
+submit_reviewer_summary as the only tool call.
+""".strip(),
+        ),
+    ]
+)
+
+REVIEWER_REREVIEW_OVERRIDE_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        (
+            "human",
+            """
+The implementation has been updated after a previous Reviewer cycle.
+
+The latest verification attempt ended in a blocked state, and a human reviewer
+explicitly chose to proceed with an override.
+
+Previous Reviewer summary:
+{previous_reviewer_summary}
+
+Latest Tester summary:
+{tester_summary}
+
+Verification block review:
+{verification_block_review}
+
+Re-review the current repository state.
+
+Verify whether the material findings from the previous Reviewer cycle have been
+resolved and determine whether any material issues remain.
+
+Take the blocked verification result and the human override into account. Do not
+interpret the override as evidence that verification passed.
+
+Base the review on the current repository state and concrete evidence. Do not
+assume that previous findings were resolved solely because the Coder reported
+changes.
+
+Use the available read-only tools as needed. Do not modify the repository or
+implement fixes.
+
+When the review is complete, submit a new Reviewer summary using
+submit_reviewer_summary as the only tool call.
+""".strip(),
+        ),
+    ]
+)

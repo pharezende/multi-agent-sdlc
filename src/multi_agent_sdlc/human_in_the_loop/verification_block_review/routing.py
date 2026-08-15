@@ -8,7 +8,6 @@ def route_after_verification_block_review(
 ) -> Literal[
     "prepare_tester",
     "prepare_coder_repair",
-    "prepare_planner_revision",
     "prepare_reviewer",
     "__end__",
 ]:
@@ -22,9 +21,6 @@ def route_after_verification_block_review(
 
     if block_review.decision == VerificationBlockDecision.CODER_REPAIR:
         return "prepare_coder_repair"
-
-    if block_review.decision == VerificationBlockDecision.PLAN_REVISION:
-        return "prepare_planner_revision"
 
     if block_review.decision == VerificationBlockDecision.PROCEED_WITH_OVERRIDE:
         return "prepare_reviewer"

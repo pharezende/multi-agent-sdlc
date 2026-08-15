@@ -17,6 +17,7 @@ from .models import (
     DevelopmentStatus,
     PlanReviewDecision,
     PlanReviewStatus,
+    VerificationBlockReview,
     VerificationStatus,
 )
 
@@ -60,9 +61,11 @@ class DevState(TypedDict):
     plan_review_content: str | None
     development_status: DevelopmentStatus | None
     verification_status: VerificationStatus | None
+    verification_block_review: VerificationBlockReview | None
+
     review_status: (
         ReviewStatus | None
-    )  # I think all status will move to the respective Cycle later.
+    )  # I think all status will be moved to the respective Cycle later.
 
 
 def build_initial_state(request: str) -> DevState:
@@ -87,5 +90,6 @@ def build_initial_state(request: str) -> DevState:
         "reviewer_messages": [],
         "current_reviewer_summary": None,
         "reviewer_summary_history": [],
+        "verification_block_review": None,
         "review_status": ReviewStatus.NOT_STARTED,
     }
