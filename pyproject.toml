@@ -12,6 +12,7 @@ dependencies = [
     "langgraph>=1.2.9",
     "langgraph-checkpoint-sqlite>=3.1.1",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "python-dotenv>=1.2.2",
     "reportlab>=5.0.0",
     "ruff>=0.16.1",
@@ -29,6 +30,11 @@ multi-agent-sdlc = "multi_agent_sdlc.main:run"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+addopts = [
+    "--cov=multi_agent_sdlc",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80",
+]
 
 [tool.ruff]
 line-length = 120
