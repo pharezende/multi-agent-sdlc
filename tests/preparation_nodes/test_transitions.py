@@ -1,3 +1,6 @@
+from multi_agent_sdlc.agents.tester.model import TesterSummary
+from multi_agent_sdlc.workflow.models import VerificationBlockDecision
+from multi_agent_sdlc.workflow.models import VerificationBlockReview
 from unittest.mock import MagicMock
 from pathlib import Path
 from multi_agent_sdlc.workflow.transitions import prepare_coder_repair_node
@@ -219,11 +222,16 @@ def test_prepare_coder_implementation_sets_state(
     )
 
 
-def test_prepare_tester_sets_state(
-    development_plan: DevelopmentPlan, dev_state: DevState, coder_summary: CoderSummary
-):
-    dev_state["plan"] = development_plan
+def test_prepare_tester_retest_sets_state(
+    dev_state: DevState, coder_summary: CoderSummary, tester_summary: TesterSummary
+) -> None:
     dev_state["current_coder_summary"] = coder_summary
+    dev_state["current_tester_summary"] = tester_summary
+    dev_state["tester_messages"] = [
+        SystemMessage(content=TESTER_SYSTEM_RULES),
+        HumanMessage(content="Previous verification."),
+    ]
+    dev_state["verification_block_review"] = None
 
     result = prepare_tester_node(dev_state)
 
@@ -233,17 +241,38 @@ def test_prepare_tester_sets_state(
     assert result["current_project_verification_result"] is None
 
     assert isinstance(messages, list)
-    assert len(messages) == 2
-    assert isinstance(messages[0], SystemMessage)
-    assert messages[0].content == TESTER_SYSTEM_RULES
-    assert isinstance(messages[1], HumanMessage)
-    assert (
-        '"implementation_summary": "Implemented the Issue Tracker project scaffolding and application."'
-        in messages[1].content
+    assert len(messages) == 1
+    assert isinstance(messages[0], HumanMessage)
+
+
+def test_prepare_tester_verification_retry_sets_state(
+    dev_state: DevState,
+    tester_summary: TesterSummary,
+) -> None:
+    dev_state["current_tester_summary"] = tester_summary
+    dev_state["verification_block_review"] = VerificationBlockReview(
+        decision=VerificationBlockDecision.RETRY,
+        reason="Retry verification using the corrected verification context.",
     )
-    assert "test-project" in messages[1].content
-    assert '"id": "T1"' in messages[1].content
-    assert "issues_app/__init__.py" in messages[1].content
+
+    result = prepare_tester_node(dev_state)
+
+    messages = result["tester_messages"]
+
+    assert result["verification_status"] == VerificationStatus.VERIFYING
+    assert result["current_project_verification_result"] is None
+
+    assert isinstance(messages, list)
+    assert len(messages) == 1
+
+    message = messages[0]
+
+    assert isinstance(message, HumanMessage)
+    assert isinstance(message.content, str)
+    assert (
+        "Retry verification using the corrected verification context."
+        in message.content
+    )
 
 
 def test_prepare_coder_repair_node_sets_state(

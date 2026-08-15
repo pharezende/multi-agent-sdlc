@@ -1,3 +1,6 @@
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE,
+)
 import json
 
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -43,3 +46,28 @@ def build_tester_retest_messages(
             )
         )
     )
+
+
+def build_tester_verification_retry_message(
+    state: DevState,
+) -> list[BaseMessage]:
+    block_review = state["verification_block_review"]
+
+    if block_review is None:
+        raise ValueError(
+            "Verification block review is required for a verification retry."
+        )
+
+    tester_summary = state["current_tester_summary"]
+
+    if tester_summary is None:
+        raise ValueError("Current Tester summary is required for a verification retry.")
+
+    prompt_value = TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE.invoke(
+        {
+            "tester_summary": tester_summary.model_dump_json(indent=2),
+            "reason": block_review.reason,
+        }
+    )
+
+    return prompt_value.to_messages()

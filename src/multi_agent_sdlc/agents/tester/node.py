@@ -117,6 +117,7 @@ def _process_tester_summary_call(
         "current_tester_summary": tester_summary,
         "tester_summary_history": [tester_cycle],
         "verification_status": verification_status,
+        "verification_block_review": None,
     }
 
 

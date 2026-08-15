@@ -429,3 +429,24 @@ TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK = (
     "tester_run_project_verification may be called only once per response. "
     "Correct the response and call it again."
 )
+
+
+TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        (
+            "human",
+            """
+The previous verification attempt was blocked and reviewed by a human operator.
+
+Previous Tester summary:
+{tester_summary}
+
+Human reason:
+{reason}
+
+Retry verification against the current repository state. Reassess the previous
+blocker and do not assume that it still applies.
+""".strip(),
+        ),
+    ]
+)
