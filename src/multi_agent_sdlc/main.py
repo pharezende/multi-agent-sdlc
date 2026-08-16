@@ -19,7 +19,8 @@ def run() -> None:
     if args.resume:
         resume_workflow(
             thread_id=args.resume,
-            plan_review_decision=automatic_plan_review_config,
+            checkpoint_id=args.checkpoint_id,
+            configurable=automatic_plan_review_config,
         )
     else:
         request = dedent(
@@ -43,7 +44,7 @@ def run() -> None:
 
         run_new_workflow(
             request=request,
-            plan_review_decision=automatic_plan_review_config,
+            configurable=automatic_plan_review_config,
         )
 
 
