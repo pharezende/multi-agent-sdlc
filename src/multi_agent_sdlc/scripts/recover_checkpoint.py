@@ -1,32 +1,72 @@
-from typing_extensions import List
+from dotenv import load_dotenv
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import StateSnapshot
-from multi_agent_sdlc.workflow.graph import build_graph
+
 from multi_agent_sdlc.workflow.checkpointing import (
     build_workflow_config,
     create_checkpointer,
 )
-from dotenv import load_dotenv
+from multi_agent_sdlc.workflow.graph import build_graph
 
 load_dotenv(override=True)
 
-THREAD_ID = "7f5814dc-36b3-4686-afcb-43307f18f7b5"
-CHECKPOINT_ID = "1f196743-bfa5-61b8-80ad-33889d39e792"
+THREAD_ID = "7b02e2f4-1ffb-41ba-9d84-dc03c179e192"
+CHECKPOINT_ID = ""
+
+
+def _get_configurable_value(
+    config: RunnableConfig | None,
+    key: str,
+) -> object | None:
+    if config is None:
+        return None
+
+    return config.get("configurable", {}).get(key)
 
 
 def _get_checkpoint_id(
     config: RunnableConfig | None,
 ) -> str | None:
-    if config is None:
-        return None
-
-    checkpoint_id = config.get("configurable", {}).get("checkpoint_id")
+    checkpoint_id = _get_configurable_value(
+        config,
+        "checkpoint_id",
+    )
 
     return checkpoint_id if isinstance(checkpoint_id, str) else None
 
 
+def _get_checkpoint_node(
+    snapshot: StateSnapshot,
+) -> str:
+    metadata = snapshot.metadata or {}
+    writes = metadata.get("writes")
+
+    if isinstance(writes, dict) and writes:
+        return ", ".join(writes)
+
+    if snapshot.tasks:
+        return ", ".join(task.name for task in snapshot.tasks)
+
+    return "-"
+
+
+def _get_task_names(
+    snapshot: StateSnapshot,
+) -> list[str]:
+    return [task.name for task in snapshot.tasks]
+
+
+def _format_values(
+    values: list[str],
+) -> str:
+    if not values:
+        return "-"
+
+    return ", ".join(values)
+
+
 def _find_forks(
-    history: List[StateSnapshot],
+    history: list[StateSnapshot],
 ) -> dict[str, list[str]]:
     children_by_parent: dict[str, list[str]] = {}
 
@@ -49,45 +89,79 @@ def _find_forks(
     }
 
 
+def _print_selected_checkpoint(
+    checkpoint: StateSnapshot,
+) -> None:
+    checkpoint_id = _get_checkpoint_id(checkpoint.config)
+    parent_checkpoint_id = _get_checkpoint_id(checkpoint.parent_config)
+
+    metadata = checkpoint.metadata or {}
+    step = metadata.get("step")
+
+    print("\nSelected checkpoint:")
+    print(f"  id: {checkpoint_id}")
+    print(f"  parent: {parent_checkpoint_id}")
+    print(f"  node: {_get_checkpoint_node(checkpoint)}")
+    print(f"  step: {step}")
+    print(f"  created_at: {checkpoint.created_at}")
+    print(f"  next: {checkpoint.next}")
+    print(f"  interrupted: " f"{bool(checkpoint.interrupts)}")
+    print(f"  has_pending_nodes: " f"{bool(checkpoint.next)}")
+    print("  tasks: " f"{_format_values(_get_task_names(checkpoint))}")
+
+
 def main() -> None:
     with create_checkpointer() as checkpointer:
         graph = build_graph(checkpointer)
 
-        # Base configuration used to retrieve the thread history.
         thread_config = build_workflow_config(THREAD_ID)
 
         history = list(graph.get_state_history(thread_config))
 
+        if not history:
+            raise RuntimeError(
+                f"No checkpoints were found for thread " f"{THREAD_ID!r}."
+            )
+
         forks = _find_forks(history)
 
-        print("Available checkpoints:\n")
+        print(f"Thread: {THREAD_ID}")
+        print(f"Total checkpoints: {len(history)}")
+        print("\nAvailable checkpoints:\n")
 
         for snapshot in history:
             checkpoint_id = _get_checkpoint_id(snapshot.config)
             parent_checkpoint_id = _get_checkpoint_id(snapshot.parent_config)
+            node = _get_checkpoint_node(snapshot)
 
             markers: list[str] = []
 
             if checkpoint_id == CHECKPOINT_ID:
-                markers.append("selected for recovery")
+                markers.append("SELECTED")
 
             if checkpoint_id in forks:
-                markers.append(f"FORK POINT ({len(forks[checkpoint_id])} branches)")
+                markers.append(f"FORK POINT " f"({len(forks[checkpoint_id])} branches)")
+
+            if snapshot.interrupts:
+                markers.append("INTERRUPTED")
 
             marker_text = f" <-- {', '.join(markers)}" if markers else ""
 
             print(
                 f"checkpoint_id={checkpoint_id} "
-                f"parent_checkpoint_id={parent_checkpoint_id} "
-                f"next={snapshot.next}"
+                f"parent={parent_checkpoint_id} "
+                f"node={node}"
                 f"{marker_text}"
             )
 
         if forks:
             print("\nDetected forks:\n")
 
-            for parent_checkpoint_id, children in forks.items():
-                print(f"Fork point: {parent_checkpoint_id}")
+            for (
+                parent_checkpoint_id,
+                children,
+            ) in forks.items():
+                print(f"Fork point: " f"{parent_checkpoint_id}")
 
                 for child_checkpoint_id in children:
                     print(f"  └─> {child_checkpoint_id}")
@@ -96,8 +170,7 @@ def main() -> None:
         else:
             print("\nNo checkpoint forks detected.")
 
-        # Find the exact checkpoint selected for recovery.
-        checkpoint = next(
+        selected_checkpoint = next(
             (
                 snapshot
                 for snapshot in history
@@ -106,41 +179,15 @@ def main() -> None:
             None,
         )
 
-        if checkpoint is None:
-            raise RuntimeError(
-                f"Checkpoint {CHECKPOINT_ID!r} was not found "
-                f"for thread {THREAD_ID!r}."
+        if selected_checkpoint is None:
+            print(
+                f"\nSelected checkpoint "
+                f"{CHECKPOINT_ID!r} was not found "
+                f"in thread {THREAD_ID!r}."
             )
+            return
 
-        print(
-            "\nResuming from checkpoint:"
-            f"\n  id: {CHECKPOINT_ID}"
-            f"\n  parent: "
-            f"{_get_checkpoint_id(checkpoint.parent_config)}"
-            f"\n  next: {checkpoint.next}"
-        )
-
-        if CHECKPOINT_ID in forks:
-            print("\nWARNING: The selected checkpoint is already " "a fork point.")
-
-            print("Existing branches:")
-
-            for child_checkpoint_id in forks[CHECKPOINT_ID]:
-                print(f"  - {child_checkpoint_id}")
-
-        if not checkpoint.next:
-            raise RuntimeError(
-                "The selected checkpoint has no pending nodes to execute."
-            )
-
-        # Replay from this historical checkpoint.
-        result = graph.invoke(
-            None,
-            config=checkpoint.config,
-        )
-
-        print("\nWorkflow resumed successfully.")
-        print(result)
+        _print_selected_checkpoint(selected_checkpoint)
 
 
 if __name__ == "__main__":
