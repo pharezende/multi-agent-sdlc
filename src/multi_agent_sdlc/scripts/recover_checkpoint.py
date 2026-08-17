@@ -10,8 +10,9 @@ from multi_agent_sdlc.workflow.graph import build_graph
 
 load_dotenv(override=True)
 
-THREAD_ID = "7b02e2f4-1ffb-41ba-9d84-dc03c179e192"
+THREAD_ID = "7bb8ffa9-41f0-4167-a236-70c0cec199d3"
 CHECKPOINT_ID = ""
+LATEST_CHECKPOINTS = 500
 
 
 def _get_configurable_value(
@@ -105,8 +106,8 @@ def _print_selected_checkpoint(
     print(f"  step: {step}")
     print(f"  created_at: {checkpoint.created_at}")
     print(f"  next: {checkpoint.next}")
-    print(f"  interrupted: " f"{bool(checkpoint.interrupts)}")
-    print(f"  has_pending_nodes: " f"{bool(checkpoint.next)}")
+    print(f"  interrupted: {bool(checkpoint.interrupts)}")
+    print(f"  has_pending_nodes: {bool(checkpoint.next)}")
     print("  tasks: " f"{_format_values(_get_task_names(checkpoint))}")
 
 
@@ -125,11 +126,14 @@ def main() -> None:
 
         forks = _find_forks(history)
 
+        latest_history = history[:LATEST_CHECKPOINTS]
+
         print(f"Thread: {THREAD_ID}")
         print(f"Total checkpoints: {len(history)}")
+        print(f"Showing latest " f"{min(LATEST_CHECKPOINTS, len(history))} checkpoints")
         print("\nAvailable checkpoints:\n")
 
-        for snapshot in history:
+        for snapshot in latest_history:
             checkpoint_id = _get_checkpoint_id(snapshot.config)
             parent_checkpoint_id = _get_checkpoint_id(snapshot.parent_config)
             node = _get_checkpoint_node(snapshot)
