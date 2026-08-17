@@ -347,6 +347,8 @@ Examples:
 
 Rules:
 
+* Provide command arguments as separate list items, not as a single
+space-separated string.
 * Use only an approved command.
 * Do not include uv run in the command or arguments.
 * Do not execute Python, shell commands, arbitrary executables, application

@@ -88,7 +88,7 @@ class ImplementationFailure(BaseModel):
 class UnresolvedIssue(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    owner: Literal["coder", "tester", "environment", "unknown"]
+    owner: Literal["coder", "tester", "environment", "tooling", "unknown"]
     description: str = Field(min_length=1)
     related_task_ids: list[str]
     evidence: str = Field(min_length=1)

@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.tester.verification import _build_mypy_command
 import json
 
 from langchain.tools import ToolRuntime, tool
@@ -127,13 +128,18 @@ def tester_run_build(
 def tester_run_verification_command(
     command: VerificationCommand,
     runtime: ToolRuntime[DevState],
-    arguments: str | None = None,
+    arguments: list[str] | None = None,
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
     project_directory = runtime.state["project_directory"]
 
     return execute_process(
-        ["uv", "run", command, *(arguments or [])],
+        [
+            "uv",
+            "run",
+            command,
+            *(arguments or []),
+        ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
     )
@@ -147,14 +153,14 @@ def tester_run_project_verification(
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 200,
 ) -> Command:
+    project_directory = runtime.state["project_directory"]
+
     commands = [
         ["uv", "run", "ruff", "check", "."],
         ["uv", "run", "ruff", "format", "--check", "."],
-        ["uv", "run", "mypy", "src"],
+        _build_mypy_command(project_directory),
         ["uv", "run", "pytest"],
     ]
-
-    project_directory = runtime.state["project_directory"]
 
     checks = [
         execute_process(

@@ -95,6 +95,19 @@ def _process_tester_summary_call(
             ],
         }
 
+    if tester_summary.overall_status == "blocked":
+        if not tester_summary.unresolved_issues:
+            return {
+                "tester_messages": [
+                    response,
+                    HumanMessage(
+                        content="A blocked Tester summary must include at least one "
+                        "concrete unresolved issue describing why verification "
+                        "cannot safely continue."
+                    ),
+                ],
+            }
+
     match tester_summary.overall_status:
         case "passed":
             verification_status = VerificationStatus.PASSED

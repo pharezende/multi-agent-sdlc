@@ -1,17 +1,15 @@
+from multi_agent_sdlc.tools.tester.descriptions import WRITE_TEST_FILE_DESCRIPTION
+from multi_agent_sdlc.tools.tester.descriptions import CREATE_TEST_DIRECTORY_DESCRIPTION
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.system.path_utils import resolve_project_path
-from multi_agent_sdlc.tools.coder.descriptions import (
-    CREATE_DIRECTORY_DESCRIPTION,
-    WRITE_FILE_DESCRIPTION,
-)
 from multi_agent_sdlc.tools.shared.models import FileContent, ProjectRelativePath
 from multi_agent_sdlc.workflow.state import DevState
 
 
 @tool(
     "tester_write_file",
-    description=WRITE_FILE_DESCRIPTION,
+    description=WRITE_TEST_FILE_DESCRIPTION,
 )
 def tester_write_file(
     path: ProjectRelativePath,
@@ -39,7 +37,7 @@ def tester_write_file(
 
 @tool(
     "tester_create_directory",
-    description=CREATE_DIRECTORY_DESCRIPTION,
+    description=CREATE_TEST_DIRECTORY_DESCRIPTION,
 )
 def tester_create_directory(
     path: ProjectRelativePath,
