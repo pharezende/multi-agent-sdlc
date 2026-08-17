@@ -36,6 +36,7 @@ def create_checkpointer() -> Iterator[SqliteSaver]:
 def build_workflow_config(
     thread_id: str,
     configurable: dict[str, object] | None = None,
+    checkpoint_id: str | None = None,
 ) -> RunnableConfig:
     configurable_values: dict[str, object] = {
         "thread_id": thread_id,
@@ -43,6 +44,9 @@ def build_workflow_config(
 
     if configurable is not None:
         configurable_values.update(configurable)
+
+    if checkpoint_id is not None:
+        configurable_values["checkpoint_id"] = checkpoint_id
 
     return {
         "configurable": configurable_values,

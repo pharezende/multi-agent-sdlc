@@ -3,7 +3,7 @@ from langchain_openrouter import ChatOpenRouter
 
 def create_chat_model(
     model: str,
-    timeout_seconds: int = 180000,  # ms
+    timeout_seconds: int = 180_000,  # ms
     max_retries: int = 0,
     provider=None,
 ) -> ChatOpenRouter:

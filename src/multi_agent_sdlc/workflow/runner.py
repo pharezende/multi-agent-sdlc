@@ -54,40 +54,37 @@ def run_new_workflow(
 
 def resume_workflow(
     thread_id: str,
-    checkpoint_id: str,
+    checkpoint_id: str | None,
     configurable: dict[str, Any],
 ) -> None:
-    workflow_run = get_workflow_run(thread_id)
-    if workflow_run is None:
-        raise ValueError(f"Workflow with thread id {thread_id!r} was not found.")
+    workflow_run = _get_resumable_workflow_run(thread_id)
 
-    if workflow_run.status in {
-        WorkflowRunStatus.COMPLETED,
-        WorkflowRunStatus.FAILED,
-    }:
-        raise ValueError(
-            f"Workflow run {thread_id} cannot be resumed because "
-            f"its status is {workflow_run.status!r}."
-        )
+    checkpoint_config = build_workflow_config(
+        workflow_run.thread_id,
+        configurable,
+        checkpoint_id,
+    )
 
-    config = build_workflow_config(workflow_run.thread_id, configurable, checkpoint_id)
+    thread_config = build_workflow_config(
+        workflow_run.thread_id,
+        configurable,
+    )
 
     with create_checkpointer() as checkpointer:
         graph = build_graph(checkpointer)
-        snapshot = graph.get_state(config)
+
+        snapshot = graph.get_state(checkpoint_config)
 
         if snapshot.interrupts:
-            interrupt = snapshot.interrupts[0]
+            interrupt = _get_first_interrupt(
+                snapshot.interrupts,
+            )
 
-            if not isinstance(interrupt, Interrupt):
-                raise TypeError(
-                    f"Expected Interrupt, got " f"{type(interrupt).__name__}."
-                )
             result = _resume_interrupt(
                 graph,
                 interrupt,
                 workflow_run,
-                config,
+                checkpoint_config,
             )
 
         elif snapshot.next:
@@ -95,21 +92,22 @@ def resume_workflow(
                 workflow_run.thread_id,
                 WorkflowRunStatus.RUNNING,
             )
+
             result = graph.invoke(
                 None,
-                config=config,
+                config=checkpoint_config,
             )
 
         else:
             raise ValueError(
-                f"Workflow run {workflow_run.thread_id} " "has no pending work."
+                f"Workflow run {workflow_run.thread_id!r} " "has no pending work."
             )
 
         _process_workflow_result(
             graph,
             result,
             workflow_run,
-            config,
+            thread_config,
         )
 
 
@@ -119,22 +117,17 @@ def _process_workflow_result(
     workflow_run: WorkflowRun,
     config: RunnableConfig,
 ) -> None:
-    interrupts = result.get("__interrupt__", ())
+    interrupts = _get_interrupts(result)
 
-    while isinstance(interrupts, tuple) and interrupts:
-        interrupt = interrupts[0]
-
-        if not isinstance(interrupt, Interrupt):
-            raise TypeError(f"Expected Interrupt, got " f"{type(interrupt).__name__}.")
-
+    while interrupts:
         result = _resume_interrupt(
             graph,
-            interrupt,
+            interrupts[0],
             workflow_run,
             config,
         )
 
-        interrupts = result.get("__interrupt__", ())
+        interrupts = _get_interrupts(result)
 
     snapshot = graph.get_state(config)
 
@@ -150,30 +143,6 @@ def _process_workflow_result(
     )
 
     print("\nWorkflow execution completed.")
-
-
-def _collect_interrupt_response(
-    interrupt_value: dict[str, Any],
-) -> BaseModel:
-    interrupt_type = interrupt_value.get("type")
-    content = interrupt_value.get("content")
-    if not isinstance(interrupt_type, str):
-        raise ValueError("Interrupt type is missing or invalid.")
-
-    if not isinstance(content, str):
-        raise ValueError("Interrupt content is missing or invalid.")
-
-    print()
-    print(content)
-    if interrupt_type == "plan_review":
-        print("\nGraph paused for plan review.")
-        return collect_plan_review_decision()
-
-    if interrupt_type == "verification_block_review":
-        print("\nGraph paused because verification is blocked.")
-        return collect_verification_block_review()
-
-    raise ValueError(f"Unsupported interrupt type: {interrupt_type!r}")
 
 
 def _resume_interrupt(
@@ -200,3 +169,84 @@ def _resume_interrupt(
         ),
         config=config,
     )
+
+
+def _collect_interrupt_response(
+    interrupt_value: dict[str, Any],
+) -> BaseModel:
+    interrupt_type = interrupt_value.get("type")
+    content = interrupt_value.get("content")
+
+    if not isinstance(interrupt_type, str):
+        raise ValueError("Interrupt type is missing or invalid.")
+
+    if not isinstance(content, str):
+        raise ValueError("Interrupt content is missing or invalid.")
+
+    print()
+    print(content)
+
+    match interrupt_type:
+        case "plan_review":
+            print("\nGraph paused for plan review.")
+            return collect_plan_review_decision()
+
+        case "verification_block_review":
+            print("\nGraph paused because verification is blocked.")
+            return collect_verification_block_review()
+
+        case _:
+            raise ValueError(f"Unsupported interrupt type: " f"{interrupt_type!r}")
+
+
+def _get_resumable_workflow_run(
+    thread_id: str,
+) -> WorkflowRun:
+    workflow_run = get_workflow_run(thread_id)
+
+    if workflow_run is None:
+        raise ValueError(f"Workflow with thread id {thread_id!r} " "was not found.")
+
+    if workflow_run.status in {
+        WorkflowRunStatus.COMPLETED,
+        WorkflowRunStatus.FAILED,
+    }:
+        raise ValueError(
+            f"Workflow run {thread_id!r} cannot be resumed "
+            f"because its status is {workflow_run.status!r}."
+        )
+
+    return workflow_run
+
+
+def _get_interrupts(
+    result: dict[str, object],
+) -> list[Interrupt]:
+    value = result.get("__interrupt__", ())
+
+    if not isinstance(value, (list, tuple)):
+        raise TypeError(
+            "Expected __interrupt__ to be a list or tuple, "
+            f"got {type(value).__name__}."
+        )
+
+    interrupts: list[Interrupt] = []
+
+    for item in value:
+        if not isinstance(item, Interrupt):
+            raise TypeError(f"Expected Interrupt, got " f"{type(item).__name__}.")
+
+        interrupts.append(item)
+
+    return interrupts
+
+
+def _get_first_interrupt(
+    interrupts: tuple[Interrupt, ...],
+) -> Interrupt:
+    interrupt = interrupts[0]
+
+    if not isinstance(interrupt, Interrupt):
+        raise TypeError(f"Expected Interrupt, got " f"{type(interrupt).__name__}.")
+
+    return interrupt

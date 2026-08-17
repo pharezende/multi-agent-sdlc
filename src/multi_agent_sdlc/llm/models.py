@@ -5,6 +5,7 @@ from typing import TypedDict
 class OpenRouterProviderConfig(TypedDict):
     only: list[str]
     allow_fallbacks: bool
+    require_parameters: bool
 
 
 class ModelId(StrEnum):
@@ -18,7 +19,8 @@ MODEL_PROVIDER_CONFIG: dict[
     OpenRouterProviderConfig,
 ] = {
     ModelId.DEEPSEEK_V4_FLASH_0731_PAID: {
-        "only": ["deepinfra/fp4", "novita/fp8"],
+        "only": ["deepinfra/fp8"],
         "allow_fallbacks": True,
+        "require_parameters": True,
     },
 }

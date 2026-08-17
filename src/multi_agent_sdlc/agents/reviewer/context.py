@@ -21,7 +21,6 @@ def build_reviewer_context(state: DevState) -> dict[str, Any]:
 
     context: dict[str, Any] = {
         "request": state["request"],
-        "project_directory": state["project_directory"],
         "plan": plan.model_dump(mode="json"),
         "coder_summary": coder_summary.model_dump(mode="json"),
         "tester_summary": tester_summary.model_dump(mode="json"),
