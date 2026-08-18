@@ -8,7 +8,7 @@ from multi_agent_sdlc.deployment.validation import validate_project
 from multi_agent_sdlc.workflow.state import DevState
 
 
-def deploy_node(
+def deployer_node(
     state: DevState,
 ) -> dict[str, object]:
     project_directory = state["project_directory"]

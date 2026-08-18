@@ -1,4 +1,4 @@
-from multi_agent_sdlc.deployment.node import deploy_node
+from multi_agent_sdlc.deployment.node import deployer_node
 from multi_agent_sdlc.workflow.transitions import prepare_reviewer_node
 from multi_agent_sdlc.human_in_the_loop.verification_block_review.routing import (
     route_after_verification_block_review,
@@ -90,7 +90,7 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     builder.add_node("prepare_coder_repair", prepare_coder_repair_node)
     builder.add_node("reviewer", reviewer_action)
     builder.add_node("reviewer_tools", reviewer_tool_node)
-    builder.add_node("deploy", deploy_node)
+    builder.add_node("deploy", deployer_node)
 
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "prepare_plan_review")
