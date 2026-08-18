@@ -1,7 +1,16 @@
 from enum import StrEnum
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+
+
+NonBlankStr = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+    ),
+]
 
 
 class VerificationType(StrEnum):
@@ -18,7 +27,7 @@ class VerificationResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     verification_type: VerificationType
-    command: list[str] | None = Field(
+    command: list[NonBlankStr] | None = Field(
         default=None,
         description=(
             "Exact command executed for this verification result. "
@@ -32,7 +41,7 @@ class VerificationResult(BaseModel):
     ] = Field(
         description=(
             "Verification outcome: passed when execution succeeded, failed when "
-            "verification ran and failed and blocked when it could not proceed. "
+            "verification ran and failed, and blocked when it could not proceed."
         )
     )
     exit_code: int | None = Field(
@@ -42,8 +51,7 @@ class VerificationResult(BaseModel):
             "Use None when no single command was executed."
         ),
     )
-    summary: str = Field(
-        min_length=1,
+    summary: NonBlankStr = Field(
         description=(
             "Concise factual summary of the verification outcome. Report only "
             "observed results from executed checks or explicitly state when a "
@@ -51,7 +59,7 @@ class VerificationResult(BaseModel):
             "acceptance criterion passed from indirect evidence."
         ),
     )
-    verified_task_ids: list[str] = Field(
+    verified_task_ids: list[NonBlankStr] = Field(
         min_length=1,
         description=(
             "Approved task identifiers for which this specific verification result "
@@ -63,46 +71,57 @@ class VerificationResult(BaseModel):
 class AcceptanceCriterionResult(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    task_id: str = Field(min_length=1)
-    criterion: str = Field(min_length=1)
-    status: Literal["passed", "failed", "blocked", "not_executed"]
-    evidence: str = Field(min_length=1)
+    task_id: NonBlankStr
+    criterion: NonBlankStr
+    status: Literal[
+        "passed",
+        "failed",
+        "blocked",
+        "not_executed",
+    ]
+    evidence: NonBlankStr
 
 
 class TesterRepair(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    description: str = Field(min_length=1)
-    files_modified: list[str] = Field(min_length=1)
-    verification_result: str = Field(min_length=1)
+    description: NonBlankStr
+    files_modified: list[NonBlankStr] = Field(min_length=1)
+    verification_result: NonBlankStr
 
 
 class ImplementationFailure(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    description: str = Field(min_length=1)
-    related_task_ids: list[str] = Field(min_length=1)
-    evidence: str = Field(min_length=1)
+    description: NonBlankStr
+    related_task_ids: list[NonBlankStr] = Field(min_length=1)
+    evidence: NonBlankStr
 
 
 class UnresolvedIssue(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    owner: Literal["coder", "tester", "environment", "tooling", "unknown"]
-    description: str = Field(min_length=1)
-    related_task_ids: list[str]
-    evidence: str = Field(min_length=1)
+    owner: Literal[
+        "coder",
+        "tester",
+        "environment",
+        "tooling",
+        "unknown",
+    ]
+    description: NonBlankStr
+    related_task_ids: list[NonBlankStr]
+    evidence: NonBlankStr
 
 
 class CoderRepairRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    related_task_ids: list[str] = Field(min_length=1)
-    affected_files: list[str] = Field(min_length=1)
-    failed_criteria: list[str] = Field(min_length=1)
-    observed_behavior: str = Field(min_length=1)
-    expected_behavior: str = Field(min_length=1)
-    evidence: str = Field(min_length=1)
+    related_task_ids: list[NonBlankStr] = Field(min_length=1)
+    affected_files: list[NonBlankStr] = Field(min_length=1)
+    failed_criteria: list[NonBlankStr] = Field(min_length=1)
+    observed_behavior: NonBlankStr
+    expected_behavior: NonBlankStr
+    evidence: NonBlankStr
 
 
 class TesterSummary(BaseModel):
@@ -110,7 +129,7 @@ class TesterSummary(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    addressed_task_ids: list[str] = Field(
+    addressed_task_ids: list[NonBlankStr] = Field(
         description=(
             "Tester-owned task identifiers actively worked on during this cycle, "
             "including test implementation, Tester-owned repairs, verification, "
@@ -120,7 +139,7 @@ class TesterSummary(BaseModel):
         )
     )
 
-    passed_task_ids: list[str] = Field(
+    passed_task_ids: list[NonBlankStr] = Field(
         description=(
             "Tester-owned task identifiers whose applicable acceptance criteria "
             "all passed with supporting evidence. Do not include Coder-owned tasks "
@@ -129,7 +148,7 @@ class TesterSummary(BaseModel):
         )
     )
 
-    related_task_ids: list[str] = Field(
+    related_task_ids: list[NonBlankStr] = Field(
         description=(
             "Approved task identifiers owned by other agents whose outputs were "
             "evaluated, exercised, or affected during this Tester cycle. Do not "
@@ -137,19 +156,20 @@ class TesterSummary(BaseModel):
         )
     )
 
-    files_created_or_modified: list[str] = Field(
+    files_created_or_modified: list[NonBlankStr] = Field(
         description=(
             "Project-relative Tester-owned files actually created or modified."
         )
     )
 
-    development_dependencies_added: list[str] = Field(
+    development_dependencies_added: list[NonBlankStr] = Field(
         description=(
             "Development dependencies newly added by the Tester during this cycle. "
             "Do not include dependencies that were already present or merely used. "
             "Include version constraints exactly as written in project configuration."
         )
     )
+
     verification_results: list[VerificationResult] = Field(
         description=(
             "Verification operations actually executed. This field must contain "
@@ -186,15 +206,19 @@ class TesterSummary(BaseModel):
         )
     )
 
-    overall_status: Literal["passed", "repair-required", "blocked"] = Field(
+    overall_status: Literal[
+        "passed",
+        "repair-required",
+        "blocked",
+    ] = Field(
         description=(
             "Final Tester outcome. Use passed only when the latest complete "
             "project verification passed and every applicable acceptance criterion "
-            "passed. Use failed when verification produced evidence of at least "
-            "one Coder-owned production defect requiring repair. Use blocked only "
-            "when required verification could not be completed or a failure could "
-            "not be safely classified because of an external, environmental, tool, "
-            "dependency, or access limitation."
+            "passed. Use repair-required when verification produced evidence of at "
+            "least one Coder-owned production defect requiring repair. Use blocked "
+            "only when required verification could not be completed or a failure "
+            "could not be safely classified because of an external, environmental, "
+            "tooling, dependency, or access limitation."
         )
     )
 
