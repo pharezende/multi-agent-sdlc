@@ -1,4 +1,3 @@
-from multi_agent_sdlc.workflow.graph import generate_diagram
 from pydantic import BaseModel
 from multi_agent_sdlc.presentation.terminal_verification_block_review import (
     collect_verification_block_review,
@@ -38,7 +37,6 @@ def run_new_workflow(
 
     with create_checkpointer() as checkpointer:
         graph = build_graph(checkpointer)
-
         result = graph.invoke(
             initial_state,
             config=config,

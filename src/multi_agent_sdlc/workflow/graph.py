@@ -90,7 +90,7 @@ def build_graph(checkpointer: BaseCheckpointSaver):
     builder.add_node("prepare_coder_repair", prepare_coder_repair_node)
     builder.add_node("reviewer", reviewer_action)
     builder.add_node("reviewer_tools", reviewer_tool_node)
-    builder.add_node("deploy", deployer_node)
+    builder.add_node("deployer", deployer_node)
 
     builder.add_edge(START, "planner")
     builder.add_edge("planner", "prepare_plan_review")
@@ -157,13 +157,13 @@ def build_graph(checkpointer: BaseCheckpointSaver):
             "prepare_coder_repair": "prepare_coder_repair",
             "reviewer": "reviewer",
             "reviewer_tools": "reviewer_tools",
-            "deploy": "deploy",
+            "deployer": "deployer",
             END: END,
         },
     )
 
     builder.add_edge("reviewer_tools", "reviewer")
-    builder.add_edge("deploy", END)
+    builder.add_edge("deployer", END)
 
     return builder.compile(
         checkpointer=checkpointer,
