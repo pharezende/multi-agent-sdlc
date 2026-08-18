@@ -47,3 +47,75 @@ class UploadedArtifact(BaseModel):
             "verification after download."
         )
     )
+
+
+class DeploymentResult(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+    )
+
+    instance_id: str = Field(
+        description=(
+            "Identifier of the EC2 instance where the deployment "
+            "command was executed."
+        )
+    )
+
+    command_id: str = Field(
+        description=(
+            "Systems Manager Run Command identifier associated " "with the deployment."
+        )
+    )
+
+    exit_code: int = Field(
+        description=("Exit code returned by the remote deployment command.")
+    )
+
+    stdout: str = Field(
+        description=("Standard output produced by the remote deployment.")
+    )
+
+    stderr: str = Field(
+        description=("Standard error produced by the remote deployment.")
+    )
+
+
+class ApplicationVerificationResult(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+    )
+
+    instance_id: str = Field(
+        description=(
+            "Identifier of the EC2 instance where application "
+            "verification was executed."
+        )
+    )
+
+    command_id: str = Field(
+        description=(
+            "Systems Manager Run Command identifier associated "
+            "with application verification."
+        )
+    )
+
+    passed: bool = Field(
+        description=(
+            "Whether all remote application verification checks "
+            "completed successfully."
+        )
+    )
+
+    exit_code: int = Field(
+        description=("Exit code returned by the remote verification command.")
+    )
+
+    stdout: str = Field(
+        description=("Standard output produced by application verification.")
+    )
+
+    stderr: str = Field(
+        description=("Standard error produced by application verification.")
+    )
