@@ -1,6 +1,6 @@
 import boto3
 
-from multi_agent_sdlc.scripts.deploy_ec2_poc.models import (
+from multi_agent_sdlc.deployment.models import (
     DeploymentArtifact,
     UploadedArtifact,
 )

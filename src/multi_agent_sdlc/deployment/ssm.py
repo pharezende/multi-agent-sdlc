@@ -1,10 +1,10 @@
-from multi_agent_sdlc.scripts.deploy_ec2_poc.models import ApplicationVerificationResult
+from multi_agent_sdlc.deployment.models import ApplicationVerificationResult
 import shlex
 
 import boto3
 from botocore.exceptions import WaiterError
 
-from multi_agent_sdlc.scripts.deploy_ec2_poc.models import (
+from multi_agent_sdlc.deployment.models import (
     DeploymentResult,
     UploadedArtifact,
 )

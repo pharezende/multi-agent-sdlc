@@ -1,5 +1,5 @@
-from multi_agent_sdlc.scripts.deploy_ec2_poc.models import DeploymentArtifact
-from multi_agent_sdlc.scripts.deploy_ec2_poc.models import ValidatedProject
+from multi_agent_sdlc.deployment.models import DeploymentArtifact
+from multi_agent_sdlc.deployment.models import ValidatedProject
 import hashlib
 import tarfile
 import tempfile

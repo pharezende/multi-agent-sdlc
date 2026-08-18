@@ -1,3 +1,5 @@
+from multi_agent_sdlc.deployment.models import DeploymentResult
+from multi_agent_sdlc.deployment.models import ApplicationVerificationResult
 from multi_agent_sdlc.workflow.models import ReviewCycle
 from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
 from multi_agent_sdlc.workflow.models import ReviewStatus
@@ -67,6 +69,9 @@ class DevState(TypedDict):
         ReviewStatus | None
     )  # I think all status will be moved to the respective Cycle later.
 
+    deployment_result: DeploymentResult | None
+    deployment_verification: ApplicationVerificationResult | None
+
 
 def build_initial_state(request: str) -> DevState:
     return {
@@ -92,4 +97,6 @@ def build_initial_state(request: str) -> DevState:
         "reviewer_summary_history": [],
         "verification_block_review": None,
         "review_status": ReviewStatus.NOT_STARTED,
+        "deployment_result": None,
+        "deployment_verification": None,
     }
