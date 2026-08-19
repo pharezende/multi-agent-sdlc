@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 from unittest.mock import call
 
-import pytest
 
 from multi_agent_sdlc.system.process import (
     _start_process,

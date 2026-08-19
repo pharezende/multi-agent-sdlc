@@ -74,7 +74,7 @@ def format_verification_block_review(
                 [
                     "",
                     f"{index}. {failure.description}",
-                    f"Related tasks: "
+                    "Related tasks: "
                     + (
                         ", ".join(failure.related_task_ids)
                         if failure.related_task_ids

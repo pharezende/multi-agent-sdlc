@@ -12,7 +12,6 @@ from multi_agent_sdlc.workflow.models import VerificationBlockReview
 from unittest.mock import MagicMock
 from pathlib import Path
 from multi_agent_sdlc.workflow.transitions import prepare_coder_repair_node
-from multi_agent_sdlc.agents.tester import model as tester_model
 from multi_agent_sdlc.agents.tester.prompt import TESTER_SYSTEM_RULES
 from multi_agent_sdlc.workflow.transitions import prepare_tester_node
 from multi_agent_sdlc.agents.coder.models import CoderSummary

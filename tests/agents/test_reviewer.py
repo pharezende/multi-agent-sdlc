@@ -1,6 +1,5 @@
 from multi_agent_sdlc.workflow.models import ReviewStatus
 from multi_agent_sdlc.workflow.models import ReviewCycle
-from multi_agent_sdlc.agents.reviewer.node import _process_reviewer_summary_call
 from multi_agent_sdlc.agents.reviewer.prompt import (
     REVIEWER_SUMMARY_MUST_BE_ALONE_MESSAGE,
 )

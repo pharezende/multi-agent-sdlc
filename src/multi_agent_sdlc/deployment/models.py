@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ValidatedProject(BaseModel):
@@ -22,9 +22,6 @@ class DeploymentArtifact(BaseModel):
 
     path: Path
     sha256: str
-
-
-from pydantic import BaseModel, ConfigDict, Field
 
 
 class UploadedArtifact(BaseModel):

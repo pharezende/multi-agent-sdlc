@@ -47,7 +47,8 @@ def tester_summary_blocked() -> _TesterSummary:
         unresolved_issues=[
             UnresolvedIssue(
                 owner="environment",
-                description="PostgreSQL is not available at the configured local address, preventing database-backed tests from running.",
+                description="PostgreSQL is not available at the configured local address,"
+                "preventing database-backed tests from running.",
                 related_task_ids=["T7", "T8"],
                 evidence=(
                     "uv run pytest -q failed because connections to 127.0.0.1:5432 "

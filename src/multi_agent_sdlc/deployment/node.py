@@ -13,7 +13,7 @@ def deployer_node(
 ) -> dict[str, object]:
     project_directory = state["project_directory"]
     if project_directory is None:
-        raise ValueError(f"Project directory cannot be None")
+        raise ValueError("Project directory cannot be None")
 
     if not project_directory.is_dir():
         raise ValueError(f"Project directory does not exist: {project_directory}")

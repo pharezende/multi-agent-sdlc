@@ -5,7 +5,6 @@ from multi_agent_sdlc.presentation.terminal_verification_block_review import (
     collect_verification_block_review,
 )
 from multi_agent_sdlc.workflow.models import VerificationBlockDecision
-from typing import Any
 from unittest.mock import patch
 
 import pytest
