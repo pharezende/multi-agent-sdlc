@@ -1,4 +1,7 @@
 from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK,
+)
+from multi_agent_sdlc.agents.tester.prompt import (
     TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
 )
 from multi_agent_sdlc.agents.tester.prompt import TESTER_INVALID_RESPONSE_FEEDBACK
@@ -17,7 +20,10 @@ import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.tester import node as tester_module
-from multi_agent_sdlc.agents.tester.model import TesterSummary as _TesterSummary
+from multi_agent_sdlc.agents.tester.model import (
+    TesterSummary as _TesterSummary,
+    UnresolvedIssue,
+)
 from multi_agent_sdlc.workflow.state import DevState, VerificationStatus
 
 
@@ -39,8 +45,34 @@ def tester_summary_blocked() -> _TesterSummary:
         tester_repairs=[],
         implementation_failures=[],
         unresolved_issues=[
-            # ...
+            UnresolvedIssue(
+                owner="environment",
+                description="PostgreSQL is not available at the configured local address, preventing database-backed tests from running.",
+                related_task_ids=["T7", "T8"],
+                evidence=(
+                    "uv run pytest -q failed because connections to 127.0.0.1:5432 "
+                    "were refused."
+                ),
+            )
         ],
+        overall_status="blocked",
+        coder_repair_requests=[],
+    )
+
+
+@pytest.fixture
+def tester_summary_blocked_with_empty_unresolved_issues() -> _TesterSummary:
+    return _TesterSummary(
+        addressed_task_ids=["T2"],
+        passed_task_ids=[],
+        related_task_ids=["T1"],
+        files_created_or_modified=[],
+        development_dependencies_added=[],
+        verification_results=[],
+        acceptance_criteria_results=[],
+        tester_repairs=[],
+        implementation_failures=[],
+        unresolved_issues=[],
         overall_status="blocked",
         coder_repair_requests=[],
     )
@@ -164,6 +196,41 @@ def test_tester_node_accepts_tool_call(
     assert result["tester_messages"] == [response]
 
     mock_llm.invoke.assert_called_once()
+
+
+def test_tester_node_processes_empty_unresolved_issues_non_passed_summary(
+    tester_summary_blocked_empty_unresolved_issues: _TesterSummary,
+    initial_dev_state: DevState,
+) -> None:
+
+    llm_response = AIMessage(
+        content="",
+        tool_calls=[
+            {
+                "name": "submit_tester_summary",
+                "args": {
+                    "summary": tester_summary_blocked_empty_unresolved_issues.model_dump(),
+                },
+                "id": "call-1",
+                "type": "tool_call",
+            },
+        ],
+    )
+
+    mock_llm = MagicMock()
+    mock_llm.invoke.return_value = llm_response
+
+    initial_dev_state["tester_messages"] = [
+        HumanMessage(content="Verify the implementation."),
+    ]
+    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+
+    result = tester_module.tester_node(initial_dev_state, mock_llm)
+
+    assert result["tester_messages"] == [
+        llm_response,
+        HumanMessage(content=TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK),
+    ]
 
 
 @pytest.mark.parametrize(

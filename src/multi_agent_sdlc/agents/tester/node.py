@@ -1,3 +1,6 @@
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK,
+)
 from langchain_core.runnables import Runnable
 from multi_agent_sdlc.agents.tester.prompt import (
     TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
@@ -101,9 +104,7 @@ def _process_tester_summary_call(
                 "tester_messages": [
                     response,
                     HumanMessage(
-                        content="A blocked Tester summary must include at least one "
-                        "concrete unresolved issue describing why verification "
-                        "cannot safely continue."
+                        content=TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK
                     ),
                 ],
             }

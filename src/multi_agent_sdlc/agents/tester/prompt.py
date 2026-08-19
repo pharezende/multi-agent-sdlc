@@ -430,6 +430,12 @@ TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK = (
     "Correct the response and call it again."
 )
 
+TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK = (
+    "A blocked Tester summary must include at least one "
+    "concrete unresolved issue describing why verification "
+    "cannot safely continue."
+)
+
 
 TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
     [
