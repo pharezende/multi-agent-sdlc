@@ -561,3 +561,21 @@ Do not:
 * return the final summary as ordinary text, JSON, or Markdown instead of
   calling this tool.
   """.strip()
+
+RUN_DOCKER_COMPOSE_DESCRIPTION = """
+Run a supported Docker Compose operation for the current project.
+
+Supported operations:
+- up: start the Compose services in detached mode and wait for them to become
+  running or healthy.
+- down: stop and remove the Compose services and associated resources.
+- build: build the Compose service images.
+- config: validate the Docker Compose configuration.
+- ps: show the current status of the Compose services.
+
+The operation is executed only within the current project directory.
+
+This tool does not provide arbitrary Docker, Docker Compose, or shell command
+execution. Use the dedicated Docker Compose exec tool for commands that must run
+inside an already-running service container.
+"""

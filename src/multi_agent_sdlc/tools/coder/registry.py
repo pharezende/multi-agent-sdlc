@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.coder.execution import coder_run_docker_compose
 from multi_agent_sdlc.tools.coder.filesystem import coder_delete_directory
 from multi_agent_sdlc.tools.coder.filesystem import coder_delete_file
 from multi_agent_sdlc.tools.coder.filesystem import coder_move_path
@@ -29,4 +30,5 @@ CODER_TOOLS = [
     coder_install_package_dependencies,
     coder_run_verification_command,
     submit_coder_summary,
+    coder_run_docker_compose,
 ]
