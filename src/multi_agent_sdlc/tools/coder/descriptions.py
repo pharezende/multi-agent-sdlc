@@ -562,20 +562,17 @@ Do not:
   calling this tool.
   """.strip()
 
-RUN_DOCKER_COMPOSE_DESCRIPTION = """
-Run a supported Docker Compose operation for the current project.
 
-Supported operations:
-- up: start the Compose services in detached mode and wait for them to become
-  running or healthy.
-- down: stop and remove the Compose services and associated resources.
-- build: build the Compose service images.
-- config: validate the Docker Compose configuration.
-- ps: show the current status of the Compose services.
+RUN_DOCKER_COMPOSE_EXEC_DESCRIPTION = """
+Run a command inside an already-running Docker Compose service container.
 
-The operation is executed only within the current project directory.
+The command is executed non-interactively using `docker compose exec -T`.
 
-This tool does not provide arbitrary Docker, Docker Compose, or shell command
-execution. Use the dedicated Docker Compose exec tool for commands that must run
-inside an already-running service container.
+Use this tool only for commands that must run inside an existing Compose service,
+such as database migrations, initial data synchronization, seeding, cache warm-up,
+or application-specific maintenance commands.
+
+The service must already be running.
+
+This tool does not provide arbitrary host-side shell or Docker command execution.
 """

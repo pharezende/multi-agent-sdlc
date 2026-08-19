@@ -1,3 +1,4 @@
+from enum import StrEnum
 from multi_agent_sdlc.tools.shared.validation import validate_application_arguments
 from multi_agent_sdlc.tools.shared.validation import validate_file_content
 from multi_agent_sdlc.tools.shared.validation import validate_project_relative_path
@@ -66,3 +67,11 @@ class ProcessResult(TypedDict):
     stderr: str
     timed_out: bool
     message: NotRequired[str]
+
+
+class DockerComposeOperation(StrEnum):
+    UP = "up"
+    DOWN = "down"
+    BUILD = "build"
+    CONFIG = "config"
+    PS = "ps"

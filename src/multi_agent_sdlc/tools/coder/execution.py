@@ -1,6 +1,8 @@
-from typing import assert_never
-from multi_agent_sdlc.tools.coder.descriptions import RUN_DOCKER_COMPOSE_DESCRIPTION
-from multi_agent_sdlc.tools.coder.models import DockerComposeOperation
+from multi_agent_sdlc.tools.coder.descriptions import (
+    RUN_DOCKER_COMPOSE_EXEC_DESCRIPTION,
+)
+from multi_agent_sdlc.tools.coder.models import DockerComposeService
+from multi_agent_sdlc.tools.coder.models import DockerComposeExecCommand
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.system.process import execute_process
@@ -117,49 +119,26 @@ def coder_run_verification_command(
 
 
 @tool(
-    "run_docker_compose",
-    description=RUN_DOCKER_COMPOSE_DESCRIPTION,
+    "run_docker_compose_exec",
+    description=RUN_DOCKER_COMPOSE_EXEC_DESCRIPTION,
 )
-def coder_run_docker_compose(
-    operation: DockerComposeOperation,
+def coder_run_docker_compose_exec(
+    service: DockerComposeService,
+    command: DockerComposeExecCommand,
     runtime: ToolRuntime[DevState],
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
     project_directory = runtime.state["project_directory"]
 
-    command = ["docker", "compose"]
-
-    match operation:
-        case DockerComposeOperation.UP:
-            command.extend(
-                [
-                    "up",
-                    "-d",
-                    "--wait",
-                    "--wait-timeout",
-                    "60",
-                ]
-            )
-
-        case DockerComposeOperation.DOWN:
-            command.append("down")
-
-        case DockerComposeOperation.BUILD:
-            command.append("build")
-
-        case DockerComposeOperation.CONFIG:
-            command.extend(
-                [
-                    "config",
-                    "--quiet",
-                ]
-            )
-
-        case DockerComposeOperation.PS:
-            command.append("ps")
-
     return execute_process(
-        command,
+        [
+            "docker",
+            "compose",
+            "exec",
+            "-T",
+            service,
+            *command,
+        ],
         project_directory=project_directory,
         timeout_seconds=timeout_seconds,
     )

@@ -81,9 +81,12 @@ VerificationCommand = Annotated[
 ]
 
 
-class DockerComposeOperation(StrEnum):
-    UP = "up"
-    DOWN = "down"
-    BUILD = "build"
-    CONFIG = "config"
-    PS = "ps"
+DockerComposeService = Annotated[
+    str,
+    "Docker Compose service name.",
+]
+
+DockerComposeExecCommand = Annotated[
+    list[str],
+    "Command and arguments to execute inside the running service container.",
+]

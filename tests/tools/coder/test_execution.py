@@ -1,5 +1,4 @@
-from multi_agent_sdlc.tools.coder.execution import coder_run_docker_compose
-from multi_agent_sdlc.tools.coder.models import DockerComposeOperation
+from multi_agent_sdlc.tools.coder.execution import coder_run_docker_compose_exec
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable, cast
@@ -542,94 +541,54 @@ def test_run_verification_command_returns_process_result(
     assert result is process_result
 
 
-@pytest.mark.parametrize(
-    ("operation", "expected_command"),
-    [
-        (
-            DockerComposeOperation.UP,
-            [
-                "docker",
-                "compose",
-                "up",
-                "-d",
-                "--wait",
-                "--wait-timeout",
-                "60",
-            ],
-        ),
-        (
-            DockerComposeOperation.DOWN,
-            [
-                "docker",
-                "compose",
-                "down",
-            ],
-        ),
-        (
-            DockerComposeOperation.BUILD,
-            [
-                "docker",
-                "compose",
-                "build",
-            ],
-        ),
-        (
-            DockerComposeOperation.CONFIG,
-            [
-                "docker",
-                "compose",
-                "config",
-                "--quiet",
-            ],
-        ),
-        (
-            DockerComposeOperation.PS,
-            [
-                "docker",
-                "compose",
-                "ps",
-            ],
-        ),
-    ],
-)
-def test_run_docker_compose_executes_expected_command(
-    operation: DockerComposeOperation,
-    expected_command: list[str],
+def test_run_docker_compose_exec_returns_process_result(
     tool_runtime: ToolRuntime[DevState],
     process_result: ProcessResult,
 ) -> None:
-    function = get_tool_function(coder_run_docker_compose)
+    function = get_tool_function(coder_run_docker_compose_exec)
 
     with patch(
         "multi_agent_sdlc.tools.coder.execution.execute_process",
         return_value=process_result,
     ) as execute_process_mock:
         result = function(
-            operation=operation,
+            service="app",
+            command=["uv", "run", "application", "sync"],
             runtime=tool_runtime,
         )
 
     assert result is process_result
 
     execute_process_mock.assert_called_once_with(
-        expected_command,
+        [
+            "docker",
+            "compose",
+            "exec",
+            "-T",
+            "app",
+            "uv",
+            "run",
+            "application",
+            "sync",
+        ],
         project_directory=tool_runtime.state["project_directory"],
         timeout_seconds=120,
     )
 
 
-def test_run_docker_compose_uses_custom_timeout(
+def test_run_docker_compose_exec_uses_custom_timeout(
     tool_runtime: ToolRuntime[DevState],
     process_result: ProcessResult,
 ) -> None:
-    function = get_tool_function(coder_run_docker_compose)
+    function = get_tool_function(coder_run_docker_compose_exec)
 
     with patch(
         "multi_agent_sdlc.tools.coder.execution.execute_process",
         return_value=process_result,
     ) as execute_process_mock:
         result = function(
-            operation=DockerComposeOperation.BUILD,
+            service="app",
+            command=["uv", "run", "alembic", "upgrade", "head"],
             runtime=tool_runtime,
             timeout_seconds=300,
         )
@@ -640,7 +599,14 @@ def test_run_docker_compose_uses_custom_timeout(
         [
             "docker",
             "compose",
-            "build",
+            "exec",
+            "-T",
+            "app",
+            "uv",
+            "run",
+            "alembic",
+            "upgrade",
+            "head",
         ],
         project_directory=tool_runtime.state["project_directory"],
         timeout_seconds=300,
