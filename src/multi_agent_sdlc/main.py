@@ -3,13 +3,19 @@ from textwrap import dedent
 from multi_agent_sdlc.cli import parse_args
 from multi_agent_sdlc.workflow.models import PlanReviewDecision
 from multi_agent_sdlc.workflow.runner import resume_workflow, run_new_workflow
+import logging
 
 load_dotenv(override=True)
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+
+
 def run() -> None:
     args = parse_args()
-
     automatic_plan_review_config = (
         {"plan_review_decision": (PlanReviewDecision(decision="approved").model_dump())}
         if args.auto_approve_plan
@@ -25,20 +31,16 @@ def run() -> None:
     else:
         request = dedent(
             """
-        Build a local web-based issue-tracking application that lets users create,
-        retrieve, update, delete, and list issues through a browser interface. Each
-        issue must include an ID, title, optional description, priority, status,
-        assignee, creation timestamp, update timestamp, optional due date, and labels.
-
-        Provide pages for viewing issues, creating and editing issues, viewing issue
-        details, and changing issue status. Support filtering by status, priority,
-        assignee, label, and due-date range, as well as sorting and pagination. Enforce
-        valid transitions between open, in_progress, resolved, and closed.
-
-        Provide a dashboard with counts by status and priority, overdue issue count,
-        and average resolution time. Persist data locally using SQLite, validate user
-        input on the server side, display clear error messages, and include automated
-        tests covering the required functionality and relevant edge cases.
+        Build a containerized URL shortener REST API using Python, PostgreSQL, and Docker Compose.
+        Provide endpoints to create short URLs, redirect them, retrieve statistics, and check health.
+        Validate that submitted URLs use HTTP or HTTPS and return clear errors for invalid input.
+        Store short codes, original URLs, creation timestamps, and access counts in PostgreSQL.
+        Increment the access count whenever a short URL is successfully resolved.
+        Use Docker Compose with separate application and PostgreSQL services.
+        Persist PostgreSQL data with a Docker volume and configure a database health check.
+        Automate database initialization or migrations without requiring manual SQL execution.
+        Provide automated tests for API behavior, persistence, redirects, errors, and health checks.
+        The project must pass Ruff, MyPy, pytest, and start with `docker compose up -d --build --wait`.
         """
         ).strip()
 
