@@ -1,8 +1,9 @@
+from langchain.tools import tool
+
+from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
 from multi_agent_sdlc.tools.reviewer.description import (
     SUBMIT_REVIEWER_SUMMARY_DESCRIPTION,
 )
-from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
-from langchain.tools import tool
 
 
 @tool(

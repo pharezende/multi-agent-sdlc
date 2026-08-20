@@ -1,7 +1,7 @@
-from multi_agent_sdlc.tools.reviewer.registry import REVIEWER_TOOLS
 from multi_agent_sdlc.llm.config import load_model_config
 from multi_agent_sdlc.llm.factory import create_chat_model
 from multi_agent_sdlc.llm.models import MODEL_PROVIDER_CONFIG
+from multi_agent_sdlc.tools.reviewer.registry import REVIEWER_TOOLS
 
 
 def create_reviewer_llm():

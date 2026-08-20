@@ -1,19 +1,16 @@
-from multi_agent_sdlc.workflow.state import build_initial_state
-from multi_agent_sdlc.agents.tester.model import TesterSummary as _TesterSummary
-from multi_agent_sdlc.workflow.models import VerificationBlockReview
-from multi_agent_sdlc.presentation.terminal_verification_block_review import (
-    collect_verification_block_review,
-)
-from multi_agent_sdlc.workflow.models import VerificationBlockDecision
 from unittest.mock import patch
 
 import pytest
 
-
+from multi_agent_sdlc.agents.tester.model import TesterSummary as _TesterSummary
 from multi_agent_sdlc.human_in_the_loop.verification_block_review.verification_block_review import (
     human_verification_block_review_node,
 )
-from multi_agent_sdlc.workflow.state import DevState
+from multi_agent_sdlc.presentation.terminal_verification_block_review import (
+    collect_verification_block_review,
+)
+from multi_agent_sdlc.workflow.models import VerificationBlockDecision, VerificationBlockReview
+from multi_agent_sdlc.workflow.state import DevState, build_initial_state
 
 
 @pytest.fixture

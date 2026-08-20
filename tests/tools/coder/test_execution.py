@@ -1,4 +1,3 @@
-from multi_agent_sdlc.tools.coder.execution import coder_run_docker_compose_exec
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable, cast
@@ -11,6 +10,7 @@ from langchain_core.tools import BaseTool, StructuredTool
 from multi_agent_sdlc.system.process import ProcessResult
 from multi_agent_sdlc.tools.coder.execution import (
     coder_run_application,
+    coder_run_docker_compose_exec,
     coder_run_python_module,
     coder_run_verification_command,
     coder_sync_project,

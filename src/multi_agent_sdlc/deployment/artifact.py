@@ -1,10 +1,9 @@
-from multi_agent_sdlc.deployment.models import DeploymentArtifact
-from multi_agent_sdlc.deployment.models import ValidatedProject
 import hashlib
 import tarfile
 import tempfile
 from pathlib import Path
 
+from multi_agent_sdlc.deployment.models import DeploymentArtifact, ValidatedProject
 
 EXCLUDED_NAMES = {
     ".git",

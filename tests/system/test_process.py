@@ -1,9 +1,7 @@
 import signal
 import subprocess
 from pathlib import Path
-from unittest.mock import Mock, patch
-from unittest.mock import call
-
+from unittest.mock import Mock, call, patch
 
 from multi_agent_sdlc.system.process import (
     _start_process,

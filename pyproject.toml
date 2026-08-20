@@ -41,6 +41,6 @@ addopts = [
 [tool.ruff]
 line-length = 120
 [tool.ruff.lint]
-select = ["E", "F", "W"] 
+select = ["I", "E", "F", "W"] 
 [tool.ruff.lint.pycodestyle]
 max-doc-length = 120

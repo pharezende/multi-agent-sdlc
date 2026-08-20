@@ -1,9 +1,12 @@
-from multi_agent_sdlc.system.path_utils import resolve_project_path
-from multi_agent_sdlc.system.path_utils import reject_repeated_project_prefix
-from multi_agent_sdlc.system.path_utils import normalise_relative_path
 from pathlib import Path, PurePosixPath
 
 import pytest
+
+from multi_agent_sdlc.system.path_utils import (
+    normalise_relative_path,
+    reject_repeated_project_prefix,
+    resolve_project_path,
+)
 
 
 @pytest.fixture

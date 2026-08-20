@@ -1,9 +1,9 @@
-import pytest
-from multi_agent_sdlc.agents.coder.models import CoderSummary
 from typing import Any, Callable
 
+import pytest
 from langchain_core.tools import BaseTool, StructuredTool
 
+from multi_agent_sdlc.agents.coder.models import CoderSummary
 from multi_agent_sdlc.tools.coder.finalization import submit_coder_summary
 
 

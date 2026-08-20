@@ -1,5 +1,3 @@
-from multi_agent_sdlc.tools.shared.models import DockerComposeOperation
-from multi_agent_sdlc.tools.shared.execution import run_docker_compose
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Callable, cast
@@ -10,6 +8,8 @@ from langchain.tools import ToolRuntime
 from langchain_core.tools import BaseTool, StructuredTool
 
 from multi_agent_sdlc.system.process import ProcessResult
+from multi_agent_sdlc.tools.shared.execution import run_docker_compose
+from multi_agent_sdlc.tools.shared.models import DockerComposeOperation
 from multi_agent_sdlc.workflow.state import DevState
 
 

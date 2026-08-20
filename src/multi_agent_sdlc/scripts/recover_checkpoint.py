@@ -10,7 +10,7 @@ from multi_agent_sdlc.workflow.graph import build_graph
 
 load_dotenv(override=True)
 
-THREAD_ID = "7bb8ffa9-41f0-4167-a236-70c0cec199d3"
+THREAD_ID = "76beca67-88bc-4f8a-8b82-4d3da4010297"
 CHECKPOINT_ID = ""
 LATEST_CHECKPOINTS = 500
 

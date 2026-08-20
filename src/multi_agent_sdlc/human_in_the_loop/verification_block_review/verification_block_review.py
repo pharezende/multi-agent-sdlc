@@ -1,6 +1,9 @@
-from multi_agent_sdlc.presentation.format import format_verification_block_review
-from multi_agent_sdlc.workflow.models import VerificationBlockReview
 from langgraph.types import interrupt
+
+from multi_agent_sdlc.presentation.verification_block_review import (
+    format_verification_block_review,
+)
+from multi_agent_sdlc.workflow.models import VerificationBlockReview
 from multi_agent_sdlc.workflow.state import DevState
 
 

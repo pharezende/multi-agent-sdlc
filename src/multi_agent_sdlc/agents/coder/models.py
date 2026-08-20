@@ -2,7 +2,6 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
-
 NonBlankStr = Annotated[
     str,
     StringConstraints(

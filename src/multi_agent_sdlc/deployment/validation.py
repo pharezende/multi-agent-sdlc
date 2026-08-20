@@ -1,7 +1,7 @@
-from multi_agent_sdlc.deployment.models import ValidatedProject
-from multi_agent_sdlc.system.process import execute_process
 from pathlib import Path
 
+from multi_agent_sdlc.deployment.models import ValidatedProject
+from multi_agent_sdlc.system.process import execute_process
 
 COMPOSE_FILE_NAMES = (
     "compose.yaml",

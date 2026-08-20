@@ -4,9 +4,6 @@ from unittest.mock import patch
 from multi_agent_sdlc.system.environment import build_sandbox_environment
 
 
-
-
-
 def test_build_sandbox_environment_removes_virtual_env() -> None:
     with patch.dict(
         os.environ,

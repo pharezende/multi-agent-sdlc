@@ -1,4 +1,3 @@
-from multi_agent_sdlc.tools.tester.verification import _build_mypy_command
 import json
 
 from langchain.tools import ToolRuntime, tool
@@ -26,6 +25,7 @@ from multi_agent_sdlc.tools.tester.model import (
     PythonModuleName,
     VerificationCommand,
 )
+from multi_agent_sdlc.tools.tester.verification import _build_mypy_command
 from multi_agent_sdlc.workflow.state import DevState
 
 

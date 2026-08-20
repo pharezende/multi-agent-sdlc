@@ -1,14 +1,14 @@
-from pydantic import BaseModel
-from multi_agent_sdlc.presentation.terminal_verification_block_review import (
-    collect_verification_block_review,
-)
 from typing import Any
-from langgraph.types import Interrupt
+
 from langchain_core.runnables import RunnableConfig
-from langgraph.types import Command
+from langgraph.types import Command, Interrupt
+from pydantic import BaseModel
 
 from multi_agent_sdlc.presentation.terminal_plan_review import (
     collect_plan_review_decision,
+)
+from multi_agent_sdlc.presentation.terminal_verification_block_review import (
+    collect_verification_block_review,
 )
 
 from .checkpointing import build_workflow_config, create_checkpointer
@@ -55,7 +55,10 @@ def resume_workflow(
     checkpoint_id: str | None,
     configurable: dict[str, Any],
 ) -> None:
-    workflow_run = _get_resumable_workflow_run(thread_id)
+    workflow_run = get_workflow_run(thread_id)
+
+    if workflow_run is None:
+        raise ValueError(f"Workflow with thread id {thread_id!r} " "was not found.")
 
     checkpoint_config = build_workflow_config(
         workflow_run.thread_id,
@@ -195,26 +198,6 @@ def _collect_interrupt_response(
 
         case _:
             raise ValueError(f"Unsupported interrupt type: " f"{interrupt_type!r}")
-
-
-def _get_resumable_workflow_run(
-    thread_id: str,
-) -> WorkflowRun:
-    workflow_run = get_workflow_run(thread_id)
-
-    if workflow_run is None:
-        raise ValueError(f"Workflow with thread id {thread_id!r} " "was not found.")
-
-    if workflow_run.status in {
-        WorkflowRunStatus.COMPLETED,
-        WorkflowRunStatus.FAILED,
-    }:
-        raise ValueError(
-            f"Workflow run {thread_id!r} cannot be resumed "
-            f"because its status is {workflow_run.status!r}."
-        )
-
-    return workflow_run
 
 
 def _get_interrupts(

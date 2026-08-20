@@ -1,14 +1,13 @@
-from multi_agent_sdlc.deployment.models import ApplicationVerificationResult
 import shlex
 
 import boto3
 from botocore.exceptions import WaiterError
 
 from multi_agent_sdlc.deployment.models import (
+    ApplicationVerificationResult,
     DeploymentResult,
     UploadedArtifact,
 )
-
 
 DEPLOYMENT_DIRECTORY = "/opt/multi-agent-sdlc-poc"
 REMOTE_ARTIFACT_PATH = "/tmp/multi-agent-sdlc-deployment.tar.gz"

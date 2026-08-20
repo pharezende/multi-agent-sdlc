@@ -1,6 +1,3 @@
-from multi_agent_sdlc.agents.tester.prompt import (
-    TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE,
-)
 import json
 
 from langchain_core.messages import BaseMessage, HumanMessage
@@ -13,6 +10,7 @@ from multi_agent_sdlc.agents.tester.prompt import (
     TESTER_CHAT_PROMPT_TEMPLATE,
     TESTER_RETEST_HUMAN_PROMPT,
     TESTER_SYSTEM_RULES,
+    TESTER_VERIFICATION_RETRY_CHAT_PROMPT_TEMPLATE,
 )
 from multi_agent_sdlc.workflow.state import DevState
 

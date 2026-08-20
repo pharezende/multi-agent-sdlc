@@ -1,19 +1,3 @@
-from multi_agent_sdlc.agents.tester.prompt import (
-    TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK,
-)
-from multi_agent_sdlc.agents.tester.prompt import (
-    TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
-)
-from multi_agent_sdlc.agents.tester.prompt import TESTER_INVALID_RESPONSE_FEEDBACK
-from multi_agent_sdlc.agents.tester.prompt import (
-    TESTER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
-)
-from multi_agent_sdlc.agents.tester.prompt import (
-    TESTER_PASSED_SUMMARY_WITHOUT_SUCCESSFUL_VERIFICATION_FEEDBACK,
-)
-from multi_agent_sdlc.tools.shared.models import ProcessResult
-from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
-from multi_agent_sdlc.workflow.state import build_initial_state
 from unittest.mock import MagicMock
 
 import pytest
@@ -22,9 +6,20 @@ from langchain_core.messages import AIMessage, HumanMessage
 from multi_agent_sdlc.agents.tester import node as tester_module
 from multi_agent_sdlc.agents.tester.model import (
     TesterSummary as _TesterSummary,
+)
+from multi_agent_sdlc.agents.tester.model import (
     UnresolvedIssue,
 )
-from multi_agent_sdlc.workflow.state import DevState, VerificationStatus
+from multi_agent_sdlc.agents.tester.prompt import (
+    TESTER_EMPTY_UNRESOLVED_ISSUE_VERIFICATION_CALLS_FEEDBACK,
+    TESTER_INVALID_RESPONSE_FEEDBACK,
+    TESTER_MULTIPLE_PROJECT_VERIFICATION_CALLS_FEEDBACK,
+    TESTER_PASSED_SUMMARY_WITHOUT_SUCCESSFUL_VERIFICATION_FEEDBACK,
+    TESTER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
+)
+from multi_agent_sdlc.tools.shared.models import ProcessResult
+from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
+from multi_agent_sdlc.workflow.state import DevState, VerificationStatus, build_initial_state
 
 
 @pytest.fixture

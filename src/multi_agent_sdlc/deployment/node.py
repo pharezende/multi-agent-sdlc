@@ -1,14 +1,11 @@
 import logging
 
 from multi_agent_sdlc.deployment.artifact import package_project
-from multi_agent_sdlc.deployment.config import DEPLOYMENT_BUCKET
-from multi_agent_sdlc.deployment.config import EC2_INSTANCE_ID
+from multi_agent_sdlc.deployment.config import DEPLOYMENT_BUCKET, EC2_INSTANCE_ID
 from multi_agent_sdlc.deployment.s3 import upload_artifact
-from multi_agent_sdlc.deployment.ssm import deploy_to_ec2
-from multi_agent_sdlc.deployment.ssm import verify_application
+from multi_agent_sdlc.deployment.ssm import deploy_to_ec2, verify_application
 from multi_agent_sdlc.deployment.validation import validate_project
 from multi_agent_sdlc.workflow.state import DevState
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,18 +1,16 @@
-from multi_agent_sdlc.tools.coder.descriptions import (
-    RUN_DOCKER_COMPOSE_EXEC_DESCRIPTION,
-)
-from multi_agent_sdlc.tools.coder.models import DockerComposeService
-from multi_agent_sdlc.tools.coder.models import DockerComposeExecCommand
 from langchain.tools import ToolRuntime, tool
 
 from multi_agent_sdlc.system.process import execute_process
 from multi_agent_sdlc.tools.coder.descriptions import (
     RUN_APPLICATION_DESCRIPTION,
+    RUN_DOCKER_COMPOSE_EXEC_DESCRIPTION,
     RUN_PYTHON_MODULE_DESCRIPTION,
     RUN_SYNC_PROJECT,
     RUN_VERIFICATION_COMMAND_DESCRIPTION,
 )
 from multi_agent_sdlc.tools.coder.models import (
+    DockerComposeExecCommand,
+    DockerComposeService,
     EntryPoint,
     PythonModuleName,
     VerificationCommand,
