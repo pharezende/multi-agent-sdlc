@@ -1,3 +1,4 @@
+from multi_agent_sdlc.presentation.plan_markdown import export_plan_to_markdown
 from multi_agent_sdlc.agents.reviewer.messages import (
     build_reviewer_initial_override_messages,
 )
@@ -32,7 +33,7 @@ from multi_agent_sdlc.agents.coder.prompt import (
 from multi_agent_sdlc.agents.planner.prompt import (
     PLANNER_REVISION_HUMAN_PROMPT_TEMPLATE,
 )
-from multi_agent_sdlc.presentation.plan_formatter import format_plan
+from multi_agent_sdlc.presentation.plan_text import format_plan
 from multi_agent_sdlc.presentation.plan_pdf import export_plan_to_pdf
 from multi_agent_sdlc.system.path_utils import create_project_directory
 
@@ -96,9 +97,9 @@ def prepare_coder_implementation_node(
         str(project_directory),
     )
 
-    export_plan_to_pdf(
-        text=plan_review_content,
-        output_path=project_directory / "development_plan.pdf",
+    export_plan_to_markdown(
+        plan=plan,
+        output_path=project_directory / "development_plan.md",
     )
 
     coder_context = build_coder_implementation_context(

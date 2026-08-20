@@ -1,5 +1,5 @@
 from multi_agent_sdlc.agents.tester.model import TesterSummary
-from multi_agent_sdlc.presentation.plan_formatter import format_items
+from multi_agent_sdlc.presentation.plan_text import format_items
 
 
 def format_verification_block_review(

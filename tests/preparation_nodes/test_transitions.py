@@ -19,7 +19,7 @@ from langchain_core.messages import SystemMessage
 from multi_agent_sdlc.workflow.models import VerificationStatus
 from multi_agent_sdlc.workflow.models import PlanReviewDecisionValue
 from multi_agent_sdlc.workflow.transitions import prepare_coder_implementation_node
-from multi_agent_sdlc.presentation.plan_formatter import format_plan
+from multi_agent_sdlc.presentation.plan_text import format_plan
 from multi_agent_sdlc.agents.coder.prompt import CODER_SYSTEM_RULES
 from multi_agent_sdlc.workflow.models import DevelopmentStatus
 from langchain_core.messages import HumanMessage
