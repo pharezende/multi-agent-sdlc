@@ -1,3 +1,4 @@
+from multi_agent_sdlc.tools.shared.execution import run_docker_compose
 from multi_agent_sdlc.tools.shared.filesystem import list_files, read_file
 from multi_agent_sdlc.tools.tester.dependencies import (
     tester_install_verification_dependencies,
@@ -29,4 +30,5 @@ TESTER_TOOLS = [
     submit_tester_summary,
     tester_run_verification_command,
     tester_run_project_verification,
+    run_docker_compose,
 ]

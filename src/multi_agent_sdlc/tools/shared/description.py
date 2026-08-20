@@ -44,16 +44,22 @@ Use this tool to inspect project files before implementation, test creation,
 verification, or review. This tool does not modify files.
 """.strip()
 
+
 RUN_DOCKER_COMPOSE_DESCRIPTION = """
 Run a supported Docker Compose operation for the current project.
 
 Supported operations:
 - up: start the Compose services in detached mode and wait for them to become
   running or healthy.
-- down: stop and remove the Compose services and associated resources.
+- down: stop and remove the Compose services and associated resources. When
+  `remove_volumes` is true, also remove Docker Compose named volumes.
 - build: build the Compose service images.
 - config: validate the Docker Compose configuration.
 - ps: show the current status of the Compose services.
+
+`remove_volumes` is supported only with the `down` operation and maps to
+`docker compose down -v`. Use it when a complete cleanup of Compose-managed
+persistent data is required, such as between isolated verification runs.
 
 The operation is executed only within the current project directory.
 

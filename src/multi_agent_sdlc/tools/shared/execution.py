@@ -17,6 +17,7 @@ from multi_agent_sdlc.workflow.state import DevState
 def run_docker_compose(
     operation: DockerComposeOperation,
     runtime: ToolRuntime[DevState],
+    remove_volumes: bool = False,
     timeout_seconds: ExecutionTimeout = 120,
 ) -> ProcessResult:
     project_directory = runtime.state["project_directory"]
@@ -38,16 +39,14 @@ def run_docker_compose(
         case DockerComposeOperation.DOWN:
             command.append("down")
 
+            if remove_volumes:
+                command.append("-v")
+
         case DockerComposeOperation.BUILD:
             command.append("build")
 
         case DockerComposeOperation.CONFIG:
-            command.extend(
-                [
-                    "config",
-                    "--quiet",
-                ]
-            )
+            command.extend(["config", "--quiet"])
 
         case DockerComposeOperation.PS:
             command.append("ps")
