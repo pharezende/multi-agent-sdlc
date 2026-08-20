@@ -200,7 +200,7 @@ def test_tester_node_accepts_tool_call(
 
 
 def test_tester_node_processes_empty_unresolved_issues_non_passed_summary(
-    tester_summary_blocked_empty_unresolved_issues: _TesterSummary,
+    tester_summary_blocked_with_empty_unresolved_issues: _TesterSummary,
     initial_dev_state: DevState,
 ) -> None:
 
@@ -210,7 +210,7 @@ def test_tester_node_processes_empty_unresolved_issues_non_passed_summary(
             {
                 "name": "submit_tester_summary",
                 "args": {
-                    "summary": tester_summary_blocked_empty_unresolved_issues.model_dump(),
+                    "summary": tester_summary_blocked_with_empty_unresolved_issues.model_dump(),
                 },
                 "id": "call-1",
                 "type": "tool_call",

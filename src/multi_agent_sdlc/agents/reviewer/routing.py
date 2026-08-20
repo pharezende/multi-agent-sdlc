@@ -13,7 +13,7 @@ def route_after_reviewer(
     review_status = state.get("review_status")
 
     if review_status == ReviewStatus.PASSED:
-        return "__end__"  # return "deployer"
+        return "deployer"
 
     if review_status == ReviewStatus.REPAIR_REQUIRED:
         return "prepare_coder_repair"
