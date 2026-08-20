@@ -146,6 +146,9 @@ ACCEPTANCE CRITERIA
   POST /login returns HTTP 401 for invalid credentials.
   over:
   Login should be secure.
+- For containerized applications intended for deterministic deployment, include
+  an acceptance criterion requiring `GET /health` to return HTTP 200 when the
+  application and its required runtime dependencies are healthy.
 - Do not use acceptance criteria that merely restate the task title.
 - If a task has no focused observable outcome, refine or split it.
 - Do not claim that an acceptance criterion already passes.

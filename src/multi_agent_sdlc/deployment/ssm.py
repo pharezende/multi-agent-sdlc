@@ -12,7 +12,7 @@ from multi_agent_sdlc.deployment.models import (
 
 DEPLOYMENT_DIRECTORY = "/opt/multi-agent-sdlc-poc"
 REMOTE_ARTIFACT_PATH = "/tmp/multi-agent-sdlc-deployment.tar.gz"
-HEALTH_URL = "http://localhost:8000/api/health"
+HEALTH_URL = "http://localhost:8000/health"
 
 
 def verify_application(
@@ -25,12 +25,21 @@ def verify_application(
             "docker compose ps",
             (
                 "for attempt in $(seq 1 12); do "
-                f"if curl --fail --silent --show-error "
-                f"{shlex.quote(HEALTH_URL)}; then "
+                f"status=$(curl --silent --output /dev/null "
+                f"--write-out '%{{http_code}}' "
+                f"{shlex.quote(HEALTH_URL)} || true); "
+                'echo "Health check attempt $attempt returned HTTP $status"; '
+                'if [ "$status" = "200" ]; then '
                 "exit 0; "
                 "fi; "
+                'if [ "$status" = "000" ] || [ "$status" = "503" ]; then '
                 "sleep 5; "
+                "continue; "
+                "fi; "
+                'echo "Health endpoint returned non-retryable HTTP $status" >&2; '
+                "exit 1; "
                 "done; "
+                'echo "Health endpoint did not become healthy after 12 attempts" >&2; '
                 "exit 1"
             ),
         ]
