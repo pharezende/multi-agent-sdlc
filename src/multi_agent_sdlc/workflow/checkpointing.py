@@ -1,9 +1,62 @@
+from multi_agent_sdlc.workflow.models import ReviewStatus
+from multi_agent_sdlc.workflow.models import VerificationStatus
+from multi_agent_sdlc.workflow.models import DevelopmentStatus
+from multi_agent_sdlc.workflow.models import PlanReviewStatus
+from multi_agent_sdlc.agents.tester.model import VerificationType
+from multi_agent_sdlc.agents.planner.models import RiskLevel
+from multi_agent_sdlc.workflow.models import ReviewCycle
+from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
+from multi_agent_sdlc.agents.tester.model import TesterCycle
+from multi_agent_sdlc.agents.tester.model import TesterSummary
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.checkpoint.sqlite import SqliteSaver
+from collections.abc import Iterator
+from contextlib import contextmanager
+
+from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+from langgraph.checkpoint.sqlite import SqliteSaver
+
+from multi_agent_sdlc.agents.coder.models import CoderCycle, CoderSummary
+from multi_agent_sdlc.agents.planner.models import DevelopmentPlan
+from multi_agent_sdlc.agents.reviewer.models import ReviewerSummary
+
+from multi_agent_sdlc.deployment.models import (
+    ApplicationVerificationResult,
+    DeploymentResult,
+)
+from multi_agent_sdlc.workflow.models import (
+    PlanReviewDecision,
+    VerificationBlockReview,
+)
+
+
+CHECKPOINT_SERDE = JsonPlusSerializer(
+    allowed_msgpack_modules=[
+        DevelopmentPlan,
+        CoderSummary,
+        CoderCycle,
+        TesterSummary,
+        TesterCycle,
+        ProjectVerificationResult,
+        ReviewerSummary,
+        ReviewCycle,
+        PlanReviewDecision,
+        VerificationBlockReview,
+        DeploymentResult,
+        ApplicationVerificationResult,
+        RiskLevel,
+        VerificationType,
+        PlanReviewStatus,
+        DevelopmentStatus,
+        VerificationStatus,
+        ReviewStatus,
+    ],
+)
+
 
 CHECKPOINT_DATABASE_PATH = Path(".data/checkpoints.sqlite")
 
@@ -30,6 +83,8 @@ def create_checkpointer() -> Iterator[SqliteSaver]:
     )
 
     with SqliteSaver.from_conn_string(str(CHECKPOINT_DATABASE_PATH)) as checkpointer:
+        checkpointer.serde = CHECKPOINT_SERDE
+
         yield checkpointer
 
 
