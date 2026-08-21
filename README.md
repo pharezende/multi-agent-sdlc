@@ -40,6 +40,31 @@ repair loops, human approval, and deterministic deployment to AWS.
 **Human Review Nodes** — human-in-the-loop nodes that pause workflow execution to collect review, approval, or intervention input:
 `human_plan_review`, `human_verification_block`
 
+### Source Organization
+
+Substantial agents remain cohesive with their prompts, models, context builders, routing, and node entry points. Nodes that exist primarily to orchestrate the graph are grouped under `workflow/nodes/`:
+
+```text
+src/multi_agent_sdlc/
+├── agents/
+│   ├── planner/
+│   ├── coder/
+│   ├── tester/
+│   └── reviewer/
+├── deployment/               # reusable deployment services
+└── workflow/
+    └── nodes/
+        ├── preparation/
+        │   ├── plan.py       # plan review and planner revision preparation
+        │   ├── coder.py      # implementation and repair preparation
+        │   ├── tester.py     # verification and retest preparation
+        │   └── reviewer.py   # initial review and rereview preparation
+        ├── human_review/     # interrupt nodes and their routing
+        └── execution/        # side-effecting graph adapters
+```
+
+The deployer node lives under `workflow/nodes/execution/`, while packaging, validation, S3, and SSM operations remain in `deployment/`.
+
 
 | Preparation Node | Feeds |
 |---|---|

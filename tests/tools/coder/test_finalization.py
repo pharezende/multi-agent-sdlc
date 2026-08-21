@@ -1,39 +1,9 @@
 from typing import Any, Callable
 
-import pytest
 from langchain_core.tools import BaseTool, StructuredTool
 
 from multi_agent_sdlc.agents.coder.models import CoderSummary
 from multi_agent_sdlc.tools.coder.finalization import submit_coder_summary
-
-
-@pytest.fixture
-def coder_summary() -> CoderSummary:
-    return CoderSummary(
-        implementation_summary=(
-            "Implemented the Issue Tracker project scaffolding and application."
-        ),
-        completed_task_ids=["T1"],
-        modified_files=[
-            "issues_app/__init__.py",
-            "issues_app/cli.py",
-            "pyproject.toml",
-        ],
-        runtime_dependencies=[
-            "flask",
-        ],
-        entry_points=[
-            "issue-tracker",
-        ],
-        executed_operations=[
-            "Created and updated the planned production files.",
-            "Ran uv sync successfully.",
-        ],
-        unresolved_issues=[],
-        tester_notes=[
-            "Verify application startup and the configured issue-tracker entry point.",
-        ],
-    )
 
 
 def get_tool_function(

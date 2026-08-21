@@ -10,12 +10,7 @@ from multi_agent_sdlc.agents.reviewer.prompt import (
     REVIEWER_SUMMARY_MUST_BE_ALONE_MESSAGE,
 )
 from multi_agent_sdlc.workflow.models import ReviewCycle, ReviewStatus
-from multi_agent_sdlc.workflow.state import DevState, build_initial_state
-
-
-@pytest.fixture
-def dev_state() -> DevState:
-    return build_initial_state("test request")
+from multi_agent_sdlc.workflow.state import DevState
 
 
 @pytest.fixture

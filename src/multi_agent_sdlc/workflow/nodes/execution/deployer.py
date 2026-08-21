@@ -26,10 +26,7 @@ def deployer_node(
     if not EC2_INSTANCE_ID:
         raise ValueError("EC2_INSTANCE_ID environment variable is required.")
 
-    logger.info(
-        "Starting deployment for project: %s",
-        project_directory,
-    )
+    logger.info("Starting deployment for project: %s", project_directory)
 
     logger.info("Validating project.")
     project = validate_project(project_directory)
@@ -43,23 +40,14 @@ def deployer_node(
         artifact.sha256,
     )
 
-    logger.info(
-        "Uploading deployment artifact to S3 bucket: %s",
-        DEPLOYMENT_BUCKET,
-    )
-    uploaded_artifact = upload_artifact(
-        artifact,
-        bucket=DEPLOYMENT_BUCKET,
-    )
+    logger.info("Uploading deployment artifact to S3 bucket: %s", DEPLOYMENT_BUCKET)
+    uploaded_artifact = upload_artifact(artifact, bucket=DEPLOYMENT_BUCKET)
     logger.info(
         "Deployment artifact uploaded successfully: key=%s",
         uploaded_artifact.key,
     )
 
-    logger.info(
-        "Deploying artifact to EC2 instance: %s",
-        EC2_INSTANCE_ID,
-    )
+    logger.info("Deploying artifact to EC2 instance: %s", EC2_INSTANCE_ID)
     deployment = deploy_to_ec2(
         uploaded_artifact,
         instance_id=EC2_INSTANCE_ID,
@@ -71,9 +59,7 @@ def deployer_node(
     )
 
     logger.info("Verifying deployed application.")
-    verification = verify_application(
-        deployment,
-    )
+    verification = verify_application(deployment)
 
     if verification.passed:
         logger.info(

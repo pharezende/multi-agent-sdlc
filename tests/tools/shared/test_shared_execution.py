@@ -1,6 +1,4 @@
-from pathlib import Path
-from types import SimpleNamespace
-from typing import Any, Callable, cast
+from typing import Any, Callable
 from unittest.mock import patch
 
 import pytest
@@ -11,44 +9,6 @@ from multi_agent_sdlc.system.process import ProcessResult
 from multi_agent_sdlc.tools.shared.execution import run_docker_compose
 from multi_agent_sdlc.tools.shared.models import DockerComposeOperation
 from multi_agent_sdlc.workflow.state import DevState
-
-
-@pytest.fixture
-def project_directory(tmp_path: Path) -> Path:
-    project_directory = tmp_path / "sandbox" / "terminal-calculator"
-    project_directory.mkdir(parents=True)
-    return project_directory
-
-
-@pytest.fixture
-def tool_runtime(
-    project_directory: Path,
-) -> ToolRuntime[DevState]:
-    state = cast(
-        DevState,
-        {
-            "project_directory": project_directory,
-        },
-    )
-
-    return cast(
-        ToolRuntime[DevState],
-        SimpleNamespace(state=state),
-    )
-
-
-@pytest.fixture
-def process_result() -> ProcessResult:
-    return cast(
-        ProcessResult,
-        {
-            "command": ["test-command"],
-            "exit_code": 0,
-            "stdout": "success",
-            "stderr": "",
-            "timed_out": False,
-        },
-    )
 
 
 def get_tool_function(

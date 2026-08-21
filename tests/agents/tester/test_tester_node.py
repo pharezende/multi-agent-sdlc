@@ -19,12 +19,7 @@ from multi_agent_sdlc.agents.tester.prompt import (
 )
 from multi_agent_sdlc.tools.shared.models import ProcessResult
 from multi_agent_sdlc.tools.tester.model import ProjectVerificationResult
-from multi_agent_sdlc.workflow.state import DevState, VerificationStatus, build_initial_state
-
-
-@pytest.fixture
-def initial_dev_state() -> DevState:
-    return build_initial_state("test request")
+from multi_agent_sdlc.workflow.state import DevState, VerificationStatus
 
 
 @pytest.fixture
@@ -165,7 +160,7 @@ def project_verification_result_non_passed() -> ProjectVerificationResult:
 
 
 def test_tester_node_accepts_tool_call(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="",
@@ -182,12 +177,12 @@ def test_tester_node_accepts_tool_call(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+    dev_state["verification_status"] = VerificationStatus.VERIFYING
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["tester_messages"] == [response]
 
@@ -196,7 +191,7 @@ def test_tester_node_accepts_tool_call(
 
 def test_tester_node_processes_empty_unresolved_issues_non_passed_summary(
     tester_summary_blocked_with_empty_unresolved_issues: _TesterSummary,
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
 
     llm_response = AIMessage(
@@ -216,12 +211,12 @@ def test_tester_node_processes_empty_unresolved_issues_non_passed_summary(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = llm_response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+    dev_state["verification_status"] = VerificationStatus.VERIFYING
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["tester_messages"] == [
         llm_response,
@@ -243,7 +238,7 @@ def test_tester_node_processes_non_passed_summary(
     summary_fixture: str,
     expected_status: VerificationStatus,
     request: pytest.FixtureRequest,
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     tester_summary = request.getfixturevalue(summary_fixture)
     assert isinstance(tester_summary, _TesterSummary)
@@ -265,12 +260,12 @@ def test_tester_node_processes_non_passed_summary(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+    dev_state["verification_status"] = VerificationStatus.VERIFYING
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["verification_status"] == expected_status
     assert result["current_tester_summary"] == tester_summary
@@ -278,7 +273,7 @@ def test_tester_node_processes_non_passed_summary(
 
 
 def test_tester_node_processes_passed_summary(
-    initial_dev_state: DevState,
+    dev_state: DevState,
     tester_summary_passed: _TesterSummary,
     project_verification_result_passed: ProjectVerificationResult,
 ) -> None:
@@ -299,14 +294,14 @@ def test_tester_node_processes_passed_summary(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["current_project_verification_result"] = (
+    dev_state["current_project_verification_result"] = (
         project_verification_result_passed
     )
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["verification_status"] == VerificationStatus.PASSED
     assert result["current_tester_summary"] == tester_summary_passed
@@ -314,7 +309,7 @@ def test_tester_node_processes_passed_summary(
 
 
 def test_tester_node_processes_passed_summary_non_passed_project_verification(
-    initial_dev_state: DevState,
+    dev_state: DevState,
     tester_summary_passed: _TesterSummary,
     project_verification_result_non_passed: ProjectVerificationResult,
 ) -> None:
@@ -335,14 +330,14 @@ def test_tester_node_processes_passed_summary_non_passed_project_verification(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["current_project_verification_result"] = (
+    dev_state["current_project_verification_result"] = (
         project_verification_result_non_passed
     )
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
     messages = result["tester_messages"]
     assert isinstance(messages, list)
     assert not hasattr(result, "verification_status")
@@ -354,7 +349,7 @@ def test_tester_node_processes_passed_summary_non_passed_project_verification(
 
 
 def test_tester_node_accepts_multiple_operational_tool_calls(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="",
@@ -380,18 +375,18 @@ def test_tester_node_accepts_multiple_operational_tool_calls(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+    dev_state["verification_status"] = VerificationStatus.VERIFYING
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["tester_messages"] == [response]
 
 
 def test_tester_node_rejects_multiple_tool_calls_with_summary(
-    initial_dev_state: DevState,
+    dev_state: DevState,
     tester_summary_blocked: _TesterSummary,
 ) -> None:
     response = AIMessage(
@@ -417,12 +412,12 @@ def test_tester_node_rejects_multiple_tool_calls_with_summary(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
-    initial_dev_state["verification_status"] = VerificationStatus.VERIFYING
+    dev_state["verification_status"] = VerificationStatus.VERIFYING
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     messages = result["tester_messages"]
 
@@ -434,7 +429,7 @@ def test_tester_node_rejects_multiple_tool_calls_with_summary(
 
 
 def test_tester_node_handles_response_without_tool_calls(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="The verification is complete.",
@@ -443,11 +438,11 @@ def test_tester_node_handles_response_without_tool_calls(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     messages = result["tester_messages"]
 
@@ -457,7 +452,7 @@ def test_tester_node_handles_response_without_tool_calls(
 
 
 def test_tester_node_rejects_multiple_project_verification_calls(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="",
@@ -480,11 +475,11 @@ def test_tester_node_rejects_multiple_project_verification_calls(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["tester_messages"] = [
+    dev_state["tester_messages"] = [
         HumanMessage(content="Verify the implementation."),
     ]
 
-    result = tester_module.tester_node(initial_dev_state, mock_llm)
+    result = tester_module.tester_node(dev_state, mock_llm)
 
     assert result["tester_messages"] == [
         response,

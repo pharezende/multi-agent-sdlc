@@ -16,28 +16,26 @@ from multi_agent_sdlc.agents.reviewer.routing import route_after_reviewer
 from multi_agent_sdlc.agents.tester.llm import create_tester_llm
 from multi_agent_sdlc.agents.tester.node import tester_node
 from multi_agent_sdlc.agents.tester.routing import route_after_tester
-from multi_agent_sdlc.deployment.node import deployer_node
-from multi_agent_sdlc.human_in_the_loop.plan_review import human_plan_review_node
-from multi_agent_sdlc.human_in_the_loop.routing import route_after_plan_review
-from multi_agent_sdlc.human_in_the_loop.verification_block_review.routing import (
-    route_after_verification_block_review,
-)
-from multi_agent_sdlc.human_in_the_loop.verification_block_review.verification_block_review import (
-    human_verification_block_review_node,
-)
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
 from multi_agent_sdlc.tools.reviewer.registry import REVIEWER_TOOLS
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
-from multi_agent_sdlc.workflow.transitions import prepare_reviewer_node
-
-from .state import DevState
-from .transitions import (
+from multi_agent_sdlc.workflow.nodes.execution import deployer_node
+from multi_agent_sdlc.workflow.nodes.human_review import (
+    human_plan_review_node,
+    human_verification_block_review_node,
+    route_after_plan_review,
+    route_after_verification_block_review,
+)
+from multi_agent_sdlc.workflow.nodes.preparation import (
     prepare_coder_implementation_node,
     prepare_coder_repair_node,
     prepare_plan_review_node,
     prepare_planner_revision_node,
+    prepare_reviewer_node,
     prepare_tester_node,
 )
+
+from .state import DevState
 
 
 def generate_diagram(graph: CompiledStateGraph) -> None:

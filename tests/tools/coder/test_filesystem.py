@@ -1,6 +1,5 @@
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any, Callable, cast
+from typing import Any, Callable
 
 import pytest
 from langchain.tools import ToolRuntime
@@ -14,30 +13,6 @@ from multi_agent_sdlc.tools.coder.filesystem import (
     coder_write_file,
 )
 from multi_agent_sdlc.workflow.state import DevState
-
-
-@pytest.fixture
-def project_directory(tmp_path: Path) -> Path:
-    project_directory = tmp_path / "sandbox" / "terminal-calculator"
-    project_directory.mkdir(parents=True)
-    return project_directory
-
-
-@pytest.fixture
-def tool_runtime(
-    project_directory: Path,
-) -> ToolRuntime[DevState]:
-    state = cast(
-        DevState,
-        {
-            "project_directory": project_directory,
-        },
-    )
-
-    return cast(
-        ToolRuntime[DevState],
-        SimpleNamespace(state=state),
-    )
 
 
 def get_tool_function(

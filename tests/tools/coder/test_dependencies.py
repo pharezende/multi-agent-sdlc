@@ -1,9 +1,7 @@
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Any, Callable, cast
+from typing import Any, Callable
 from unittest.mock import patch
 
-import pytest
 from langchain.tools import ToolRuntime
 from langchain_core.tools import BaseTool, StructuredTool
 
@@ -12,44 +10,6 @@ from multi_agent_sdlc.tools.coder.dependencies import (
     coder_install_package_dependencies,
 )
 from multi_agent_sdlc.workflow.state import DevState
-
-
-@pytest.fixture
-def project_directory(tmp_path: Path) -> Path:
-    project_directory = tmp_path / "sandbox" / "terminal-calculator"
-    project_directory.mkdir(parents=True)
-    return project_directory
-
-
-@pytest.fixture
-def tool_runtime(
-    project_directory: Path,
-) -> ToolRuntime[DevState]:
-    state = cast(
-        DevState,
-        {
-            "project_directory": project_directory,
-        },
-    )
-
-    return cast(
-        ToolRuntime[DevState],
-        SimpleNamespace(state=state),
-    )
-
-
-@pytest.fixture
-def process_result() -> ProcessResult:
-    return cast(
-        ProcessResult,
-        {
-            "command": ["uv", "add", "requests"],
-            "exit_code": 0,
-            "stdout": "Installed requests",
-            "stderr": "",
-            "timed_out": False,
-        },
-    )
 
 
 def get_tool_function(
@@ -190,15 +150,12 @@ def test_install_package_dependencies_uses_custom_timeout(
 def test_install_package_dependencies_returns_failed_process_result(
     tool_runtime: ToolRuntime[DevState],
 ) -> None:
-    failed_result = cast(
-        ProcessResult,
-        {
-            "command": ["uv", "add", "missing-package"],
-            "exit_code": 1,
-            "stdout": "",
-            "stderr": "Dependency resolution failed",
-            "timed_out": False,
-        },
+    failed_result = ProcessResult(
+        command=["uv", "add", "missing-package"],
+        exit_code=1,
+        stdout="",
+        stderr="Dependency resolution failed",
+        timed_out=False,
     )
 
     function = get_tool_function(coder_install_package_dependencies)
@@ -218,16 +175,13 @@ def test_install_package_dependencies_returns_failed_process_result(
 def test_install_package_dependencies_returns_timeout_result(
     tool_runtime: ToolRuntime[DevState],
 ) -> None:
-    timeout_result = cast(
-        ProcessResult,
-        {
-            "command": ["uv", "add", "requests"],
-            "exit_code": None,
-            "stdout": "",
-            "stderr": "",
-            "timed_out": True,
-            "message": ("Command exceeded timeout and process group terminated."),
-        },
+    timeout_result = ProcessResult(
+        command=["uv", "add", "requests"],
+        exit_code=None,
+        stdout="",
+        stderr="",
+        timed_out=True,
+        message="Command exceeded timeout and process group terminated.",
     )
 
     function = get_tool_function(coder_install_package_dependencies)

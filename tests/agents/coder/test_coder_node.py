@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
 from langchain_core.messages import AIMessage, HumanMessage
 
 from multi_agent_sdlc.agents.coder import node as coder_module
@@ -13,56 +12,22 @@ from multi_agent_sdlc.agents.coder.prompt import (
     CODER_SUBMIT_SUMMARY_WITH_OTHER_TOOLS_FEEDBACK,
 )
 from multi_agent_sdlc.workflow.models import DevelopmentStatus
-from multi_agent_sdlc.workflow.state import DevState, build_initial_state
-
-
-@pytest.fixture
-def initial_dev_state() -> DevState:
-    return build_initial_state("test request")
-
-
-@pytest.fixture
-def coder_summary() -> CoderSummary:
-    return CoderSummary(
-        implementation_summary=(
-            "Implemented the Issue Tracker project scaffolding and application."
-        ),
-        completed_task_ids=["T1"],
-        modified_files=[
-            "issues_app/__init__.py",
-            "issues_app/cli.py",
-            "pyproject.toml",
-        ],
-        runtime_dependencies=[
-            "flask",
-        ],
-        entry_points=[
-            "issue-tracker",
-        ],
-        executed_operations=[
-            "Created and updated the planned production files.",
-            "Ran uv sync successfully.",
-        ],
-        unresolved_issues=[],
-        tester_notes=[
-            "Verify application startup and the configured issue-tracker entry point.",
-        ],
-    )
+from multi_agent_sdlc.workflow.state import DevState
 
 
 def test_coder_node_increments_invalid_response_count(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(content="I have completed the implementation.")
 
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["coder_messages"] = [
+    dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application.")
     ]
 
-    result = coder_module.coder_node(initial_dev_state, mock_llm)
+    result = coder_module.coder_node(dev_state, mock_llm)
 
     assert result["coder_invalid_response_count"] == 1
     messages = result["coder_messages"]
@@ -72,7 +37,7 @@ def test_coder_node_increments_invalid_response_count(
 
 
 def test_coder_node_fails_after_max_invalid_responses(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="The implementation is complete.",
@@ -81,15 +46,15 @@ def test_coder_node_fails_after_max_invalid_responses(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["coder_messages"] = [
+    dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
-    initial_dev_state["development_status"] = DevelopmentStatus.IMPLEMENTING
-    initial_dev_state["coder_invalid_response_count"] = (
+    dev_state["development_status"] = DevelopmentStatus.IMPLEMENTING
+    dev_state["coder_invalid_response_count"] = (
         MAX_CONSECUTIVE_CODER_INVALID_RESPONSES - 1
     )
 
-    result = coder_module.coder_node(initial_dev_state, mock_llm)
+    result = coder_module.coder_node(dev_state, mock_llm)
 
     assert (
         result["coder_invalid_response_count"]
@@ -101,7 +66,7 @@ def test_coder_node_fails_after_max_invalid_responses(
 
 
 def test_coder_node_accepts_summary_called_alone(
-    initial_dev_state: DevState,
+    dev_state: DevState,
     coder_summary: CoderSummary,
 ) -> None:
     response = AIMessage(
@@ -121,13 +86,13 @@ def test_coder_node_accepts_summary_called_alone(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["coder_messages"] = [
+    dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
-    initial_dev_state["development_status"] = DevelopmentStatus.IMPLEMENTING
-    initial_dev_state["coder_invalid_response_count"] = 1
+    dev_state["development_status"] = DevelopmentStatus.IMPLEMENTING
+    dev_state["coder_invalid_response_count"] = 1
 
-    result = coder_module.coder_node(initial_dev_state, mock_llm)
+    result = coder_module.coder_node(dev_state, mock_llm)
 
     assert result["development_status"] == DevelopmentStatus.COMPLETED
     assert result["current_coder_summary"] == coder_summary
@@ -138,7 +103,7 @@ def test_coder_node_accepts_summary_called_alone(
 
 
 def test_coder_node_accepts_multiple_operational_tool_calls(
-    initial_dev_state: DevState,
+    dev_state: DevState,
 ) -> None:
     response = AIMessage(
         content="",
@@ -167,19 +132,19 @@ def test_coder_node_accepts_multiple_operational_tool_calls(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["coder_messages"] = [
+    dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
-    initial_dev_state["coder_invalid_response_count"] = 1
+    dev_state["coder_invalid_response_count"] = 1
 
-    result = coder_module.coder_node(initial_dev_state, mock_llm)
+    result = coder_module.coder_node(dev_state, mock_llm)
 
     assert result["coder_messages"] == [response]
     assert result["coder_invalid_response_count"] == 0
 
 
 def test_coder_node_rejects_summary_with_other_tool_call(
-    initial_dev_state: DevState,
+    dev_state: DevState,
     coder_summary: CoderSummary,
 ) -> None:
     response = AIMessage(
@@ -208,11 +173,11 @@ def test_coder_node_rejects_summary_with_other_tool_call(
     mock_llm = MagicMock()
     mock_llm.invoke.return_value = response
 
-    initial_dev_state["coder_messages"] = [
+    dev_state["coder_messages"] = [
         HumanMessage(content="Implement the application."),
     ]
 
-    result = coder_module.coder_node(initial_dev_state, mock_llm)
+    result = coder_module.coder_node(dev_state, mock_llm)
 
     assert result["coder_invalid_response_count"] == 1
 
