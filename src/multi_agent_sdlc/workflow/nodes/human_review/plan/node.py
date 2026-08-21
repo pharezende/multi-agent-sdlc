@@ -1,5 +1,3 @@
-from typing import Literal
-
 from langchain_core.runnables import RunnableConfig
 from langgraph.types import interrupt
 
@@ -40,21 +38,3 @@ def human_plan_review_node(
         "plan_review_decision": decision,
         "plan_review_status": PlanReviewStatus(decision.decision),
     }
-
-
-def route_after_plan_review(
-    state: DevState,
-) -> Literal[
-    "prepare_coder_implementation",
-    "prepare_planner_revision",
-    "__end__",
-]:
-    status = state["plan_review_status"]
-
-    if status == PlanReviewStatus.APPROVED:
-        return "prepare_coder_implementation"
-
-    if status == PlanReviewStatus.REVISION_REQUIRED:
-        return "prepare_planner_revision"
-
-    return "__end__"

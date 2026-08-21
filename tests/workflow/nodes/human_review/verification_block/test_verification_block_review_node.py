@@ -7,7 +7,7 @@ from multi_agent_sdlc.workflow.models import (
     VerificationBlockDecision,
     VerificationBlockReview,
 )
-from multi_agent_sdlc.workflow.nodes.human_review.verification_block import (
+from multi_agent_sdlc.workflow.nodes.human_review.verification_block.node import (
     human_verification_block_review_node,
 )
 from multi_agent_sdlc.workflow.state import DevState
@@ -60,7 +60,7 @@ def test_human_verification_block_review_stores_resume_response(
     }
 
     with patch(
-        "multi_agent_sdlc.workflow.nodes.human_review.verification_block.interrupt",
+        "multi_agent_sdlc.workflow.nodes.human_review.verification_block.node.interrupt",
         return_value=resume_value,
     ):
         result = human_verification_block_review_node(dev_state)
@@ -85,12 +85,12 @@ def test_human_verification_block_review_passes_formatted_content_to_interrupt(
 
     with (
         patch(
-            "multi_agent_sdlc.workflow.nodes.human_review.verification_block."
+            "multi_agent_sdlc.workflow.nodes.human_review.verification_block.node."
             "format_verification_block_review",
             return_value="FORMATTED VERIFICATION BLOCK REVIEW",
         ) as format_mock,
         patch(
-            "multi_agent_sdlc.workflow.nodes.human_review.verification_block.interrupt",
+            "multi_agent_sdlc.workflow.nodes.human_review.verification_block.node.interrupt",
             return_value=resume_value,
         ) as interrupt_mock,
     ):

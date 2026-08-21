@@ -1,5 +1,5 @@
 from multi_agent_sdlc.workflow.models import PlanReviewStatus
-from multi_agent_sdlc.workflow.nodes.human_review import route_after_plan_review
+from multi_agent_sdlc.workflow.nodes.human_review.plan.routing import route_after_plan_review
 from multi_agent_sdlc.workflow.state import DevState
 
 

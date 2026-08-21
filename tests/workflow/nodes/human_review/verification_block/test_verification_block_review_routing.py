@@ -2,7 +2,7 @@ from multi_agent_sdlc.workflow.models import (
     VerificationBlockDecision,
     VerificationBlockReview,
 )
-from multi_agent_sdlc.workflow.nodes.human_review import (
+from multi_agent_sdlc.workflow.nodes.human_review.verification_block.routing import (
     route_after_verification_block_review,
 )
 from multi_agent_sdlc.workflow.state import DevState

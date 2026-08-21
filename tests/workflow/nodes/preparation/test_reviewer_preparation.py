@@ -15,7 +15,7 @@ from multi_agent_sdlc.workflow.models import (
     VerificationBlockDecision,
     VerificationBlockReview,
 )
-from multi_agent_sdlc.workflow.nodes.preparation import prepare_reviewer_node
+from multi_agent_sdlc.workflow.nodes.preparation.reviewer import prepare_reviewer_node
 from multi_agent_sdlc.workflow.state import DevState
 
 

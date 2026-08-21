@@ -19,21 +19,25 @@ from multi_agent_sdlc.agents.tester.routing import route_after_tester
 from multi_agent_sdlc.tools.coder.registry import CODER_TOOLS
 from multi_agent_sdlc.tools.reviewer.registry import REVIEWER_TOOLS
 from multi_agent_sdlc.tools.tester.registry import TESTER_TOOLS
-from multi_agent_sdlc.workflow.nodes.execution import deployer_node
-from multi_agent_sdlc.workflow.nodes.human_review import (
-    human_plan_review_node,
+from multi_agent_sdlc.workflow.nodes.deployment.deployer import deployer_node
+from multi_agent_sdlc.workflow.nodes.human_review.plan.node import human_plan_review_node
+from multi_agent_sdlc.workflow.nodes.human_review.plan.routing import route_after_plan_review
+from multi_agent_sdlc.workflow.nodes.human_review.verification_block.node import (
     human_verification_block_review_node,
-    route_after_plan_review,
+)
+from multi_agent_sdlc.workflow.nodes.human_review.verification_block.routing import (
     route_after_verification_block_review,
 )
-from multi_agent_sdlc.workflow.nodes.preparation import (
+from multi_agent_sdlc.workflow.nodes.preparation.coder import (
     prepare_coder_implementation_node,
     prepare_coder_repair_node,
+)
+from multi_agent_sdlc.workflow.nodes.preparation.plan import (
     prepare_plan_review_node,
     prepare_planner_revision_node,
-    prepare_reviewer_node,
-    prepare_tester_node,
 )
+from multi_agent_sdlc.workflow.nodes.preparation.reviewer import prepare_reviewer_node
+from multi_agent_sdlc.workflow.nodes.preparation.tester import prepare_tester_node
 
 from .state import DevState
 

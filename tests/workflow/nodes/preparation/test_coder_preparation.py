@@ -11,7 +11,7 @@ from multi_agent_sdlc.agents.planner.models import DevelopmentPlan
 from multi_agent_sdlc.agents.tester.model import TesterSummary as _TesterSummary
 from multi_agent_sdlc.presentation.plan_text import format_plan
 from multi_agent_sdlc.workflow.models import DevelopmentStatus
-from multi_agent_sdlc.workflow.nodes.preparation import (
+from multi_agent_sdlc.workflow.nodes.preparation.coder import (
     prepare_coder_implementation_node,
     prepare_coder_repair_node,
 )

@@ -8,7 +8,7 @@ from multi_agent_sdlc.workflow.models import (
     VerificationBlockReview,
     VerificationStatus,
 )
-from multi_agent_sdlc.workflow.nodes.preparation import prepare_tester_node
+from multi_agent_sdlc.workflow.nodes.preparation.tester import prepare_tester_node
 from multi_agent_sdlc.workflow.state import DevState
 
 

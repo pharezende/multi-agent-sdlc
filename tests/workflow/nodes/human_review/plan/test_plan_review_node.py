@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 from langchain_core.runnables import RunnableConfig
 
-import multi_agent_sdlc.workflow.nodes.human_review.plan as plan_review_module
+import multi_agent_sdlc.workflow.nodes.human_review.plan.node as plan_review_module
 from multi_agent_sdlc.agents.planner.models import DevelopmentPlan
 from multi_agent_sdlc.workflow.models import PlanReviewDecision, PlanReviewStatus
 from multi_agent_sdlc.workflow.run_repository import WorkflowRunStatus
